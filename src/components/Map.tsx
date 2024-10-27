@@ -2,7 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const Map: React.FC = () => {
+interface MapProps {
+    selectedRegion: Region | null;
+}
+
+const Map: React.FC<MapProps> = ({ selectedRegion }) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<mapboxgl.Map | null>(null);
 
