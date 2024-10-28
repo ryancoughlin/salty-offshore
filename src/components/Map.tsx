@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import DataLayer from './layers/DataLayer';
+import type { Region } from '../types/Region';
+import type { LayerGroups } from '../types/Layer';
 
 interface MapProps {
     selectedRegion: Region | null;
+    layerGroups: LayerGroups;
 }
 
-const Map: React.FC<MapProps> = ({ selectedRegion }) => {
+const Map: React.FC<MapProps> = ({ selectedRegion, layerGroups }) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<mapboxgl.Map | null>(null);
 
@@ -30,7 +34,23 @@ const Map: React.FC<MapProps> = ({ selectedRegion }) => {
     }, []);
 
     return (
-        <div ref={mapContainer} className="w-full h-full" />
+        <div ref={mapContainer} className="w-full h-full">
+            {map.current && selectedRegion && (
+                <>
+                    {Object.entries(layerGroups).map(([category, layers]) =>
+                        layers.map(layer => (
+                            <DataLayer
+                                key={layer.id}
+                                map={map.current!}
+                                region={selectedRegion}
+                                datasetId={layer.id}
+                                visible={layer.visible}
+                            />
+                        ))
+                    )}
+                </>
+            )}
+        </div>
     );
 };
 
