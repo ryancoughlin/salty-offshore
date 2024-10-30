@@ -1,6 +1,9 @@
-export type Region = {
+import { BoundingBox, Coordinates } from './common';
+
+export interface Region {
   id: string;
   name: string;
-  description: string;
-  bounds: [[number, number], [number, number]]; // [west, south], [east, north]
-};
+  description?: string;
+  bounds: BoundingBox;
+  center: Coordinates;
+}

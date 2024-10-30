@@ -1,19 +1,19 @@
 export type LayerCategory = 'sst' | 'currents' | 'chlorophyll';
 
-export type SSTDataset = 'LEOACSPOSSTL3SnrtCDaily' | 'other_sst_dataset';
-export type CurrentsDataset = 'BLENDEDNRTcurrentsDaily' | 'other_currents_dataset';
-export type ChlorophyllDataset = 'chlorophyll_oci' | 'other_chlorophyll_dataset';
-
-export type DatasetId = SSTDataset | CurrentsDataset | ChlorophyllDataset;
+export type DatasetId = {
+  sst: 'LEOACSPOSSTL3SnrtCDaily' | 'other_sst_dataset';
+  currents: 'BLENDEDNRTcurrentsDaily' | 'other_currents_dataset';
+  chlorophyll: 'chlorophyll_oci' | 'other_chlorophyll_dataset';
+}
 
 export interface Layer {
-  id: DatasetId;
+  id: DatasetId[LayerCategory];
   category: LayerCategory;
   name: string;
   visible: boolean;
+  opacity: number;
 }
 
-// Example grouping of layers by category
 export interface LayerGroups {
   sst: Layer[];
   currents: Layer[];

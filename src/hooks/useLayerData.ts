@@ -12,7 +12,7 @@ interface LayerData {
 
 export const useLayerData = (
   region: Region | null,
-  datasetId: DatasetId,
+  datasetId: DatasetId[keyof DatasetId],
   visible: boolean
 ) => {
   const [layerData, setLayerData] = useState<LayerData>({
@@ -28,7 +28,7 @@ export const useLayerData = (
       setLayerData(prev => ({ ...prev, loading: true }));
       
       try {
-        const data = await api.getDatasetInfo(region.id, datasetId);
+        const data = await api.getDatasetMetadata(region.id, datasetId);
         
         const latestDate = data.dates[0];
         if (!latestDate) {
@@ -36,8 +36,8 @@ export const useLayerData = (
         }
 
         setLayerData({
-          image: api.getImageUrl(latestDate.paths.image),
-          geojson: api.getGeoJsonUrl(latestDate.paths.geojson),
+          image: latestDate.layers.image ? api.getImageUrl(region.id, datasetId, latestDate.date) : undefined,
+          geojson: latestDate.layers.geojson ? api.getGeoJsonUrl(region.id, datasetId, latestDate.date) : undefined,
           loading: false
         });
 
