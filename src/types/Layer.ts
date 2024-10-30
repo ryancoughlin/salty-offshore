@@ -1,10 +1,10 @@
-import { DataCategory } from "./core";
+import { Category } from "./core";
 
 export type DatasetId = string;
 
 export interface LayerState {
   id: DatasetId;
   name: string;
-  category: DataCategory;
+  category: Category;
   visible: boolean;
 }

@@ -7,7 +7,7 @@ interface MapLayerProps {
     visible: boolean;
     visibleLayers?: Set<string>;
     selectedDate: string;
-    opacity?: number;
+
 }
 
 export const MapLayer: React.FC<MapLayerProps> = ({
@@ -15,8 +15,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
     dataset,
     visible,
     visibleLayers = new Set(),
-    selectedDate,
-    opacity = 1
+    selectedDate
 }) => {
     if (!visible || !selectedDate) return null;
 
@@ -50,7 +49,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                         id={`${dataset.id}-image`}
                         type="raster"
                         paint={{
-                            'raster-opacity': opacity,
+                            'raster-opacity': 0.5,
                             'raster-fade-duration': 0
                         }}
                     />
@@ -64,13 +63,37 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                     type="geojson"
                     data={dateEntry.layers.contours}
                 >
+                    {/* Main contour lines */}
                     <Layer
-                        id={`${dataset.id}-contours`}
+                        id={`${dataset.id}-contours-line`}
                         type="line"
                         paint={{
                             'line-color': '#FF0000',
-                            'line-width': 1.5,
-                            'line-opacity': opacity * 0.8
+                            'line-width': 1,
+                            'line-opacity': 1
+                        }}
+                    />
+
+                    {/* Contour labels */}
+                    <Layer
+                        id={`${dataset.id}-contours-label`}
+                        type="symbol"
+                        layout={{
+                            'text-field': [
+                                'concat',
+                                ['number-format', ['get', 'value'], { 'min-fraction-digits': 1, 'max-fraction-digits': 1 }],
+                                '°C'  // Add unit
+                            ],
+                            'text-font': ['Open Sans Regular'],
+                            'symbol-placement': 'line',
+                            'text-size': 12,
+                            'text-allow-overlap': false,
+                            'text-padding': 5
+                        }}
+                        paint={{
+                            'text-color': '#FF0000',
+                            'text-halo-color': '#FFFFFF',
+                            'text-halo-width': 2
                         }}
                     />
                 </Source>

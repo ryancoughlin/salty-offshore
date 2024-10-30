@@ -1,8 +1,8 @@
-import { DataCategory, LayerType, Bounds } from "./core";
+import { Category, LayerType, Bounds } from "./core";
 
 export interface Dataset {
   id: string;
-  category: DataCategory;
+  category: Category;
   name: string;
   supportedLayers: LayerType[];
   dates: DateEntry[];
