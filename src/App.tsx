@@ -1,80 +1,58 @@
 import './App.css'
 import React, { useState } from 'react'
-import Map from './components/Map'
+import SaltyMap from './components/Map/Map'
 import RegionPicker from './components/RegionPicker'
 import LayerControls from './components/LayerControls'
-import { AVAILABLE_REGIONS } from './mocks/regions'
-import type { Region } from './types/Region'
-import type { LayerGroups, DatasetId } from './types/Layer'
-
-const DEFAULT_LAYER_GROUPS: LayerGroups = {
-  sst: [
-    { 
-      id: 'LEOACSPOSSTL3SnrtCDaily',
-      category: 'sst',
-      name: 'LEO ACSPO SST',
-      visible: false 
-    }
-    // Add other SST datasets here
-  ],
-  currents: [
-    {
-      id: 'BLENDEDNRTcurrentsDaily',
-      category: 'currents',
-      name: 'NOAA Blended Currents',
-      visible: false
-    }
-  ],
-  chlorophyll: [
-    {
-      id: 'chlorophyll_oci',
-      category: 'chlorophyll',
-      name: 'Chlorophyll OCI',
-      visible: false
-    }
-  ]
-};
+import { useRegions } from './hooks/useRegions'
+import { useRegionDatasets } from './hooks/useRegionDatasets'
+import type { RegionInfo } from './types/api'
+import type { DatasetId } from './types/Layer'
 
 const App: React.FC = () => {
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
-  const [layerGroups, setLayerGroups] = useState<LayerGroups>(DEFAULT_LAYER_GROUPS);
+  const { regions, loading: regionsLoading } = useRegions();
+  const { getRegionData } = useRegionDatasets();
+  const [selectedRegion, setSelectedRegion] = useState<RegionInfo | null>(null);
+  const [visibleLayers, setVisibleLayers] = useState<Set<DatasetId>>(new Set());
 
-  const handleRegionSelect = (region: Region) => {
+  const handleRegionSelect = (region: RegionInfo) => {
     setSelectedRegion(region);
   };
 
   const handleToggleLayer = (datasetId: DatasetId) => {
-    setLayerGroups(prevGroups => {
-      const newGroups = { ...prevGroups };
-      
-      // Find and toggle the layer in the appropriate group
-      Object.keys(newGroups).forEach(category => {
-        newGroups[category] = newGroups[category].map(layer =>
-          layer.id === datasetId 
-            ? { ...layer, visible: !layer.visible }
-            : layer
-        );
-      });
-      
-      return newGroups;
+    setVisibleLayers(prev => {
+      const next = new Set(prev);
+      if (next.has(datasetId)) {
+        next.delete(datasetId);
+      } else {
+        next.add(datasetId);
+      }
+      return next;
     });
   };
 
+  if (regionsLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const regionData = getRegionData(selectedRegion?.id);
+
   return (
     <div className="w-screen h-screen">
-      <Map 
-        selectedRegion={selectedRegion}
-        layerGroups={layerGroups}
+      <SaltyMap
+        bounds={selectedRegion?.bounds}
+        datasets={regionData?.datasets || []}
+        visibleLayers={visibleLayers}
       />
       <RegionPicker
-        regions={AVAILABLE_REGIONS}
+        regions={regions}
         selectedRegion={selectedRegion}
         onRegionSelect={handleRegionSelect}
       />
-      {selectedRegion && (
+      {regionData && (
         <LayerControls
-          layerGroups={layerGroups}
+          region={regionData}
           onToggleLayer={handleToggleLayer}
+          visibleLayers={visibleLayers}
         />
       )}
     </div>

@@ -1,57 +1,59 @@
-import { useState, useEffect } from 'react';
-import { api } from '../services/api';
-import type { Region } from '../types/Region';
-import type { DatasetId } from '../types/Layer';
+import { useState, useEffect } from "react";
+import type { Region } from "../types/api";
+import type { LayerType } from "../types/core";
 
-interface LayerData {
-  image?: string;
-  geojson?: string;
+interface LayerDataResult {
+  path: string | null;
   loading: boolean;
-  error?: string;
+  error: Error | null;
 }
 
-export const useLayerData = (
-  region: Region | null,
-  datasetId: DatasetId[keyof DatasetId],
-  visible: boolean
-) => {
-  const [layerData, setLayerData] = useState<LayerData>({
-    loading: false
-  });
+export function useLayerData(
+  region: Region,
+  datasetId: string,
+  layerType: LayerType,
+  selectedDate: string | null
+): LayerDataResult {
+  const [path, setPath] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!region || !visible) {
-      return;
-    }
-
-    const fetchLayerData = async () => {
-      setLayerData(prev => ({ ...prev, loading: true }));
-      
+    async function fetchLayerData() {
       try {
-        const data = await api.getDatasetMetadata(region.id, datasetId);
-        
-        const latestDate = data.dates[0];
-        if (!latestDate) {
-          throw new Error('No data available');
+        const data = await api.getRegionData(region.id);
+        const dataset = data[datasetId];
+
+        if (!dataset) {
+          throw new Error(`Dataset ${datasetId} not found`);
         }
 
-        setLayerData({
-          image: latestDate.layers.image ? api.getImageUrl(region.id, datasetId, latestDate.date) : undefined,
-          geojson: latestDate.layers.geojson ? api.getGeoJsonUrl(region.id, datasetId, latestDate.date) : undefined,
-          loading: false
-        });
+        const dateEntry = selectedDate
+          ? dataset.dates.find((d) => d.date === selectedDate)
+          : dataset.dates[0];
 
-      } catch (error) {
-        console.error('Error loading layer data:', error);
-        setLayerData({
-          loading: false,
-          error: 'Failed to load layer data'
-        });
+        if (!dateEntry) {
+          throw new Error("No data available for selected date");
+        }
+
+        const layerPath = dateEntry.layers[layerType];
+        if (!layerPath) {
+          throw new Error(`Layer type ${layerType} not available`);
+        }
+
+        setPath(layerPath);
+        setError(null);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err : new Error("Failed to fetch layer data")
+        );
+      } finally {
+        setLoading(false);
       }
-    };
+    }
 
     fetchLayerData();
-  }, [region, datasetId, visible]);
+  }, [region.id, datasetId, layerType, selectedDate]);
 
-  return layerData;
-};
+  return { path, loading, error };
+}

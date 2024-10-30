@@ -1,21 +1,10 @@
-export type LayerCategory = 'sst' | 'currents' | 'chlorophyll';
+import { DataCategory } from "./core";
 
-export type DatasetId = {
-  sst: 'LEOACSPOSSTL3SnrtCDaily' | 'other_sst_dataset';
-  currents: 'BLENDEDNRTcurrentsDaily' | 'other_currents_dataset';
-  chlorophyll: 'chlorophyll_oci' | 'other_chlorophyll_dataset';
-}
+export type DatasetId = string;
 
-export interface Layer {
-  id: DatasetId[LayerCategory];
-  category: LayerCategory;
+export interface LayerState {
+  id: DatasetId;
   name: string;
+  category: DataCategory;
   visible: boolean;
-  opacity: number;
-}
-
-export interface LayerGroups {
-  sst: Layer[];
-  currents: Layer[];
-  chlorophyll: Layer[];
 }

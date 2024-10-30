@@ -8,9 +8,3 @@ export interface MapProps {
 export interface MapContextProps {
     map: MapboxMap | null;
 }
-
-export interface LayerState {
-    id: string;
-    visible: boolean;
-    opacity: number;
-}
