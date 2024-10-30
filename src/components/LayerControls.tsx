@@ -20,6 +20,12 @@ const LayerControls: React.FC<LayerControlsProps> = ({
     visibleLayers,
     onToggleLayer
 }) => {
+    // Add debugging
+    console.log('LayerControls Render:', {
+        datasets: region.datasets,
+        visibleLayers: Array.from(visibleLayers)
+    });
+
     // Group datasets by category
     const groupedDatasets = region.datasets.reduce((acc, dataset) => {
         if (!acc[dataset.category]) {

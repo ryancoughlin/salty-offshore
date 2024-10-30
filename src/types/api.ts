@@ -4,13 +4,15 @@ export interface Dataset {
   id: string;
   category: DataCategory;
   name: string;
-  type: LayerType;
+  supportedLayers: LayerType[];
   dates: DateEntry[];
 }
 
 export interface DateEntry {
   date: string;
-  url: string;
+  layers: {
+    [key in LayerType]?: string;
+  };
 }
 
 export interface Region {
