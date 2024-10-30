@@ -7,6 +7,7 @@ import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
 import type { Region } from './types/api'
 import type { DatasetId } from './types/Layer'
+import { TemperatureOverlay } from './TemperatureOverlay';
 
 const App: React.FC = () => {
   const { regions, loading: regionsLoading } = useRegions();
@@ -35,7 +36,7 @@ const App: React.FC = () => {
       const mostRecentDate = allDates.sort().reverse()[0];
       setSelectedDate(mostRecentDate);
     }
-  }, [selectedRegion]);
+  }, [selectedRegion, getRegionData]);
 
   const handleRegionSelect = (region: Region) => {
     setSelectedRegion(region);
@@ -95,6 +96,16 @@ const App: React.FC = () => {
         selectedRegion={selectedRegion}
         onRegionSelect={handleRegionSelect}
       />
+      {/* Temperature Overlay - positioned under RegionPicker */}
+      {regionData?.datasets.map(dataset => (
+        dataset.category === 'sst' && (
+          <TemperatureOverlay
+            key={dataset.id}
+            dataUrl={dataset.dates.find(d => d.date === selectedDate)?.layers.data}
+            dataset={dataset}
+          />
+        )
+      ))}
       {regionData && selectedDate && (
         <LayerControls
           region={regionData}

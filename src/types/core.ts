@@ -11,7 +11,7 @@ export interface GeographicEntity {
 
 // Data classification
 export type Category = "sst" | "currents" | "chlorophyll";
-export type LayerType = "image" | "geojson" | "contours";
+export type LayerType = "image" | "data" | "contours";
 export type SourceType = "image" | "geojson";
 export type LayerStyleType = "raster" | "line";
 

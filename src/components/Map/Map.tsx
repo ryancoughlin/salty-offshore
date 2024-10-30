@@ -3,6 +3,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapLayer } from './MapLayer';
 import type { Dataset, Region } from '../../types/api';
 import type { DatasetId } from '../../types/Layer';
+import { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
 
 interface MapProps {
     region?: Region;
@@ -23,23 +25,30 @@ const SaltyMap: React.FC<MapProps> = ({
     visibleLayers,
     selectedDate
 }) => {
-    const viewState = region ? {
-        longitude: (region.bounds[0][0] + region.bounds[1][0]) / 2,
-        latitude: (region.bounds[0][1] + region.bounds[1][1]) / 2,
-        zoom: 7,
-    } : DEFAULT_VIEW_STATE;
+    const mapRef = useRef<mapboxgl.Map | null>(null);
+
+    useEffect(() => {
+        if (region?.bounds && mapRef.current) {
+            mapRef.current.fitBounds(region.bounds, {
+                padding: 50,
+                duration: 1000
+            });
+        }
+    }, [region]);
 
     return (
         <div className="w-full h-full relative">
             <Map
+                ref={mapRef}
                 reuseMaps
-                initialViewState={viewState}
+                initialViewState={DEFAULT_VIEW_STATE}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle="mapbox://styles/mapbox/dark-v11"
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                 renderWorldCopies={false}
                 maxZoom={12}
                 minZoom={3}
+                interactiveLayerIds={datasets.map(d => `${d.id}-data`)}
             >
                 <NavigationControl position="top-right" />
                 {region && datasets.map((dataset) => (
@@ -48,8 +57,8 @@ const SaltyMap: React.FC<MapProps> = ({
                         region={region}
                         dataset={dataset}
                         visible={visibleLayers.has(dataset.id)}
-                        visibleLayers={visibleLayers}
                         selectedDate={selectedDate}
+                        visibleLayers={visibleLayers}
                     />
                 ))}
             </Map>
