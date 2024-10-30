@@ -1,6 +1,6 @@
 import { Source, Layer } from 'react-map-gl';
 import type { Dataset, Region } from '../../types/api';
-import type { LayerType } from '../../types/core';
+import type { LayerType, SourceType, LayerStyleType } from '../../types/core';
 
 interface MapLayerProps {
     region: Region;
@@ -22,17 +22,6 @@ export const MapLayer: React.FC<MapLayerProps> = ({
     const dateEntry = dataset.dates.find(d => d.date === selectedDate);
     if (!dateEntry) return null;
 
-    // Add debugging
-    console.log('MapLayer Render:', {
-        datasetId: dataset.id,
-        visible,
-        selectedDate,
-        dateEntry,
-        supportedLayers: dataset.supportedLayers,
-        bounds: region.bounds
-    });
-
-    // Render a Source/Layer pair for each supported layer type
     return (
         <>
             {dataset.supportedLayers.map(layerType => {
@@ -42,33 +31,16 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                 const sourceId = `${dataset.id}-${layerType}-source`;
                 const layerId = `${dataset.id}-${layerType}-layer`;
 
-                const sourceProps = layerType === 'image'
-                    ? {
-                        type: 'image' as const,
-                        url: layerUrl,
-                        coordinates: region.bounds
-                    }
-                    : {
-                        type: 'geojson' as const,
-                        data: layerUrl
-                    };
+                const [[minLng, minLat], [maxLng, maxLat]] = region.bounds;
+                const coordinates = [
+                    [minLng, maxLat],
+                    [maxLng, maxLat],
+                    [maxLng, minLat],
+                    [minLng, minLat]
+                ];
 
-                const layerProps = layerType === 'image'
-                    ? {
-                        type: 'raster' as const,
-                        paint: {
-                            'raster-opacity': opacity,
-                            'raster-fade-duration': 0
-                        }
-                    }
-                    : {
-                        type: 'line' as const,
-                        paint: {
-                            'line-color': '#FF0000',
-                            'line-width': 1,
-                            'line-opacity': opacity
-                        }
-                    };
+                const sourceProps = getSourceProps(layerType, layerUrl, coordinates);
+                const layerProps = getLayerProps(layerType, opacity);
 
                 return (
                     <Source
@@ -85,4 +57,34 @@ export const MapLayer: React.FC<MapLayerProps> = ({
             })}
         </>
     );
+};
+
+const getSourceProps = (layerType: LayerType, url: string, coordinates?: number[][]) => {
+    const sourceType: SourceType = layerType === 'image' ? 'image' : 'geojson';
+
+    return {
+        type: sourceType,
+        ...(layerType === 'image'
+            ? { url, coordinates }
+            : { data: url }
+        )
+    };
+};
+
+const getLayerProps = (layerType: LayerType, opacity: number) => {
+    const styleType: LayerStyleType = layerType === 'image' ? 'raster' : 'line';
+
+    return {
+        type: styleType,
+        paint: layerType === 'image'
+            ? {
+                'raster-opacity': opacity,
+                'raster-fade-duration': 0
+            }
+            : {
+                'line-color': '#FF0000',
+                'line-width': 1,
+                'line-opacity': opacity
+            }
+    };
 }; 
