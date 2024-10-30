@@ -37,6 +37,9 @@ const SaltyMap: React.FC<MapProps> = ({
                 style={{ width: '100%', height: '100%' }}
                 mapStyle="mapbox://styles/mapbox/dark-v11"
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+                renderWorldCopies={false}
+                maxZoom={12}
+                minZoom={3}
             >
                 <NavigationControl position="top-right" />
                 {region && datasets.map((dataset) => (
@@ -45,6 +48,7 @@ const SaltyMap: React.FC<MapProps> = ({
                         region={region}
                         dataset={dataset}
                         visible={visibleLayers.has(dataset.id)}
+                        visibleLayers={visibleLayers}
                         selectedDate={selectedDate}
                     />
                 ))}

@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const { regions, loading: regionsLoading } = useRegions();
   const { getRegionData } = useRegionDatasets();
   const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
-  const [visibleLayers, setVisibleLayers] = useState<Set<DatasetId>>(new Set());
+  const [visibleLayers, setVisibleLayers] = useState<Set<string>>(new Set());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // When region changes, find the most recent date from its datasets
@@ -42,14 +42,36 @@ const App: React.FC = () => {
     setVisibleLayers(new Set()); // Clear visible layers when region changes
   };
 
-  const handleToggleLayer = (datasetId: DatasetId) => {
+  const handleToggleLayer = (datasetId: DatasetId, layerType?: string) => {
     setVisibleLayers(prev => {
       const next = new Set(prev);
-      if (next.has(datasetId)) {
-        next.delete(datasetId);
+
+      if (layerType) {
+        // Toggle additional layer (e.g., contours)
+        const layerId = `${datasetId}-${layerType}`;
+        if (next.has(layerId)) {
+          next.delete(layerId);
+        } else {
+          // Ensure main layer is visible when adding additional layer
+          next.add(datasetId); // Add main image layer if not present
+          next.add(layerId);   // Add the additional layer
+        }
       } else {
-        next.add(datasetId);
+        // Toggle main dataset (image layer)
+        if (next.has(datasetId)) {
+          // Remove main layer and all its additional layers
+          next.delete(datasetId);
+          // Find and remove any additional layers for this dataset
+          Array.from(next).forEach(id => {
+            if (id.startsWith(`${datasetId}-`)) {
+              next.delete(id);
+            }
+          });
+        } else {
+          next.add(datasetId); // Just add main layer
+        }
       }
+
       return next;
     });
   };

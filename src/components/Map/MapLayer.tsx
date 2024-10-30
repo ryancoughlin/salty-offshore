@@ -1,11 +1,11 @@
 import { Source, Layer } from 'react-map-gl';
 import type { Dataset, Region } from '../../types/api';
-import type { LayerType, SourceType, LayerStyleType } from '../../types/core';
 
 interface MapLayerProps {
     region: Region;
     dataset: Dataset;
     visible: boolean;
+    visibleLayers?: Set<string>;
     selectedDate: string;
     opacity?: number;
 }
@@ -14,6 +14,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
     region,
     dataset,
     visible,
+    visibleLayers = new Set(),
     selectedDate,
     opacity = 1
 }) => {
@@ -22,69 +23,58 @@ export const MapLayer: React.FC<MapLayerProps> = ({
     const dateEntry = dataset.dates.find(d => d.date === selectedDate);
     if (!dateEntry) return null;
 
+    // Get coordinates for image bounds
+    const [[minLng, minLat], [maxLng, maxLat]] = region.bounds;
+    const coordinates = [
+        [minLng, maxLat], // top-left
+        [maxLng, maxLat], // top-right
+        [maxLng, minLat], // bottom-right
+        [minLng, minLat]  // bottom-left
+    ];
+
+    const isLayerVisible = (layerType: string): boolean => {
+        return visibleLayers?.has(`${dataset.id}-${layerType}`) ?? false;
+    };
+
     return (
         <>
-            {dataset.supportedLayers.map(layerType => {
-                const layerUrl = dateEntry.layers[layerType];
-                if (!layerUrl) return null;
+            {/* Base Image Layer */}
+            {dateEntry.layers.image && (
+                <Source
+                    id={`${dataset.id}-image-source`}
+                    type="image"
+                    url={dateEntry.layers.image}
+                    coordinates={coordinates}
+                >
+                    <Layer
+                        id={`${dataset.id}-image`}
+                        type="raster"
+                        paint={{
+                            'raster-opacity': opacity,
+                            'raster-fade-duration': 0
+                        }}
+                    />
+                </Source>
+            )}
 
-                const sourceId = `${dataset.id}-${layerType}-source`;
-                const layerId = `${dataset.id}-${layerType}-layer`;
-
-                const [[minLng, minLat], [maxLng, maxLat]] = region.bounds;
-                const coordinates = [
-                    [minLng, maxLat],
-                    [maxLng, maxLat],
-                    [maxLng, minLat],
-                    [minLng, minLat]
-                ];
-
-                const sourceProps = getSourceProps(layerType, layerUrl, coordinates);
-                const layerProps = getLayerProps(layerType, opacity);
-
-                return (
-                    <Source
-                        key={sourceId}
-                        id={sourceId}
-                        {...sourceProps}
-                    >
-                        <Layer
-                            id={layerId}
-                            {...layerProps}
-                        />
-                    </Source>
-                );
-            })}
+            {/* Contour Layer */}
+            {dateEntry.layers.contours && isLayerVisible('contours') && (
+                <Source
+                    id={`${dataset.id}-contours-source`}
+                    type="geojson"
+                    data={dateEntry.layers.contours}
+                >
+                    <Layer
+                        id={`${dataset.id}-contours`}
+                        type="line"
+                        paint={{
+                            'line-color': '#FF0000',
+                            'line-width': 1.5,
+                            'line-opacity': opacity * 0.8
+                        }}
+                    />
+                </Source>
+            )}
         </>
     );
-};
-
-const getSourceProps = (layerType: LayerType, url: string, coordinates?: number[][]) => {
-    const sourceType: SourceType = layerType === 'image' ? 'image' : 'geojson';
-
-    return {
-        type: sourceType,
-        ...(layerType === 'image'
-            ? { url, coordinates }
-            : { data: url }
-        )
-    };
-};
-
-const getLayerProps = (layerType: LayerType, opacity: number) => {
-    const styleType: LayerStyleType = layerType === 'image' ? 'raster' : 'line';
-
-    return {
-        type: styleType,
-        paint: layerType === 'image'
-            ? {
-                'raster-opacity': opacity,
-                'raster-fade-duration': 0
-            }
-            : {
-                'line-color': '#FF0000',
-                'line-width': 1,
-                'line-opacity': opacity
-            }
-    };
 }; 
