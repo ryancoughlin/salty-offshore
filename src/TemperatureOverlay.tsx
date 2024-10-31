@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Dataset } from './types/api';
 import type { Coordinate } from './types/core';
 
@@ -16,118 +16,52 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     visibleLayers
 }) => {
     const [temperature, setTemperature] = useState<number | null>(null);
-    const [isSourceReady, setIsSourceReady] = useState(false);
+    const lastQueryTime = useRef<number>(0);
+    const lastValidData = useRef<{ temp: number; position: Coordinate } | null>(null);
+
+    // Core temperature calculation
+    const queryTemperature = useCallback((map: mapboxgl.Map, point: mapboxgl.Point) => {
+        const now = Date.now();
+        if (now - lastQueryTime.current < 32) return; // ~30fps throttle
+        lastQueryTime.current = now;
+
+        const features = map.queryRenderedFeatures(
+            [[point.x - 15, point.y - 15], [point.x + 15, point.y + 15]],
+            { layers: [`${dataset.id}-data`] }
+        );
+
+        const value = features[0]?.properties?.value;
+
+        if (typeof value === 'number') {
+            const temp = (value * (dataset.scale || 1)) + (dataset.offset || 0);
+            lastValidData.current = { temp, position: cursorPosition };
+            setTemperature(temp);
+        } else if (lastValidData.current) {
+            // Keep showing temperature if within range
+            const distance = Math.hypot(
+                cursorPosition.lng - lastValidData.current.position.lng,
+                cursorPosition.lat - lastValidData.current.position.lat
+            );
+
+            setTemperature(distance < 0.01 ? lastValidData.current.temp : null);
+        }
+    }, [dataset.id, dataset.scale, dataset.offset, cursorPosition]);
 
     useEffect(() => {
-        if (!mapRef || !cursorPosition) return;
-
-        // Early return if layer isn't visible or isn't SST
-        if (!visibleLayers.has(dataset.id) || dataset.category !== 'sst') {
+        if (!mapRef || !cursorPosition || !visibleLayers.has(dataset.id)) {
             setTemperature(null);
-            setIsSourceReady(false);
             return;
         }
 
-        const layerId = `${dataset.id}-data`;
-        const sourceId = `${dataset.id}-data-source`;
+        const point = mapRef.project(cursorPosition);
+        queryTemperature(mapRef, point);
+    }, [mapRef, dataset.id, cursorPosition, visibleLayers, queryTemperature]);
 
-        // Handle source data loading
-        const handleSourceData = (e: mapboxgl.MapDataEvent) => {
-            if (e.sourceId !== sourceId) return;
-
-            // Only consider source ready when it's fully loaded with content
-            if (e.isSourceLoaded && e.sourceDataType === 'content') {
-                setIsSourceReady(true);
-                queryTemperature();
-            }
-        };
-
-        // Query temperature at current cursor position
-        const queryTemperature = () => {
-            const point = mapRef.project(cursorPosition);
-
-            // Increase buffer size significantly for better hit detection
-            const buffer = 10; // pixels
-            const features = mapRef.queryRenderedFeatures(
-                [
-                    [point.x - buffer, point.y - buffer],
-                    [point.x + buffer, point.y + buffer]
-                ],
-                { layers: [layerId] }
-            );
-
-            // Enhanced debug logging
-            console.log('Temperature query:', {
-                dataset: dataset.id,
-                point,
-                bufferSize: buffer,
-                featuresFound: features.length,
-                queryBox: {
-                    topLeft: [point.x - buffer, point.y - buffer],
-                    bottomRight: [point.x + buffer, point.y + buffer]
-                },
-                value: features[0]?.properties?.value,
-                scale: dataset.scale,
-                offset: dataset.offset
-            });
-
-            if (!features.length) {
-                console.log('No features found in query area');
-                setTemperature(null);
-                return;
-            }
-
-            const value = features[0].properties?.value;
-            if (typeof value !== 'number') {
-                console.log('Invalid temperature value:', value);
-                setTemperature(null);
-                return;
-            }
-
-            // Calculate temperature and log the calculation
-            const tempValue = (value * (dataset.scale || 1)) + (dataset.offset || 0);
-            console.log('Temperature calculation:', {
-                rawValue: value,
-                scale: dataset.scale || 1,
-                offset: dataset.offset || 0,
-                finalTemp: tempValue
-            });
-
-            setTemperature(tempValue);
-        };
-
-        // Add source data event listener
-        mapRef.on('sourcedata', handleSourceData);
-
-        // Initial query if source is already loaded
-        if (mapRef.isSourceLoaded(sourceId)) {
-            setIsSourceReady(true);
-            queryTemperature();
-        }
-
-        // Cleanup
-        return () => {
-            mapRef.off('sourcedata', handleSourceData);
-        };
-    }, [mapRef, dataset, cursorPosition, visibleLayers]);
-
-    // Only show temperature UI when we have both a valid temperature and the source is ready
-    console.log('Temperature overlay render:', { isSourceReady, temperature });
-    console.log('Checking render conditions:', { isSourceReady, temperature });
-    if (!isSourceReady) {
-        console.log('Source not ready yet');
-        return null;
-    }
-    if (temperature === null) {
-        console.log('No temperature data available');
-        return null;
-    }
+    if (!temperature) return null;
 
     return (
         <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
-            <div className="text-xs text-gray-500">
-                {dataset.name || 'Sea Surface Temperature'}
-            </div>
+            <div className="text-xs text-gray-500">{dataset.name}</div>
             <div className="text-sm font-medium text-gray-900">
                 {`${temperature.toFixed(1)}°F`}
             </div>
