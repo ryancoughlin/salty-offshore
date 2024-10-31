@@ -37,31 +37,6 @@ const SaltyMap: React.FC<MapProps> = ({
             });
         }
     }, [region]);
-
-    // Debug source loading with more detail
-    useEffect(() => {
-        if (!mapRef) return;
-
-        mapRef.on('sourcedata', (e) => {
-            if (e.sourceId?.includes('data-source')) {
-                console.log('Source event:', {
-                    sourceId: e.sourceId,
-                    dataType: e.dataType,
-                    sourceDataType: e.sourceDataType,
-                    isSourceLoaded: e.isSourceLoaded
-                });
-            }
-        });
-    }, [mapRef]);
-
-    // Debug datasets at Map level
-    console.log('Map component:', {
-        hasRegion: !!region,
-        region,
-        datasetCount: datasets.length,
-        sstDatasets: datasets.filter(d => d.category === 'sst')
-    });
-
     return (
         <div className="w-full h-full relative">
             <Map

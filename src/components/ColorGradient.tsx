@@ -1,13 +1,13 @@
 import React from 'react';
+import sstColorScale from '../utils/sst_color_scale.json';
 
 interface ColorGradientProps {
     min: number;
     max: number;
-    colors: string[];
 }
 
-const ColorGradient: React.FC<ColorGradientProps> = ({ min, max, colors }) => {
-    const gradient = `linear-gradient(to right, ${colors.join(', ')})`;
+const ColorGradient: React.FC<ColorGradientProps> = ({ min, max }) => {
+    const gradient = `linear-gradient(to right, ${sstColorScale.colors.join(', ')})`;
 
     return (
         <div className="flex items-center gap-2 px-4 py-2">
