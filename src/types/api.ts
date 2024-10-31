@@ -18,6 +18,7 @@ export interface DateEntry {
 export interface Region {
   id: string;
   name: string;
+  description: string;
   bounds: Bounds;
   datasets: Dataset[];
 }

@@ -11,9 +11,25 @@ export interface GeographicEntity {
 
 // Data classification
 export type Category = "sst" | "currents" | "chlorophyll";
-export type LayerType = "image" | "data" | "contours";
-export type SourceType = "image" | "geojson";
-export type LayerStyleType = "raster" | "line";
+
+// Base layers that come with every dataset
+export type BaseLayerType = "image" | "data";
+
+// Additional layers that can be toggled
+export type AdditionalLayerType = "contours";
+
+// Combined type for all possible layers
+export type LayerType = BaseLayerType | AdditionalLayerType;
+
+// Base layers are always present
+export const BASE_LAYERS: BaseLayerType[] = ["image", "data"];
+
+// Helper to check if a layer is an additional layer
+export const isAdditionalLayer = (
+  layer: LayerType
+): layer is AdditionalLayerType => {
+  return !BASE_LAYERS.includes(layer as BaseLayerType);
+};
 
 // Layer foundation
 export interface BaseLayer {
@@ -21,19 +37,4 @@ export interface BaseLayer {
   type: LayerType;
   visible: boolean;
   opacity: number;
-}
-
-export interface LayerState {
-  visible: boolean;
-  opacity: number;
-}
-
-export interface LayerConfig {
-  id: string;
-  type: LayerType;
-  paint: {
-    "raster-opacity"?: number;
-    "line-color"?: string;
-    "line-width"?: number;
-  };
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Dataset } from '../types/api';
 import type { DatasetId } from '../types/Layer';
+import { isAdditionalLayer } from '../types/core';
+import { MapIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 
 interface LayerControlProps {
   dataset: Dataset;
@@ -15,16 +17,13 @@ const LayerControl: React.FC<LayerControlProps> = ({
   visibleLayers,
   onToggle,
 }) => {
-  // Handle child layer toggle without affecting parent
-  const handleChildLayerToggle = (layerType: string) => {
-    const layerId = `${dataset.id}-${layerType}`;
-    if (!visible) {
-      // If parent is not visible, turn it on first
-      onToggle(dataset.id); // Turn on parent (image layer)
-    }
-    // Toggle the child layer
-    onToggle(dataset.id, layerType);
-  };
+
+  const additionalLayers = dataset.supportedLayers
+    ? dataset.supportedLayers.filter(layer => {
+      const isAdditional = isAdditionalLayer(layer);
+      return isAdditional;
+    })
+    : [];
 
   return (
     <div className="mb-4">
@@ -32,29 +31,21 @@ const LayerControl: React.FC<LayerControlProps> = ({
       <button
         onClick={() => onToggle(dataset.id)}
         className={`
-          w-24 h-24 p-2 rounded
+          w-24 h-24 p-2 rounded-lg
           flex flex-col items-center justify-center
-          text-sm transition-colors
+          text-sm transition-all
+          hover:scale-105
           ${visible
-            ? 'bg-blue-500 text-white'
-            : 'bg-white text-gray-700 hover:bg-gray-100'
+            ? 'bg-blue-500 text-white shadow-lg'
+            : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
           }
         `}
         aria-label={`Toggle ${dataset.name} layer`}
-        tabIndex={0}
       >
-        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mb-2">
-          <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24">
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 5h16M4 12h16M4 19h16"
-            />
-          </svg>
+        <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-2">
+          <MapIcon className="w-6 h-6" />
         </div>
-        <span className="text-center">
+        <span className="text-center font-medium">
           {dataset.name}
           <span className="ml-1 text-xs opacity-75">
             {visible ? '(ON)' : '(OFF)'}
@@ -62,34 +53,32 @@ const LayerControl: React.FC<LayerControlProps> = ({
         </span>
       </button>
 
-      {/* Child layer toggles - show when parent is visible */}
-      {visible && dataset.supportedLayers.length > 1 && (
+      {/* Additional layer toggles */}
+      {visible && additionalLayers.length > 0 && (
         <div className="mt-2 ml-2 space-y-1">
-          {dataset.supportedLayers.map(layerType => {
-            if (layerType === 'image') return null; // Skip image as it's controlled by main toggle
-
+          {additionalLayers.map(layerType => {
             const layerId = `${dataset.id}-${layerType}`;
             const layerVisible = visibleLayers.has(layerId);
 
             return (
               <button
                 key={layerId}
-                onClick={() => handleChildLayerToggle(layerType)}
+                onClick={() => onToggle(dataset.id, layerType)}
                 className={`
-                  w-20 h-8 px-2 rounded text-xs
+                  w-20 h-8 px-2 rounded-md
                   flex items-center justify-between
-                  transition-colors
+                  transition-all
+                  hover:scale-105
                   ${layerVisible
-                    ? 'bg-blue-400 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-blue-400 text-white shadow-md'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm'
                   }
                 `}
                 aria-label={`Toggle ${layerType} for ${dataset.name}`}
-                tabIndex={0}
               >
-                <span className="capitalize">{layerType}</span>
-                <span className="text-xs opacity-75">
-                  {layerVisible ? '(ON)' : '(OFF)'}
+                <Squares2X2Icon className="w-4 h-4" />
+                <span className="text-xs font-medium capitalize">
+                  {layerType}
                 </span>
               </button>
             );

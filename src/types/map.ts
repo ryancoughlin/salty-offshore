@@ -1,9 +1,4 @@
-import type { Map as MapboxMap } from 'mapbox-gl';
-import { Layer } from './Layer';
-
-export interface MapState {
-  layers: Layer[];
-}
+import type { Map as MapboxMap } from "mapbox-gl";
 
 export interface MapProps {
   children?: React.ReactNode;
@@ -12,4 +7,4 @@ export interface MapProps {
 
 export interface MapContextProps {
   map: MapboxMap | null;
-} 
+}

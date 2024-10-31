@@ -7,7 +7,8 @@ import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
 import type { Region } from './types/api'
 import type { DatasetId } from './types/Layer'
-import { TemperatureOverlay } from './TemperatureOverlay';
+import ColorGradient from './components/ColorGradient'
+import sstColorScale from './utils/sst_color_scale.json'
 
 const App: React.FC = () => {
   const { regions, loading: regionsLoading } = useRegions();
@@ -16,26 +17,27 @@ const App: React.FC = () => {
   const [visibleLayers, setVisibleLayers] = useState<Set<string>>(new Set());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // When region changes, find the most recent date from its datasets
+  const handleUpdateDate = (region: Region) => {
+    if (!region) return null;
+
+    const regionData = getRegionData(region.id);
+    if (!regionData?.datasets.length) return;
+
+    const allDates = regionData.datasets
+      .flatMap(dataset => dataset.dates)
+      .map(d => d.date);
+
+    if (allDates.length) {
+      setSelectedDate(allDates.sort().reverse()[0]);
+    }
+  };
+
   useEffect(() => {
     if (!selectedRegion) {
       setSelectedDate(null);
       return;
     }
-
-    const regionData = getRegionData(selectedRegion.id);
-    if (!regionData?.datasets.length) return;
-
-    // Get all available dates from all datasets
-    const allDates = regionData.datasets
-      .flatMap(dataset => dataset.dates)
-      .map(d => d.date);
-
-    // Set the most recent date
-    if (allDates.length) {
-      const mostRecentDate = allDates.sort().reverse()[0];
-      setSelectedDate(mostRecentDate);
-    }
+    handleUpdateDate(selectedRegion);
   }, [selectedRegion, getRegionData]);
 
   const handleRegionSelect = (region: Region) => {
@@ -84,7 +86,19 @@ const App: React.FC = () => {
   const regionData = selectedRegion && getRegionData(selectedRegion.id);
 
   return (
-    <div className="w-screen h-screen">
+    <div className="flex flex-col w-screen h-screen overflow-hidden">
+      <div className="absolute top-4 left-4 z-10 bg-gray-900/80 rounded-lg">
+        {regionData?.datasets.map(dataset => (
+          dataset.category === 'sst' && (
+            <ColorGradient
+              key={dataset.id}
+              min={dataset.colorScale?.[0] || 0}
+              max={dataset.colorScale?.[1] || 100}
+              colors={sstColorScale.colors}
+            />
+          )
+        ))}
+      </div>
       <SaltyMap
         region={regionData || undefined}
         datasets={regionData?.datasets || []}
@@ -96,16 +110,6 @@ const App: React.FC = () => {
         selectedRegion={selectedRegion}
         onRegionSelect={handleRegionSelect}
       />
-      {/* Temperature Overlay - positioned under RegionPicker */}
-      {regionData?.datasets.map(dataset => (
-        dataset.category === 'sst' && (
-          <TemperatureOverlay
-            key={dataset.id}
-            dataUrl={dataset.dates.find(d => d.date === selectedDate)?.layers.data}
-            dataset={dataset}
-          />
-        )
-      ))}
       {regionData && selectedDate && (
         <LayerControls
           region={regionData}

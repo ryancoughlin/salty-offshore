@@ -1,7 +1,7 @@
-import { Source, Layer } from 'react-map-gl';
+import { Source, Layer, useMap } from 'react-map-gl';
 import { useDatasetLayers } from '../../hooks/useDatasetLayers';
 import type { Dataset, Region } from '../../types/api';
-import type { LayerType } from '../../types/core';
+import { LayerType, isAdditionalLayer } from '../../types/core';
 
 interface MapLayerProps {
     dataset: Dataset;
@@ -19,19 +19,13 @@ export const MapLayer: React.FC<MapLayerProps> = ({
     visibleLayers
 }) => {
     const { layerUrls } = useDatasetLayers(dataset, selectedDate);
+    const { current: map } = useMap();
 
     if (!layerUrls) return null;
 
     const isLayerVisible = (layerType: LayerType): boolean => {
-        // Base visibility check - if dataset isn't visible, no layers should show
         if (!visible) return false;
-
-        // For image and data layers, show when dataset is visible
-        if (layerType === 'image' || layerType === 'data') {
-            return true;
-        }
-
-        // For additional layers (like contours), check if specifically enabled
+        if (!isAdditionalLayer(layerType)) return true;
         const layerId = `${dataset.id}-${layerType}`;
         return visibleLayers.has(layerId);
     };
@@ -46,6 +40,23 @@ export const MapLayer: React.FC<MapLayerProps> = ({
 
     return (
         <>
+            {/* Data Layer (GeoJSON) */}
+            {layerUrls.data && isLayerVisible('data') && (
+                <Source
+                    id={`${dataset.id}-data-source`}
+                    type="geojson"
+                    data={layerUrls.data}
+                >
+                    <Layer
+                        id={`${dataset.id}-data`}
+                        type="fill"
+                        paint={{
+                            'fill-opacity': 0  // Invisible but queryable
+                        }}
+                    />
+                </Source>
+            )}
+
             {/* Image Layer */}
             {layerUrls.image && isLayerVisible('image') && (
                 <Source
@@ -58,24 +69,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                         id={`${dataset.id}-image`}
                         type="raster"
                         paint={{
-                            'raster-opacity': 0.7
-                        }}
-                    />
-                </Source>
-            )}
-
-            {/* Data Layer (GeoJSON) */}
-            {layerUrls.data && isLayerVisible('data') && (
-                <Source
-                    id={`${dataset.id}-data-source`}
-                    type="geojson"
-                    data={layerUrls.data}
-                >
-                    <Layer
-                        id={`${dataset.id}-data`}
-                        type="fill"
-                        paint={{
-                            'fill-opacity': 0
+                            'raster-opacity': 1
                         }}
                     />
                 </Source>
@@ -92,7 +86,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                         id={`${dataset.id}-contours`}
                         type="line"
                         paint={{
-                            'line-color': '#FF0000',
+                            'line-color': '#00',
                             'line-width': 1,
                             'line-opacity': 0.8
                         }}
