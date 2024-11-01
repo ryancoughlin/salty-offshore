@@ -1,19 +1,22 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Dataset } from './types/api';
 import type { Coordinate } from './types/core';
+import { FloatingTooltip } from './components/FloatingTooltip';
 
 interface TemperatureOverlayProps {
     dataset: Dataset;
     cursorPosition: Coordinate;
     mapRef: mapboxgl.Map | null;
     visibleLayers: Set<string>;
+    color?: string;
 }
 
 export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     dataset,
     cursorPosition,
     mapRef,
-    visibleLayers
+    visibleLayers,
+    color
 }) => {
     const [temperature, setTemperature] = useState<number | null>(null);
     const lastQueryTime = useRef<number>(0);
@@ -60,11 +63,10 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     if (!temperature) return null;
 
     return (
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
-            <div className="text-xs text-gray-500">{dataset.name}</div>
-            <div className="text-sm font-medium text-gray-900">
-                {`${temperature.toFixed(1)}°F`}
-            </div>
-        </div>
+        <FloatingTooltip
+            dataset={dataset}
+            temperature={temperature}
+            color={color}
+        />
     );
 }; 
