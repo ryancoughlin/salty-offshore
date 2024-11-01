@@ -2,20 +2,18 @@ import React from 'react';
 import LayerControl from './LayerControl';
 import { CATEGORY_NAMES } from '../config';
 import type { Dataset, Region } from '../types/api';
-import type { DatasetId } from '../types/Layer';
 
 interface LayerControlsProps {
     region: Region;
-    visibleLayers: Set<string>;
-    onToggleLayer: (datasetId: DatasetId, layerType?: string) => void;
+    visibleDatasets: Set<string>;
+    onToggleDataset: (datasetId: string) => void;
 }
 
 const LayerControls: React.FC<LayerControlsProps> = ({
     region,
-    visibleLayers,
-    onToggleLayer
+    visibleDatasets,
+    onToggleDataset
 }) => {
-    // Group datasets by category
     const datasetsByCategory = region.datasets.reduce((acc, dataset) => {
         const category = dataset.category;
         if (!acc[category]) {
@@ -32,14 +30,13 @@ const LayerControls: React.FC<LayerControlsProps> = ({
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">
                         {CATEGORY_NAMES[category] || category}
                     </h3>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                         {datasets.map((dataset) => (
                             <LayerControl
                                 key={dataset.id}
                                 dataset={dataset}
-                                visible={visibleLayers.has(dataset.id)}
-                                visibleLayers={visibleLayers}
-                                onToggle={onToggleLayer}
+                                visible={visibleDatasets.has(dataset.id)}
+                                onToggle={onToggleDataset}
                             />
                         ))}
                     </div>

@@ -1,34 +1,52 @@
-import { Source, Layer, useMap } from 'react-map-gl';
+import { Source, Layer } from 'react-map-gl';
 import { useDatasetLayers } from '../../hooks/useDatasetLayers';
 import type { Dataset, Region } from '../../types/api';
-import { LayerType, isAdditionalLayer } from '../../types/core';
+import { useMemo, useEffect } from 'react';
+import type { Feature, FeatureCollection } from 'geojson';
 
 interface MapLayerProps {
     dataset: Dataset;
     visible: boolean;
-    selectedDate: string | null;
+    selectedDate: string;
     region: Region;
-    visibleLayers: Set<string>;
 }
+
+const isValidGeoJSON = (data: any): data is FeatureCollection => {
+    console.log('Validating GeoJSON:', {
+        hasData: !!data,
+        type: data?.type,
+        hasFeatures: Array.isArray(data?.features),
+        featureCount: data?.features?.length
+    });
+
+    return data &&
+        typeof data === 'object' &&
+        data.type === 'FeatureCollection' &&
+        Array.isArray(data.features) &&
+        data.features.length > 0;
+};
+
+const isValidImageUrl = (url: any): url is string => {
+    return typeof url === 'string' && url.startsWith('http');
+};
 
 export const MapLayer: React.FC<MapLayerProps> = ({
     dataset,
     visible,
     selectedDate,
     region,
-    visibleLayers
 }) => {
-    const { layerUrls } = useDatasetLayers(dataset, selectedDate);
-    const { current: map } = useMap();
+    const { layerData } = useDatasetLayers(dataset, selectedDate);
 
-    if (!layerUrls) return null;
-
-    const isLayerVisible = (layerType: LayerType): boolean => {
-        if (!visible) return false;
-        if (!isAdditionalLayer(layerType)) return true;
-        const layerId = `${dataset.id}-${layerType}`;
-        return visibleLayers.has(layerId);
-    };
+    // Early return if not visible or no layer data
+    if (!visible || !layerData) {
+        console.log('Layer not rendered:', {
+            datasetId: dataset.id,
+            visible,
+            hasLayerData: !!layerData
+        });
+        return null;
+    }
 
     const [[minLng, minLat], [maxLng, maxLat]] = region.bounds;
     const coordinates = [
@@ -40,53 +58,38 @@ export const MapLayer: React.FC<MapLayerProps> = ({
 
     return (
         <>
-            {/* Data Layer (GeoJSON) */}
-            {layerUrls.data && isLayerVisible('data') && (
-                <Source
-                    id={`${dataset.id}-data-source`}
-                    type="geojson"
-                    data={layerUrls.data}
-                >
+            {isValidGeoJSON(layerData.data) && (
+                <Source id={`${dataset.id}-data`} type="geojson" data={layerData.data}>
                     <Layer
                         id={`${dataset.id}-data`}
                         type="fill"
-                        paint={{
-                            'fill-opacity': 0  // Invisible but queryable
-                        }}
+                        paint={{ 'fill-opacity': 0 }}
                     />
                 </Source>
             )}
 
-            {/* Image Layer */}
-            {layerUrls.image && isLayerVisible('image') && (
+            {layerData.image && (
                 <Source
-                    id={`${dataset.id}-image-source`}
+                    id={`${dataset.id}-image`}
                     type="image"
-                    url={layerUrls.image}
+                    url={layerData.image}
                     coordinates={coordinates}
                 >
                     <Layer
                         id={`${dataset.id}-image`}
                         type="raster"
-                        paint={{
-                            'raster-opacity': 1
-                        }}
+                        paint={{ 'raster-opacity': 1 }}
                     />
                 </Source>
             )}
 
-            {/* Contours Layer */}
-            {layerUrls.contours && isLayerVisible('contours') && (
-                <Source
-                    id={`${dataset.id}-contours-source`}
-                    type="geojson"
-                    data={layerUrls.contours}
-                >
+            {isValidGeoJSON(layerData.contours) && (
+                <Source id={`${dataset.id}-contours`} type="geojson" data={layerData.contours}>
                     <Layer
                         id={`${dataset.id}-contours`}
                         type="line"
                         paint={{
-                            'line-color': '#00',
+                            'line-color': '#000',
                             'line-width': 1,
                             'line-opacity': 0.8
                         }}

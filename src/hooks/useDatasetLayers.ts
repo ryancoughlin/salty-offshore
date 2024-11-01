@@ -1,27 +1,48 @@
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import type { Dataset } from "../types/api";
+import type { FeatureCollection } from "geojson";
 
-interface LayerUrls {
+interface LayerData {
+  data?: FeatureCollection;
+  contours?: FeatureCollection;
   image?: string;
-  data?: string;
-  contours?: string;
 }
 
-export const useDatasetLayers = (
-  dataset: Dataset | null,
-  selectedDate: string | null
-): { layerUrls: LayerUrls | null; error: Error | null } => {
-  const [error, setError] = useState<Error | null>(null);
+export const useDatasetLayers = (dataset: Dataset, selectedDate: string) => {
+  const [layerData, setLayerData] = useState<LayerData | null>(null);
 
-  const layerUrls = useMemo(() => {
-    if (!dataset || !selectedDate) return null;
+  useEffect(() => {
     const dateEntry = dataset.dates.find((d) => d.date === selectedDate);
     if (!dateEntry) {
-      setError(new Error(`No data found for date: ${selectedDate}`));
-      return null;
+      setLayerData(null);
+      return;
     }
-    return dateEntry.layers || null;
+
+    const fetchData = async () => {
+      try {
+        const [dataResponse, contoursResponse] = await Promise.all([
+          dateEntry.layers.data ? fetch(dateEntry.layers.data) : null,
+          dateEntry.layers.contours ? fetch(dateEntry.layers.contours) : null,
+        ]);
+
+        const data = dataResponse ? await dataResponse.json() : undefined;
+        const contours = contoursResponse
+          ? await contoursResponse.json()
+          : undefined;
+
+        setLayerData({
+          data,
+          contours,
+          image: dateEntry.layers.image,
+        });
+      } catch (error) {
+        console.error("Error fetching layer data:", error);
+        setLayerData(null);
+      }
+    };
+
+    fetchData();
   }, [dataset, selectedDate]);
 
-  return { layerUrls, error };
+  return { layerData };
 };

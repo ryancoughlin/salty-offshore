@@ -2,7 +2,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
 import type { Dataset, Region } from '../../types/api';
-import type { DatasetId } from '../../types/Layer';
 import { useEffect, useRef, useState } from 'react';
 import Map, { MapRef, NavigationControl } from 'react-map-gl';
 import { GeographicInspector } from '../GeographicInspector';
@@ -10,7 +9,7 @@ import { GeographicInspector } from '../GeographicInspector';
 interface MapProps {
     region?: Region;
     datasets: Dataset[];
-    visibleLayers: Set<DatasetId>;
+    visibleDatasets: Set<string>;
     selectedDate: string;
 }
 
@@ -23,7 +22,7 @@ const DEFAULT_VIEW_STATE = {
 const SaltyMap: React.FC<MapProps> = ({
     region,
     datasets,
-    visibleLayers,
+    visibleDatasets,
     selectedDate
 }) => {
     const mapRef = useRef<MapRef>(null);
@@ -55,7 +54,7 @@ const SaltyMap: React.FC<MapProps> = ({
                 renderWorldCopies={false}
                 maxZoom={10}
                 minZoom={6}
-                interactiveLayerIds={[...datasets.map(d => `${d.id}-data`), 'spots-points']}
+                interactiveLayerIds={datasets.map(d => `${d.id}-data`).concat('spots-points')}
             >
                 {isStyleLoaded && (
                     <>
@@ -65,17 +64,16 @@ const SaltyMap: React.FC<MapProps> = ({
                                 key={dataset.id}
                                 region={region}
                                 dataset={dataset}
-                                visible={visibleLayers.has(dataset.id)}
+                                visible={visibleDatasets.has(dataset.id)}
                                 selectedDate={selectedDate}
-                                visibleLayers={visibleLayers}
                             />
                         ))}
                         <SpotLayer />
-                        <GeographicInspector
+                        {/* <GeographicInspector
                             mapRef={mapRef.current}
                             datasets={datasets.filter(d => d.category === 'sst')}
-                            visibleLayers={visibleLayers}
-                        />
+                            visibleDatasets={visibleDatasets}
+                        /> */}
                     </>
                 )}
             </Map>
