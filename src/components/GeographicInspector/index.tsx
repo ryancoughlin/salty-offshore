@@ -6,13 +6,13 @@ import type { Coordinate } from '../../types/core';
 interface GeographicInspectorProps {
     mapRef: mapboxgl.Map | null;
     datasets: Dataset[];
-    visibleLayers: Set<string>;
+    visibleDatasets: Set<string>;
 }
 
 export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
     mapRef,
     datasets,
-    visibleLayers
+    visibleDatasets
 }) => {
     const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
     const [format, setFormat] = useState<'DD' | 'DMS' | 'DMM'>('DMS');
@@ -68,7 +68,7 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
                         dataset={dataset}
                         cursorPosition={cursorPosition}
                         mapRef={mapRef}
-                        visibleLayers={visibleLayers}
+                        visibleDatasets={visibleDatasets}
                     />
                 ))}
         </div>

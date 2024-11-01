@@ -1,4 +1,4 @@
-import { Category, LayerType, Bounds } from "./core";
+import type { Category, LayerType, Bounds } from "./core";
 
 export interface Dataset {
   id: string;

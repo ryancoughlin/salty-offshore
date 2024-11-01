@@ -1,29 +1,33 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
+import type { Dataset, Region } from '../../types/api';
+import type { ISODateString } from '../../types/date';
+import { useEffect, useRef, useState } from 'react';
+import type { MapRef } from 'react-map-gl';
+import Map, { NavigationControl } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
-import type { Dataset, Region } from '../../types/api';
-import { useEffect, useRef, useState } from 'react';
-import Map, { MapRef, NavigationControl } from 'react-map-gl';
-import { GeographicInspector } from '../GeographicInspector';
+import { DateTimeline } from '../DateTimeline';
 
 interface MapProps {
-    region?: Region;
+    region?: Region | null;
     datasets: Dataset[];
-    visibleDatasets: Set<string>;
-    selectedDate: string;
+    selectedDataset: Dataset | null;
+    selectedDate: ISODateString | null;
+    onDateSelect: (date: ISODateString) => void;
 }
 
 const DEFAULT_VIEW_STATE = {
     longitude: -71.0,
     latitude: 39.0,
-    zoom: 5
-};
+    zoom: 5,
+} as const;
 
 const SaltyMap: React.FC<MapProps> = ({
     region,
     datasets,
-    visibleDatasets,
-    selectedDate
+    selectedDataset,
+    selectedDate,
+    onDateSelect
 }) => {
     const mapRef = useRef<MapRef>(null);
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
@@ -35,11 +39,14 @@ const SaltyMap: React.FC<MapProps> = ({
     useEffect(() => {
         if (isStyleLoaded && region?.bounds && mapRef.current) {
             mapRef.current.fitBounds(region.bounds, {
-                padding: 50,
+                padding: 150,
                 duration: 1000
             });
         }
     }, [region, isStyleLoaded]);
+
+    console.log('selectedDataset', selectedDataset);
+    console.log('region', region);
 
     return (
         <div className="w-full h-full relative">
@@ -59,24 +66,25 @@ const SaltyMap: React.FC<MapProps> = ({
                 {isStyleLoaded && (
                     <>
                         <NavigationControl position="top-right" />
-                        {region && datasets.map((dataset) => (
+                        {region && selectedDataset && (
                             <MapLayer
-                                key={dataset.id}
                                 region={region}
-                                dataset={dataset}
-                                visible={visibleDatasets.has(dataset.id)}
-                                selectedDate={selectedDate}
+                                dataset={selectedDataset}
+                                selectedDate={selectedDate || ''}
                             />
-                        ))}
+                        )}
                         <SpotLayer />
-                        {/* <GeographicInspector
-                            mapRef={mapRef.current}
-                            datasets={datasets.filter(d => d.category === 'sst')}
-                            visibleDatasets={visibleDatasets}
-                        /> */}
                     </>
                 )}
             </Map>
+
+            {region && selectedDataset && (
+                <DateTimeline
+                    dataset={selectedDataset}
+                    selectedDate={selectedDate}
+                    onDateSelect={onDateSelect}
+                />
+            )}
         </div>
     );
 };

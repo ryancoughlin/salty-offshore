@@ -7,7 +7,7 @@ interface TemperatureOverlayProps {
     dataset: Dataset;
     cursorPosition: Coordinate;
     mapRef: mapboxgl.Map | null;
-    visibleLayers: Set<string>;
+    visibleDatasets: Set<string>;
     color?: string;
 }
 
@@ -15,7 +15,7 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     dataset,
     cursorPosition,
     mapRef,
-    visibleLayers,
+    visibleDatasets,
     color
 }) => {
     const [temperature, setTemperature] = useState<number | null>(null);
@@ -51,14 +51,14 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     }, [dataset.id, dataset.scale, dataset.offset, cursorPosition]);
 
     useEffect(() => {
-        if (!mapRef || !cursorPosition || !visibleLayers.has(dataset.id)) {
+        if (!mapRef || !cursorPosition || !visibleDatasets.has(dataset.id)) {
             setTemperature(null);
             return;
         }
 
         const point = mapRef.project(cursorPosition);
         queryTemperature(mapRef, point);
-    }, [mapRef, dataset.id, cursorPosition, visibleLayers, queryTemperature]);
+    }, [mapRef, dataset.id, cursorPosition, visibleDatasets, queryTemperature]);
 
     if (!temperature) return null;
 

@@ -5,14 +5,14 @@ import type { Dataset, Region } from '../types/api';
 
 interface LayerControlsProps {
     region: Region;
-    visibleDatasets: Set<string>;
-    onToggleDataset: (datasetId: string) => void;
+    selectedDataset: Dataset | null;
+    onDatasetSelect: (datasetId: string) => void;
 }
 
 const LayerControls: React.FC<LayerControlsProps> = ({
     region,
-    visibleDatasets,
-    onToggleDataset
+    selectedDataset,
+    onDatasetSelect
 }) => {
     const datasetsByCategory = region.datasets.reduce((acc, dataset) => {
         const category = dataset.category;
@@ -35,8 +35,8 @@ const LayerControls: React.FC<LayerControlsProps> = ({
                             <LayerControl
                                 key={dataset.id}
                                 dataset={dataset}
-                                visible={visibleDatasets.has(dataset.id)}
-                                onToggle={onToggleDataset}
+                                isSelected={dataset.id === selectedDataset.id}
+                                onSelect={onDatasetSelect}
                             />
                         ))}
                     </div>
