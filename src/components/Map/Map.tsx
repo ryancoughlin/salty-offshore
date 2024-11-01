@@ -3,10 +3,11 @@ import type { Dataset, Region } from '../../types/api';
 import type { ISODateString } from '../../types/date';
 import { useEffect, useRef, useState } from 'react';
 import type { MapRef } from 'react-map-gl';
-import Map, { NavigationControl } from 'react-map-gl';
+import Map, { NavigationControl, ScaleControl } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
 import { DateTimeline } from '../DateTimeline';
+import { GridControl } from './GridControl';
 
 interface MapProps {
     region?: Region | null;
@@ -31,6 +32,8 @@ const SaltyMap: React.FC<MapProps> = ({
 }) => {
     const mapRef = useRef<MapRef>(null);
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
+    const [gridSize, setGridSize] = useState(1);
+    const [showGrid, setShowGrid] = useState(true);
 
     const handleMapLoad = () => {
         setIsStyleLoaded(true);
@@ -74,6 +77,16 @@ const SaltyMap: React.FC<MapProps> = ({
                             />
                         )}
                         <SpotLayer />
+                        <ScaleControl
+                            maxWidth={100}
+                            unit="nautical"
+                            position="bottom-left"
+                        />
+                        <GridControl
+                            visible={showGrid}
+                            gridSize={gridSize}
+                            onGridSizeChange={setGridSize}
+                        />
                     </>
                 )}
             </Map>
