@@ -26,53 +26,58 @@ const SaltyMap: React.FC<MapProps> = ({
     visibleLayers,
     selectedDate
 }) => {
-    const [mapRef, setMapRef] = useState<mapboxgl.Map | null>(null);
-    const mapContainer = useRef<MapRef>(null);
+    const mapRef = useRef<MapRef>(null);
+    const [isStyleLoaded, setIsStyleLoaded] = useState(false);
+
+    const handleMapLoad = () => {
+        setIsStyleLoaded(true);
+    };
 
     useEffect(() => {
-        if (region?.bounds && mapRef) {
-            mapRef.fitBounds(region.bounds, {
+        if (isStyleLoaded && region?.bounds && mapRef.current) {
+            mapRef.current.fitBounds(region.bounds, {
                 padding: 50,
                 duration: 1000
             });
         }
-    }, [region]);
+    }, [region, isStyleLoaded]);
+
     return (
         <div className="w-full h-full relative">
             <Map
-                ref={(ref) => {
-                    mapContainer.current = ref;
-                    if (ref) {
-                        setMapRef(ref.getMap());
-                    }
-                }}
+                ref={mapRef}
                 reuseMaps
+                onLoad={handleMapLoad}
                 initialViewState={DEFAULT_VIEW_STATE}
                 style={{ width: '100%', height: '100%' }}
-                mapStyle="mapbox://styles/mapbox/dark-v11"
+                mapStyle="mapbox://styles/snowcast/cm2xtr8gl00lu01pd38l35unx"
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                 renderWorldCopies={false}
                 maxZoom={10}
                 minZoom={6}
                 interactiveLayerIds={[...datasets.map(d => `${d.id}-data`), 'spots-points']}
             >
-                <NavigationControl position="top-right" />
-                {region && datasets.map((dataset) => (
-                    <MapLayer
-                        key={dataset.id}
-                        region={region}
-                        dataset={dataset}
-                        visible={visibleLayers.has(dataset.id)}
-                        selectedDate={selectedDate}
-                        visibleLayers={visibleLayers}
-                    />
-                ))}
-                <SpotLayer />
-                <GeographicInspector
-                    mapRef={mapRef}
-                    datasets={datasets.filter(d => d.category === 'sst')}
-                    visibleLayers={visibleLayers}
-                />
+                {isStyleLoaded && (
+                    <>
+                        <NavigationControl position="top-right" />
+                        {region && datasets.map((dataset) => (
+                            <MapLayer
+                                key={dataset.id}
+                                region={region}
+                                dataset={dataset}
+                                visible={visibleLayers.has(dataset.id)}
+                                selectedDate={selectedDate}
+                                visibleLayers={visibleLayers}
+                            />
+                        ))}
+                        <SpotLayer />
+                        <GeographicInspector
+                            mapRef={mapRef.current}
+                            datasets={datasets.filter(d => d.category === 'sst')}
+                            visibleLayers={visibleLayers}
+                        />
+                    </>
+                )}
             </Map>
         </div>
     );

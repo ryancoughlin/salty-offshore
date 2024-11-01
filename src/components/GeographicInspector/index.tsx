@@ -17,13 +17,6 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
     const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
     const [format, setFormat] = useState<'DD' | 'DMS' | 'DMM'>('DMS');
 
-    console.log('GeographicInspector received:', {
-        datasetsCount: datasets.length,
-        datasets,
-        hasPosition: !!cursorPosition,
-        cursorPosition
-    });
-
     useEffect(() => {
         if (!mapRef) return;
 
@@ -80,4 +73,4 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
                 ))}
         </div>
     );
-}; 
+};  
