@@ -1,5 +1,6 @@
-/* Mapbox styles */
+@import url('https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap');
 @import 'mapbox-gl/dist/mapbox-gl.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,3 +10,37 @@ body {
   padding: 0;
   overflow: hidden;
 }
+
+@layer base {
+  html {
+    @apply antialiased text-neutral-900 font-sans;
+  }
+/*   
+  h1 {
+    @apply text-4xl font-display font-bold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-3xl font-display font-semibold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-2xl font-display font-semibold;
+  }
+  
+  p {
+    @apply text-neutral-700 leading-relaxed;
+  } */
+
+  /* Focus styles for better accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} 

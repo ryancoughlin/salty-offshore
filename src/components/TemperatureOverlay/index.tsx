@@ -64,16 +64,14 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
         setTemperature(null);
     }, [mapRef, dataset, cursorPosition]);
 
-    if (temperature === null) return null;
-
     return (
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
-            <div className="text-xs text-gray-500">
-                Sea Surface Temperature
-            </div>
-            <div className="text-sm font-medium text-gray-900">
-                {`${temperature.toFixed(1)}°F`}
-            </div>
+        <div className="flex flex-col justify-center items-start gap-2 w-28">
+            <span className="opacity-50 text-sm font-medium uppercase text-white">
+                Water temp
+            </span>
+            <p className="text-[28px] font-semibold text-white">
+                {temperature !== null ? `${temperature.toFixed(1)}°F` : 'N/A'}
+            </p>
         </div>
     );
 }; 

@@ -9,8 +9,9 @@ import { SpotLayer } from './SpotLayer';
 import { DateTimeline } from '../DateTimeline';
 // import { GridControl } from './GridControl';
 import { Grid } from './Grid';
-import { TemperatureOverlay } from '../TemperatureOverlay';
 import type { Coordinate } from '../../types/core';
+import { CurrentStatusBar } from '../CurrentStatusBar';
+import { RegionInfo } from '../../types/api';
 
 interface MapProps {
     region?: Region | null;
@@ -18,6 +19,9 @@ interface MapProps {
     selectedDataset: Dataset | null;
     selectedDate: ISODateString | null;
     onDateSelect: (date: ISODateString) => void;
+    regions: RegionInfo[];
+    selectedRegion: RegionInfo | null;
+    onRegionSelect: (region: RegionInfo) => void;
 }
 
 const DEFAULT_VIEW_STATE = {
@@ -31,14 +35,16 @@ const SaltyMap: React.FC<MapProps> = ({
     datasets,
     selectedDataset,
     selectedDate,
-    onDateSelect
+    onDateSelect,
+    regions,
+    selectedRegion,
+    onRegionSelect
 }) => {
     const mapRef = useRef<MapRef>(null);
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
     const [gridSize, setGridSize] = useState(1);
     const [showGrid, setShowGrid] = useState(true);
     const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
-    const [visibleDatasets] = useState<Set<string>>(new Set(datasets.map(d => d.id)));
 
     const handleMapLoad = () => {
         setIsStyleLoaded(true);
@@ -100,18 +106,18 @@ const SaltyMap: React.FC<MapProps> = ({
                             gridSize={gridSize}
                         />
                         <SpotLayer />
-
-                        {selectedDataset && cursorPosition && (
-                            <TemperatureOverlay
-                                dataset={selectedDataset}
-                                cursorPosition={cursorPosition}
-                                mapRef={mapRef.current?.getMap() ?? null}
-                                visibleDatasets={visibleDatasets}
-                            />
-                        )}
                     </>
                 )}
             </Map>
+
+            <CurrentStatusBar
+                regions={regions}
+                selectedRegion={selectedRegion}
+                onRegionSelect={onRegionSelect}
+                cursorPosition={cursorPosition}
+                mapRef={mapRef.current?.getMap() ?? null}
+                dataset={selectedDataset}
+            />
 
             {region && selectedDataset && (
                 <DateTimeline

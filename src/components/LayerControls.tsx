@@ -24,7 +24,7 @@ const LayerControls: React.FC<LayerControlsProps> = ({
     }, {} as Record<string, Dataset[]>);
 
     return (
-        <div className="absolute top-4 right-4 bg-white p-4 rounded shadow-lg">
+        <div className="absolute top-4 right-4 bg-surface-base p-4 rounded shadow-lg">
             {Object.entries(datasetsByCategory).map(([category, datasets]) => (
                 <div key={category} className="mb-6">
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">
@@ -35,7 +35,7 @@ const LayerControls: React.FC<LayerControlsProps> = ({
                             <LayerControl
                                 key={dataset.id}
                                 dataset={dataset}
-                                isSelected={dataset.id === selectedDataset.id}
+                                isSelected={dataset.id === selectedDataset?.id}
                                 onSelect={onDatasetSelect}
                             />
                         ))}

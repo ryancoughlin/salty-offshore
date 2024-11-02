@@ -31,7 +31,7 @@ const RegionPicker: React.FC<RegionPickerProps> = ({
   }, [regions, setPersistedRegionId, onRegionSelect]);
 
   return (
-    <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg p-2">
+    <div className="flex justify-center items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-2 px-6 border-t-0 border-r border-b-0 border-l-0 border-white/20">
       <select
         value={selectedRegion?.id || ''}
         onChange={handleRegionChange}

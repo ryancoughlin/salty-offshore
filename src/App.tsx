@@ -49,17 +49,14 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden">
       <SaltyMap
+        regions={regions}
+        selectedRegion={selectedRegion}
+        onRegionSelect={handleRegionSelect}
         region={selectedRegion}
         datasets={regionData?.datasets || []}
         selectedDataset={selectedDataset}
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
-      />
-
-      <RegionPicker
-        regions={regions}
-        selectedRegion={selectedRegion}
-        onRegionSelect={handleRegionSelect}
       />
 
       {regionData && (

@@ -1,76 +1,41 @@
-import { useState, useEffect, useCallback } from 'react';
-import { TemperatureOverlay } from '../../TemperatureOverlay';
+import { useState } from 'react';
 import { formatCoordinates } from '../../utils/formatCoordinates';
 import type { Coordinate } from '../../types/core';
 
 interface GeographicInspectorProps {
     mapRef: mapboxgl.Map | null;
-    datasets: Dataset[];
-    visibleDatasets: Set<string>;
+    cursorPosition: Coordinate | null;
 }
 
 export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
     mapRef,
-    datasets,
-    visibleDatasets
+    cursorPosition
 }) => {
-    const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
     const [format, setFormat] = useState<'DD' | 'DMS' | 'DMM'>('DMS');
 
-    useEffect(() => {
-        if (!mapRef) return;
+    const formattedCoordinates = cursorPosition && Array.isArray(cursorPosition) && cursorPosition.length === 2
+        ? formatCoordinates(cursorPosition, format)
+        : 'N/A';
 
-        const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
-            setCursorPosition([e.lngLat.lng, e.lngLat.lat]);
-        };
-
-        const handleMouseLeave = () => {
-            setCursorPosition(null);
-        };
-
-        mapRef.on('mousemove', handleMouseMove);
-        mapRef.on('mouseleave', handleMouseLeave);
-
-        return () => {
-            mapRef.off('mousemove', handleMouseMove);
-            mapRef.off('mouseleave', handleMouseLeave);
-        };
-    }, [mapRef]);
+    const handleFormatChange = () => {
+        setFormat(f => f === 'DD' ? 'DMS' : f === 'DMS' ? 'DMM' : 'DD');
+    };
 
     return (
-        <div className="absolute bottom-4 left-4 flex flex-col gap-2">
-            {/* Coordinate Display */}
-            <div
-                className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3 z-10 cursor-pointer"
-                onClick={() => setFormat(f => f === 'DD' ? 'DMS' : f === 'DMS' ? 'DMM' : 'DD')}
+        <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 relative gap-2">
+            <span className="flex-grow-0 flex-shrink-0 opacity-50 text-sm font-medium text-left uppercase text-white">
+                Location
+            </span>
+            <span
+                className="flex-grow-0 flex-shrink-0 text-[28px] font-semibold text-left text-white"
+                onClick={handleFormatChange}
+                onKeyDown={(e) => e.key === 'Enter' && handleFormatChange()}
                 role="button"
                 tabIndex={0}
-                aria-label="Toggle coordinate format"
+                aria-label={`Location coordinates: ${formattedCoordinates}. Click to change format.`}
             >
-                <div className="text-xs text-gray-500 flex justify-between items-center">
-                    <span>Coordinates</span>
-                    <span className="text-gray-400">{format}</span>
-                </div>
-                <div className="text-sm font-medium text-gray-900">
-                    {cursorPosition
-                        ? formatCoordinates(cursorPosition, format)
-                        : 'Move mouse over map'
-                    }
-                </div>
-            </div>
-
-            {/* Temperature Overlays */}
-            {cursorPosition && datasets
-                .filter(d => d.category === 'sst')
-                .map(dataset => (
-                    <TemperatureOverlay
-                        key={dataset.id}
-                        dataset={dataset}
-                        cursorPosition={cursorPosition}
-                        mapRef={mapRef}
-                        visibleDatasets={visibleDatasets}
-                    />
-                ))}
+                {formattedCoordinates}
+            </span>
         </div>
     );
 };  
