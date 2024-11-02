@@ -9,7 +9,7 @@ interface SpotLayerProps {
 
 export const SpotLayer: React.FC<SpotLayerProps> = ({
     visible = true,
-    minZoom = 10,
+    minZoom = 6,
     maxZoom = 14
 }) => {
     return (
@@ -21,7 +21,7 @@ export const SpotLayer: React.FC<SpotLayerProps> = ({
                 maxzoom={maxZoom}
                 layout={{
                     'text-field': ['get', 'name'],
-                    'text-size': 11,
+                    'text-size': 12,
                     'text-anchor': 'center',
                     'text-allow-overlap': true,
                     'text-ignore-placement': true,
@@ -34,8 +34,8 @@ export const SpotLayer: React.FC<SpotLayerProps> = ({
                 }}
                 paint={{
                     'text-color': '#ffffff',
-                    'text-halo-color': '#000000',
-                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(0, 0, 0, 0.5)',
+                    'text-halo-width': 2,
                     'text-opacity': 1
                 }}
             />

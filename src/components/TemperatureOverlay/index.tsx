@@ -21,39 +21,49 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
         // Convert cursor position to pixel coordinates for querying
         const point = mapRef.project(cursorPosition);
 
-        // Query the GeoJSON layer at cursor position with a small buffer
-        const features = mapRef.queryRenderedFeatures(
-            [
-                [point.x - 2, point.y - 2], // Add small buffer for easier querying
-                [point.x + 2, point.y + 2]
-            ],
-            {
-                layers: [`${dataset.id}-data`] // Query only our SST data layer
-            }
-        );
+        // Query all supported layer types
+        const layerIds = dataset.supportedLayers.map(layer => `${dataset.id}-${layer}`);
 
-        // Debug logging
-        console.log('Temperature query:', {
-            point,
-            layerId: `${dataset.id}-data`,
-            featuresFound: features.length,
-            firstFeature: features[0]?.properties
+        console.log('Querying layers:', {
+            layerIds,
+            cursorPosition,
+            point
         });
 
-        // No data at this point
-        if (!features.length || !features[0].properties?.value) {
-            setTemperature(null);
-            return;
+        // Try each layer type
+        for (const layerId of layerIds) {
+            const features = mapRef.queryRenderedFeatures(
+                [
+                    [point.x - 2, point.y - 2],
+                    [point.x + 2, point.y + 2]
+                ],
+                { layers: [layerId] }
+            );
+
+            // Debug logging
+            console.log('Temperature query:', {
+                layerId,
+                featuresFound: features.length,
+                firstFeature: features[0]?.properties
+            });
+
+            if (features.length && features[0].properties) {
+                const value = features[0].properties.temperature ||
+                    features[0].properties.temp ||
+                    features[0].properties.value;
+
+                if (typeof value === 'number') {
+                    const tempValue = (value * (dataset.scale || 1)) + (dataset.offset || 0);
+                    setTemperature(tempValue);
+                    return;
+                }
+            }
         }
 
-        // Calculate temperature using dataset scale and offset
-        const rawValue = features[0].properties.value;
-        const tempValue = (rawValue * (dataset.scale || 1)) + (dataset.offset || 0);
-
-        setTemperature(tempValue);
+        // No data found in any layer
+        setTemperature(null);
     }, [mapRef, dataset, cursorPosition]);
 
-    // Only render if we have temperature data
     if (temperature === null) return null;
 
     return (

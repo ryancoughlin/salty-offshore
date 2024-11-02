@@ -54,6 +54,24 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                 </Source>
             )}
 
+            {layerData.image && (
+                <Source
+                    key={`${sourceIds.image}-source`}
+                    id={sourceIds.image}
+                    type="image"
+                    url={layerData.image}
+                    coordinates={coordinates}
+                >
+                    <Layer
+                        id={sourceIds.image}
+                        type="raster"
+                        paint={{
+                            'raster-opacity': 1
+                        }}
+                    />
+                </Source>
+            )}
+
             {layerData.contours && (
                 <Source
                     key={`${sourceIds.contours}-source`}
@@ -68,24 +86,6 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                             'line-color': '#000',
                             'line-opacity': 0.3,
                             'line-width': 1
-                        }}
-                    />
-                </Source>
-            )}
-
-            {layerData.image && (
-                <Source
-                    key={`${sourceIds.image}-source`}
-                    id={sourceIds.image}
-                    type="image"
-                    url={layerData.image}
-                    coordinates={coordinates}
-                >
-                    <Layer
-                        id={sourceIds.image}
-                        type="raster"
-                        paint={{
-                            'raster-opacity': 1
                         }}
                     />
                 </Source>

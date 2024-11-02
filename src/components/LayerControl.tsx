@@ -5,6 +5,7 @@ import { MapIcon } from '@heroicons/react/24/outline';
 interface LayerControlProps {
   isSelected: boolean;
   onSelect: (datasetId: string) => void;
+  dataset: Dataset;
 }
 
 const LayerControl: React.FC<LayerControlProps> = ({

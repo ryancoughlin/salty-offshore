@@ -1,13 +1,16 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import type { Dataset, Region } from '../../types/api';
 import type { ISODateString } from '../../types/date';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import type { MapRef } from 'react-map-gl';
 import Map, { NavigationControl, ScaleControl } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
 import { DateTimeline } from '../DateTimeline';
-import { GridControl } from './GridControl';
+// import { GridControl } from './GridControl';
+import { Grid } from './Grid';
+import { TemperatureOverlay } from '../TemperatureOverlay';
+import type { Coordinate } from '../../types/core';
 
 interface MapProps {
     region?: Region | null;
@@ -34,6 +37,8 @@ const SaltyMap: React.FC<MapProps> = ({
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
     const [gridSize, setGridSize] = useState(1);
     const [showGrid, setShowGrid] = useState(true);
+    const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
+    const [visibleDatasets] = useState<Set<string>>(new Set(datasets.map(d => d.id)));
 
     const handleMapLoad = () => {
         setIsStyleLoaded(true);
@@ -42,14 +47,18 @@ const SaltyMap: React.FC<MapProps> = ({
     useEffect(() => {
         if (isStyleLoaded && region?.bounds && mapRef.current) {
             mapRef.current.fitBounds(region.bounds, {
-                padding: 150,
-                duration: 1000
+                padding: 50,
+                duration: 500
             });
         }
     }, [region, isStyleLoaded]);
 
     console.log('selectedDataset', selectedDataset);
     console.log('region', region);
+
+    const handleMouseMove = useCallback((event: mapboxgl.MapLayerMouseEvent) => {
+        setCursorPosition(event.lngLat);
+    }, []);
 
     return (
         <div className="w-full h-full relative">
@@ -65,10 +74,19 @@ const SaltyMap: React.FC<MapProps> = ({
                 maxZoom={10}
                 minZoom={6}
                 interactiveLayerIds={datasets.map(d => `${d.id}-data`).concat('spots-points')}
+                optimizeForTerrain={false}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => setCursorPosition(null)}
             >
                 {isStyleLoaded && (
                     <>
                         <NavigationControl position="top-right" />
+                        <ScaleControl
+                            maxWidth={100}
+                            unit="nautical"
+                            position="bottom-left"
+                        />
+
                         {region && selectedDataset && (
                             <MapLayer
                                 region={region}
@@ -76,17 +94,21 @@ const SaltyMap: React.FC<MapProps> = ({
                                 selectedDate={selectedDate || ''}
                             />
                         )}
-                        <SpotLayer />
-                        <ScaleControl
-                            maxWidth={100}
-                            unit="nautical"
-                            position="bottom-left"
-                        />
-                        <GridControl
+
+                        <Grid
                             visible={showGrid}
                             gridSize={gridSize}
-                            onGridSizeChange={setGridSize}
                         />
+                        <SpotLayer />
+
+                        {selectedDataset && cursorPosition && (
+                            <TemperatureOverlay
+                                dataset={selectedDataset}
+                                cursorPosition={cursorPosition}
+                                mapRef={mapRef.current?.getMap() ?? null}
+                                visibleDatasets={visibleDatasets}
+                            />
+                        )}
                     </>
                 )}
             </Map>
