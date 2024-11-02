@@ -11,14 +11,14 @@ const ColorGradient: React.FC<ColorGradientProps> = ({ min, max }) => {
 
     return (
         <div className="flex items-center gap-2 px-4 py-2">
-            <span className="text-sm text-gray-200">{min}</span>
+            <span className="text-sm text-gray-200">{min}°</span>
             <div
                 className="h-4 w-40 rounded"
                 style={{ background: gradient }}
                 role="img"
                 aria-label={`Color gradient from ${min} to ${max}`}
             />
-            <span className="text-sm text-gray-200">{max}</span>
+            <span className="text-sm text-gray-200">{max}°</span>
         </div>
     );
 };

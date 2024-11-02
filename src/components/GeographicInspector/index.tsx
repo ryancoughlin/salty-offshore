@@ -23,12 +23,12 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
     };
 
     return (
-        <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 relative gap-2">
-            <span className="flex-grow-0 flex-shrink-0 opacity-50 text-sm font-medium text-left uppercase text-white">
+        <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 relative gap-1">
+            <span className="opacity-50 text-xs font-medium font-mono uppercase text-white">
                 Location
             </span>
             <span
-                className="flex-grow-0 flex-shrink-0 text-[28px] font-semibold text-left text-white"
+                className="text-base font-semibold text-white"
                 onClick={handleFormatChange}
                 onKeyDown={(e) => e.key === 'Enter' && handleFormatChange()}
                 role="button"

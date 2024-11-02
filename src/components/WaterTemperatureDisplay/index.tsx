@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import type { Dataset } from '../../types/api';
 import type { Coordinate } from '../../types/core';
 
-interface TemperatureOverlayProps {
+interface WaterTemperatureDisplayProps {
     dataset: Dataset;
     cursorPosition: Coordinate;
     mapRef: mapboxgl.Map | null;
 }
 
-export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
+export const WaterTemperatureDisplay: React.FC<WaterTemperatureDisplayProps> = ({
     dataset,
     cursorPosition,
     mapRef
@@ -34,38 +34,28 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
                 { layers: [layerId] }
             );
 
-            // Debug logging
-            console.log('Temperature query:', {
-                layerId,
-                featuresFound: features.length,
-                firstFeature: features[0]?.properties
-            });
-
             if (features.length && features[0].properties) {
-                const value = features[0].properties.temperature ||
+                const temperature = features[0].properties.temperature ||
                     features[0].properties.temp ||
                     features[0].properties.value;
 
-                if (typeof value === 'number') {
-                    const tempValue = (value * (dataset.scale || 1)) + (dataset.offset || 0);
-                    setTemperature(tempValue);
+                if (typeof temperature === 'number') {
+                    setTemperature(temperature);
                     return;
                 }
             }
         }
-
-        // No data found in any layer
         setTemperature(null);
     }, [mapRef, dataset, cursorPosition]);
 
     return (
-        <div className="flex flex-col justify-center items-start gap-2 w-28">
-            <span className="opacity-50 text-sm font-medium uppercase text-white">
+        <div className="flex flex-col justify-center items-start gap-1 w-20">
+            <span className="opacity-50 text-xs font-medium font-mono uppercase text-white">
                 Water temp
             </span>
-            <p className="text-[28px] font-semibold text-white">
-                {temperature !== null ? `${temperature.toFixed(1)}°F` : 'N/A'}
-            </p>
+            <span className="text-base font-semibold text-white">
+                {temperature !== null ? `${temperature}°F` : 'N/A'}
+            </span>
         </div>
     );
 }; 
