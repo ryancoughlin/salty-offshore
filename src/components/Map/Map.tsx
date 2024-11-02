@@ -63,7 +63,10 @@ const SaltyMap: React.FC<MapProps> = ({
     console.log('region', region);
 
     const handleMouseMove = useCallback((event: mapboxgl.MapLayerMouseEvent) => {
-        setCursorPosition(event.lngLat);
+        setCursorPosition({
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat
+        });
     }, []);
 
     return (

@@ -1,5 +1,8 @@
 // types/core.ts
-export type Coordinate = [number, number]; // [longitude, latitude]
+export type Coordinate = {
+  longitude: number;
+  latitude: number;
+};
 export type Bounds = [[number, number], [number, number]];
 
 // Geographic base types

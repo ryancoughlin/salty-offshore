@@ -18,17 +18,11 @@ export const TemperatureOverlay: React.FC<TemperatureOverlayProps> = ({
     useEffect(() => {
         if (!mapRef || !cursorPosition) return;
 
-        // Convert cursor position to pixel coordinates for querying
-        const point = mapRef.project(cursorPosition);
+        // Convert cursor position to LngLat format that Mapbox expects
+        const point = mapRef.project([cursorPosition.longitude, cursorPosition.latitude]);
 
         // Query all supported layer types
         const layerIds = dataset.supportedLayers.map(layer => `${dataset.id}-${layer}`);
-
-        console.log('Querying layers:', {
-            layerIds,
-            cursorPosition,
-            point
-        });
 
         // Try each layer type
         for (const layerId of layerIds) {

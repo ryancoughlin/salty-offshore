@@ -3,18 +3,19 @@ import { formatCoordinates } from '../../utils/formatCoordinates';
 import type { Coordinate } from '../../types/core';
 
 interface GeographicInspectorProps {
-    mapRef: mapboxgl.Map | null;
     cursorPosition: Coordinate | null;
 }
 
 export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
-    mapRef,
     cursorPosition
 }) => {
     const [format, setFormat] = useState<'DD' | 'DMS' | 'DMM'>('DMS');
 
-    const formattedCoordinates = cursorPosition && Array.isArray(cursorPosition) && cursorPosition.length === 2
-        ? formatCoordinates(cursorPosition, format)
+    const formattedCoordinates = cursorPosition
+        ? formatCoordinates([
+            Number(cursorPosition.longitude),
+            Number(cursorPosition.latitude.toFixed(3))
+        ], format)
         : 'N/A';
 
     const handleFormatChange = () => {
