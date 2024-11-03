@@ -15,14 +15,7 @@ export const DateTimeline: React.FC<DateTimelineProps> = ({
     selectedDate,
     onDateSelect
 }) => {
-    console.log('DateTimeline render:', {
-        hasDataset: !!dataset,
-        datesLength: dataset?.dates?.length,
-        dates: dataset?.dates,
-        selectedDate
-    });
-
-    const availableDates = useMemo(() => {
+    const dates = useMemo(() => {
         if (!dataset?.dates) {
             console.warn('Dataset has no dates array:', dataset);
             return [];
@@ -36,15 +29,15 @@ export const DateTimeline: React.FC<DateTimelineProps> = ({
         return filtered;
     }, [dataset]);
 
-    if (!availableDates.length) {
-        console.log('No available dates to render');
+    if (!dates.length) {
+        console.error('No dates available for dataset:', dataset);
         return null;
     }
 
     return (
         <div className="absolute bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4">
             <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                {availableDates.map((date) => {
+                {dates.map((date) => {
                     const isSelected = date === selectedDate;
                     const dateObj = new Date(date);
 
