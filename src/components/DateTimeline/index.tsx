@@ -28,21 +28,13 @@ export const DateTimeline: React.FC<DateTimelineProps> = ({
             return [];
         }
 
-        // Add debug log
-        console.log('Processing dates:', dataset.dates);
-
         const filtered = dataset.dates
             .filter((entry: DateEntry) => entry.date && Object.keys(entry.layers).length > 0)
             .map((entry: DateEntry) => entry.date)
             .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
-        // Add debug log
-        console.log('Filtered dates:', filtered);
         return filtered;
     }, [dataset]);
-
-    // Add debug log
-    console.log('Rendering timeline with dates:', availableDates);
 
     if (!availableDates.length) {
         console.log('No available dates to render');

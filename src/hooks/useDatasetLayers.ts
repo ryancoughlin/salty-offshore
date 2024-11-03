@@ -13,45 +13,87 @@ export const useDatasetLayers = (
   dataset: Dataset | null,
   selectedDate: ISODateString | null
 ) => {
+  console.log("useDatasetLayers INIT:", { dataset, selectedDate });
+
   const [layerData, setLayerData] = useState<LayerData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  console.log("useDatasetLayers initial state:", { layerData, loading, error });
 
   useEffect(() => {
-    setLayerData(null);
+    console.log("useDatasetLayers effect START:", {
+      datasetId: dataset?.id,
+      selectedDate,
+      datesCount: dataset?.dates?.length,
+    });
 
-    if (!dataset || !selectedDate || !Array.isArray(dataset.dates)) {
+    if (!dataset) {
+      console.log("No dataset provided");
+      return;
+    }
+
+    if (!selectedDate) {
+      console.log("No selectedDate provided");
+      return;
+    }
+
+    if (!Array.isArray(dataset.dates)) {
+      console.log("Dataset dates is not an array:", dataset.dates);
       return;
     }
 
     const dateEntry = dataset.dates.find((d) => d.date === selectedDate);
+    console.log("Found dateEntry:", dateEntry);
+
     if (!dateEntry) {
+      console.log("No matching date entry found");
       return;
     }
 
+    console.log("Available layers:", dateEntry.layers);
+
     const fetchData = async () => {
+      console.log("fetchData START");
+      setLoading(true);
+
       try {
-        const [dataResponse, contoursResponse] = await Promise.all([
-          dateEntry.layers.data ? fetch(dateEntry.layers.data) : null,
-          dateEntry.layers.contours ? fetch(dateEntry.layers.contours) : null,
-        ]);
+        const results: LayerData = {};
 
-        const data = dataResponse ? await dataResponse.json() : undefined;
-        const contours = contoursResponse
-          ? await contoursResponse.json()
-          : undefined;
+        if (dateEntry.layers.data) {
+          console.log("Fetching data layer:", dateEntry.layers.data);
+          const dataResponse = await fetch(dateEntry.layers.data);
+          results.data = await dataResponse.json();
+        }
 
-        setLayerData({
-          data,
-          contours,
-          image: dateEntry.layers.image,
-        });
-      } catch (error) {
-        console.error("Error fetching layer data:", error);
-        setLayerData(null);
+        if (dateEntry.layers.contours) {
+          console.log("Fetching contours layer:", dateEntry.layers.contours);
+          const contoursResponse = await fetch(dateEntry.layers.contours);
+          results.contours = await contoursResponse.json();
+        }
+
+        if (dateEntry.layers.image) {
+          console.log("Setting image layer:", dateEntry.layers.image);
+          results.image = dateEntry.layers.image;
+        }
+
+        console.log("Setting layerData:", results);
+        setLayerData(results);
+      } catch (err) {
+        console.error("Error in fetchData:", err);
+        setError(
+          err instanceof Error ? err : new Error("Failed to fetch layer data")
+        );
+      } finally {
+        console.log("fetchData END");
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [dataset, selectedDate]);
 
-  return { layerData };
+  console.log("useDatasetLayers returning:", { layerData, loading, error });
+
+  return { layerData, loading, error };
 };

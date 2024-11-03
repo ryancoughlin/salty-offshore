@@ -13,7 +13,7 @@ export const SpotLayer: React.FC<SpotLayerProps> = ({
     maxZoom = 14
 }) => {
     return (
-        <Source id="spots-source" type="geojson" data={spots}>
+        <Source id="spots-source" type="geojson" data={spots} interactive={false}>
             <Layer
                 id="spots-labels"
                 type="symbol"

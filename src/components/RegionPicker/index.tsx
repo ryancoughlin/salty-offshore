@@ -3,8 +3,6 @@ import type { RegionInfo } from '../../types/api';
 import usePersistedState from '../../hooks/usePersistedState';
 import { RegionSelectItem } from './RegionSelectItem';
 
-// ... existing props interface ...
-
 export const RegionPicker: React.FC<RegionPickerProps> = ({
     regions,
     selectedRegion,
@@ -13,8 +11,6 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [persistedRegionId, setPersistedRegionId] = usePersistedState<string>('selectedRegionId', '');
-
-    // ... existing useEffect ...
 
     const handleRegionSelect = useCallback((region: RegionInfo) => {
         setPersistedRegionId(region.id);
@@ -37,7 +33,7 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
         <div ref={dropdownRef} className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="h-[86px] px-6 bg-neutral-950 border-r border-white/20 text-white text-xl font-semibold justify-center items-center gap-2 inline-flex transition-colors duration-150 ease-in-out hover:bg-white/5"
+                className="h-[86px] px-6 bg-neutral-950 border-r border-white/20 text-white text-2xl font-semibold justify-center items-center gap-2 inline-flex transition-colors duration-150 ease-in-out hover:bg-white/5"
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
             >
