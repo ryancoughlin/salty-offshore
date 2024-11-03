@@ -7,7 +7,6 @@ import Map, { NavigationControl, ScaleControl, Layer, Source } from 'react-map-g
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
 import { DateTimeline } from '../DateTimeline';
-// import { GridControl } from './GridControl';
 import { Grid } from './Grid';
 import type { Coordinate } from '../../types/core';
 import { CurrentStatusBar } from '../CurrentStatusBar';
@@ -42,8 +41,8 @@ const SaltyMap: React.FC<MapProps> = ({
 }) => {
     const mapRef = useRef<MapRef>(null);
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
-    const [gridSize, setGridSize] = useState(1);
-    const [showGrid, setShowGrid] = useState(true);
+    const [gridSize] = useState(1);
+    const [showGrid] = useState(true);
     const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
 
     const handleMapLoad = () => {
@@ -58,9 +57,6 @@ const SaltyMap: React.FC<MapProps> = ({
             });
         }
     }, [region, isStyleLoaded]);
-
-    console.log('selectedDataset', selectedDataset);
-    console.log('region', region);
 
     const handleMouseMove = useCallback((event: mapboxgl.MapLayerMouseEvent) => {
         setCursorPosition({
