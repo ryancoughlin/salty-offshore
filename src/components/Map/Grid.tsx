@@ -57,7 +57,7 @@ export const Grid: React.FC<GridProps> = ({
                 source="grid-source"
                 paint={{
                     "line-color": "#000",
-                    "line-opacity": 0.2,
+                    "line-opacity": 0.1,
                     "line-width": 1
                 }}
             />

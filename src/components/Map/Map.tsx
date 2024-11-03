@@ -3,7 +3,7 @@ import type { Dataset, Region } from '../../types/api';
 import type { ISODateString } from '../../types/date';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { MapRef } from 'react-map-gl';
-import Map, { NavigationControl, ScaleControl } from 'react-map-gl';
+import Map, { NavigationControl, ScaleControl, Layer, Source } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
 import { DateTimeline } from '../DateTimeline';
@@ -69,6 +69,26 @@ const SaltyMap: React.FC<MapProps> = ({
         });
     }, []);
 
+    const getRegionBoundsGeoJSON = useCallback(() => {
+        if (!selectedRegion?.bounds) return null;
+
+        const [[minLng, minLat], [maxLng, maxLat]] = selectedRegion.bounds;
+        return {
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [[
+                    [minLng, minLat],
+                    [maxLng, minLat],
+                    [maxLng, maxLat],
+                    [minLng, maxLat],
+                    [minLng, minLat]
+                ]]
+            },
+            properties: {}
+        };
+    }, [selectedRegion]);
+
     return (
         <div className="w-full h-full relative">
             <Map
@@ -109,6 +129,23 @@ const SaltyMap: React.FC<MapProps> = ({
                             gridSize={gridSize}
                         />
                         <SpotLayer />
+
+                        {selectedRegion?.bounds && (
+                            <Source
+                                id="selected-region-bounds"
+                                type="geojson"
+                                data={getRegionBoundsGeoJSON()}
+                            >
+                                <Layer
+                                    id="region-bounds-line"
+                                    type="line"
+                                    paint={{
+                                        'line-color': '#000000',
+                                        'line-width': 2
+                                    }}
+                                />
+                            </Source>
+                        )}
                     </>
                 )}
             </Map>
