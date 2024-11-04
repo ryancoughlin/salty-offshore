@@ -91,8 +91,12 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                 onMove={handleMove}
                 onMouseMove={handleMouseMove}
                 onLoad={handleMapLoad}
-                mapStyle="mapbox://styles/mapbox/light-v11"
+                mapStyle="mapbox://styles/snowcast/cm2xtr8gl00lu01pd38l35unx"
+                style={{ width: '100%', height: '100%' }}
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+                maxZoom={10}
+                minZoom={6}
+                optimizeForTerrain={false}
             >
                 {isStyleLoaded && (
                     <>

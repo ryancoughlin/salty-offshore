@@ -1,8 +1,8 @@
-import type { Dataset, Region, CachedLayerData } from "../types/api";
+import type { RegionInfo, Dataset, CachedLayerData } from "../types/api";
 import type { ISODateString } from "../types/date";
 
 export interface MapState {
-  selectedRegion: Region | null;
+  selectedRegion: RegionInfo | null;
   selectedDataset: Dataset | null;
   selectedDate: ISODateString | null;
   layerData: CachedLayerData | null;
@@ -11,8 +11,11 @@ export interface MapState {
 }
 
 export interface MapActions {
-  selectRegion: (region: Region) => void;
+  selectRegion: (region: RegionInfo) => void;
+  selectDefaultDataset: (regionData: RegionInfo) => void;
   selectDataset: (dataset: Dataset) => void;
   selectDate: (date: ISODateString) => void;
   fetchLayerData: (dataset: Dataset, date: ISODateString) => Promise<void>;
 }
+
+export type MapStore = MapState & MapActions;

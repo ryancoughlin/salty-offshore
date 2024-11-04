@@ -9,7 +9,7 @@ import useMapStore from './store/useMapStore'
 const App: React.FC = () => {
   const { regions } = useRegions();
   const { getRegionData } = useRegionDatasets();
-  const { selectedRegion, initializeRegionData } = useMapStore();
+  const { selectedRegion, selectDefaultDataset } = useMapStore();
 
   const regionData = useMemo(() =>
     selectedRegion ? getRegionData(selectedRegion.id) : null,
@@ -18,9 +18,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (regionData) {
-      initializeRegionData(regionData);
+      selectDefaultDataset(regionData);
     }
-  }, [regionData, initializeRegionData]);
+  }, [regionData, selectDefaultDataset]);
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden">

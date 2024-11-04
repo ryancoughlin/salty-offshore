@@ -1,26 +1,11 @@
 import { create } from "zustand";
-import type { RegionInfo, Dataset, CachedLayerData } from "../types/api";
-import type { ISODateString } from "../types/date";
-
-interface MapStore {
-  selectedRegion: RegionInfo | null;
-  selectedDataset: Dataset | null;
-  selectedDate: ISODateString | null;
-  layerData: CachedLayerData | null;
-  loading: boolean;
-  error: Error | null;
-
-  // Actions
-  selectRegion: (region: RegionInfo) => void;
-  initializeRegionData: (regionData: Region) => void;
-  selectDataset: (dataset: Dataset) => void;
-  selectDate: (date: ISODateString) => void;
-  fetchLayerData: (dataset: Dataset, date: ISODateString) => Promise<void>;
-}
+import type { Dataset, CachedLayerData } from "../types/api";
+import type { MapStore } from "./types";
 
 const layerCache = new Map<string, CachedLayerData>();
 
 export const useMapStore = create<MapStore>((set, get) => ({
+  // Initial State
   selectedRegion: null,
   selectedDataset: null,
   selectedDate: null,
@@ -28,6 +13,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
   loading: false,
   error: null,
 
+  // Actions
   selectRegion: (region) => {
     layerCache.clear();
     set({
@@ -38,11 +24,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
     });
   },
 
-  initializeRegionData: (regionData) => {
-    const { selectedRegion } = get();
-    if (!selectedRegion || !regionData) return;
-
-    // Auto-select SST dataset if available
+  selectDefaultDataset: (regionData) => {
     const sstDataset = regionData.datasets.find(
       (d) => d.id === "LEOACSPOSSTL3SnrtCDaily"
     );
@@ -53,8 +35,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
   selectDataset: (dataset) => {
     set({ selectedDataset: dataset });
-
-    // Auto-select most recent date
     const mostRecentDate = dataset.dates[0]?.date;
     if (mostRecentDate) {
       get().selectDate(mostRecentDate);
