@@ -1,100 +1,19 @@
 import { Source, Layer } from 'react-map-gl';
-import type { Dataset, Region } from '../../types/api';
-import type { ISODateString } from '../../types/date';
-import { useDatasetLayers } from '../../hooks/useDatasetLayers';
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
+import useMapStore from '../../store/useMapStore';
 
-interface ContourProperties {
-    value: number;
-}
-
-interface MapLayerProps {
-    region: Region;
-    dataset: Dataset;
-    selectedDate: ISODateString;
-}
-
-const getTemperatureColor = (temp: number): string => {
-    if (temp < 60) return '#0072C4';
-    if (temp < 65) return '#1AA3FF';
-    if (temp < 70) return '#30BF9A';
-    if (temp < 72) return '#F0C649';
-    return '#FF6B00';
-};
-
-const getLineWidth = (breakStrength: string, isKeyTemp: boolean): number => {
-    if (isKeyTemp) return 3;
-    switch (breakStrength) {
-        case 'strong': return 3;
-        case 'moderate': return 2;
-        default: return 1;
-    }
-};
-
-const getLineOpacity = (breakStrength: string, isKeyTemp: boolean): number => {
-    let baseOpacity = isKeyTemp ? 0.1 : 0;
-    switch (breakStrength) {
-        case 'strong': return 1.0 + baseOpacity;
-        case 'moderate': return 0.9 + baseOpacity;
-        default: return 0.7 + baseOpacity;
-    }
-};
-
-export const MapLayer: React.FC<MapLayerProps> = ({
-    region,
-    dataset,
-    selectedDate,
-}) => {
-    console.log('MapLayer ENTRY:', {
-        regionId: region?.id,
-        datasetId: dataset?.id,
-        selectedDate,
-        bounds: region?.bounds
-    });
-
-    const { layerData, loading, error } = useDatasetLayers(dataset, selectedDate);
-
-    console.log('MapLayer DATA:', {
-        hasDataset: dataset,
-        hasData: !!layerData?.data,
-        hasContours: !!layerData?.contours,
-        hasImage: !!layerData?.image,
-        loading,
-        error
-    });
+export const MapLayer: React.FC = () => {
+    const { layerData, loading, error, selectedRegion, selectedDataset, selectedDate } = useMapStore();
 
     const sourceIds = useMemo(() => ({
-        data: `${dataset.id}-data`,
-        contours: `${dataset.id}-contours`,
-        image: `${dataset.id}-image`
-    }), [dataset.id]);
+        data: `${selectedDataset?.id}-data`,
+        contours: `${selectedDataset?.id}-contours`,
+        image: `${selectedDataset?.id}-image`
+    }), [selectedDataset?.id]);
 
-    if (!dataset || !region) {
-        console.log('MapLayer: Missing required props');
+    if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
         return null;
     }
-
-    if (loading) {
-        console.log('MapLayer: Loading...');
-        return null;
-    }
-
-    if (error) {
-        console.error('MapLayer: Error:', error);
-        return null;
-    }
-
-    if (!layerData) {
-        console.log('MapLayer: No layer data');
-        return null;
-    }
-
-    console.log('MapLayer RENDER:', {
-        sourceIds,
-        dataFeatures: layerData.data?.features?.length,
-        contourFeatures: layerData.contours?.features?.length,
-        imageUrl: layerData.image
-    });
 
     return (
         <>
@@ -123,10 +42,10 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                     type="image"
                     url={layerData.image}
                     coordinates={[
-                        [region.bounds[0][0], region.bounds[1][1]],
-                        [region.bounds[1][0], region.bounds[1][1]],
-                        [region.bounds[1][0], region.bounds[0][1]],
-                        [region.bounds[0][0], region.bounds[0][1]]
+                        [selectedRegion.bounds[0][0], selectedRegion.bounds[1][1]],
+                        [selectedRegion.bounds[1][0], selectedRegion.bounds[1][1]],
+                        [selectedRegion.bounds[1][0], selectedRegion.bounds[0][1]],
+                        [selectedRegion.bounds[0][0], selectedRegion.bounds[0][1]]
                     ]}
                 >
                     <Layer
@@ -140,7 +59,7 @@ export const MapLayer: React.FC<MapLayerProps> = ({
                 </Source>
             )}
 
-            {layerData?.contours && dataset.id === 'LEOACSPOSSTL3SnrtCDaily' && (
+            {layerData?.contours && selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
                 <Source
                     key={`${sourceIds.contours}-source`}
                     id={sourceIds.contours}

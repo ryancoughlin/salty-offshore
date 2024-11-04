@@ -2,18 +2,15 @@ import React from 'react';
 import LayerControl from './LayerControl';
 import { CATEGORY_NAMES } from '../config';
 import type { Dataset, Region } from '../types/api';
+import useMapStore from '../store/useMapStore';
 
 interface LayerControlsProps {
     region: Region;
-    selectedDataset: Dataset | null;
-    onDatasetSelect: (datasetId: string) => void;
 }
 
-const LayerControls: React.FC<LayerControlsProps> = ({
-    region,
-    selectedDataset,
-    onDatasetSelect
-}) => {
+const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
+    const { selectedDataset, selectDataset } = useMapStore();
+
     const datasetsByCategory = region.datasets.reduce((acc, dataset) => {
         const category = dataset.category;
         if (!acc[category]) {
@@ -36,7 +33,7 @@ const LayerControls: React.FC<LayerControlsProps> = ({
                                 key={dataset.id}
                                 dataset={dataset}
                                 isSelected={dataset.id === selectedDataset?.id}
-                                onSelect={onDatasetSelect}
+                                onSelect={() => selectDataset(dataset)}
                             />
                         ))}
                     </div>

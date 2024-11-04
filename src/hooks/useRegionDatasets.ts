@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { APIResponse, Region } from "../types/api";
 
 export const useRegionDatasets = () => {
@@ -32,10 +32,22 @@ export const useRegionDatasets = () => {
     fetchRegionDatasets();
   }, []);
 
-  const getRegionData = (regionId: string | null): Region | undefined => {
-    if (!regionId || !data) return undefined;
-    return data.regions.find((r) => r.id === regionId);
-  };
+  const getRegionData = useCallback(
+    (regionId: string) => {
+      if (!data?.regions) return null;
+      const regionData = data.regions.find((r) => r.id === regionId);
+      if (!regionData) return null;
+
+      return {
+        ...regionData,
+        datasets: regionData.datasets.map((dataset) => ({
+          ...dataset,
+          regionId,
+        })),
+      };
+    },
+    [data]
+  );
 
   return {
     regionDatasets: data,

@@ -1,69 +1,31 @@
 import './App.css'
-import React, { useState, useCallback } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import SaltyMap from './components/Map/Map'
 import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
-import type { Region } from './types/api'
 import LayerControls from './components/LayerControls'
-import type { ISODateString } from './types/api'
-import type { Dataset } from './types/api'
+import useMapStore from './store/useMapStore'
 
 const App: React.FC = () => {
-  const { regions, loading: regionsLoading } = useRegions();
+  const { regions } = useRegions();
   const { getRegionData } = useRegionDatasets();
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
-  const [selectedDate, setSelectedDate] = useState<ISODateString | null>(null);
-  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const { selectedRegion, initializeRegionData } = useMapStore();
 
-  const regionData = selectedRegion ? getRegionData(selectedRegion.id) : null;
+  const regionData = useMemo(() =>
+    selectedRegion ? getRegionData(selectedRegion.id) : null,
+    [selectedRegion, getRegionData]
+  );
 
-  const handleRegionSelect = useCallback((region: Region) => {
-    setSelectedRegion(region);
-    const regionData = getRegionData(region.id);
-
+  useEffect(() => {
     if (regionData) {
-      const defaultDataset = regionData.datasets.find(d => d.category === 'sst');
-      if (defaultDataset) {
-        setSelectedDataset(defaultDataset);
-        const mostRecentDate = defaultDataset.dates?.[0]?.date;
-        setSelectedDate(mostRecentDate || null);
-      }
+      initializeRegionData(regionData);
     }
-  }, [getRegionData]);
-
-  const handleDatasetSelect = useCallback((datasetId: string) => {
-    const dataset = regionData?.datasets.find(d => d.id === datasetId);
-    if (dataset) {
-      setSelectedDataset(dataset);
-      const mostRecentDate = dataset.dates?.[0]?.date;
-      setSelectedDate(mostRecentDate || null);
-    }
-  }, [regionData]);
-
-  if (regionsLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
+  }, [regionData, initializeRegionData]);
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden">
-      <SaltyMap
-        regions={regions}
-        selectedRegion={selectedRegion}
-        onRegionSelect={handleRegionSelect}
-        region={selectedRegion}
-        datasets={regionData?.datasets || []}
-        selectedDataset={selectedDataset}
-        selectedDate={selectedDate}
-        onDateSelect={setSelectedDate}
-      />
-
-      {regionData && (
-        <LayerControls
-          region={regionData}
-          selectedDataset={selectedDataset}
-          onDatasetSelect={handleDatasetSelect}
-        />
-      )}
+      <SaltyMap regions={regions} />
+      {regionData && <LayerControls region={regionData} />}
     </div>
   );
 };

@@ -1,8 +1,6 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
-import type { Dataset, Region } from '../../types/api';
-import type { ISODateString } from '../../types/date';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { MapRef } from 'react-map-gl';
+import type { MapRef, MapLayerMouseEvent, ViewState } from 'react-map-gl';
 import Map, { NavigationControl, ScaleControl, Layer, Source } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
@@ -11,16 +9,10 @@ import { Grid } from './Grid';
 import type { Coordinate } from '../../types/core';
 import { CurrentStatusBar } from '../CurrentStatusBar';
 import { RegionInfo } from '../../types/api';
+import useMapStore from '../../store/useMapStore';
 
 interface MapProps {
-    region?: Region | null;
-    datasets: Dataset[];
-    selectedDataset: Dataset | null;
-    selectedDate: ISODateString | null;
-    onDateSelect: (date: ISODateString) => void;
     regions: RegionInfo[];
-    selectedRegion: RegionInfo | null;
-    onRegionSelect: (region: RegionInfo) => void;
 }
 
 const DEFAULT_VIEW_STATE = {
@@ -29,40 +21,46 @@ const DEFAULT_VIEW_STATE = {
     zoom: 5,
 } as const;
 
-const SaltyMap: React.FC<MapProps> = ({
-    region,
-    datasets,
-    selectedDataset,
-    selectedDate,
-    onDateSelect,
-    regions,
-    selectedRegion,
-    onRegionSelect
-}) => {
+const SaltyMap: React.FC<MapProps> = ({ regions }) => {
     const mapRef = useRef<MapRef>(null);
+    const [viewState, setViewState] = useState<Partial<ViewState>>(DEFAULT_VIEW_STATE);
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
     const [gridSize] = useState(1);
     const [showGrid] = useState(true);
     const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
+
+    const {
+        selectedRegion,
+        selectedDataset,
+        selectedDate,
+        selectRegion,
+        selectDate
+    } = useMapStore();
 
     const handleMapLoad = () => {
         setIsStyleLoaded(true);
     };
 
     useEffect(() => {
-        if (isStyleLoaded && region?.bounds && mapRef.current) {
-            mapRef.current.fitBounds(region.bounds, {
+        if (isStyleLoaded && selectedRegion?.bounds && mapRef.current) {
+            mapRef.current.fitBounds(selectedRegion.bounds, {
                 padding: 50,
                 duration: 500
             });
         }
-    }, [region, isStyleLoaded]);
+    }, [selectedRegion, isStyleLoaded]);
 
-    const handleMouseMove = useCallback((event: mapboxgl.MapLayerMouseEvent) => {
-        setCursorPosition({
-            longitude: event.lngLat.lng,
-            latitude: event.lngLat.lat
-        });
+    const handleMove = useCallback((evt: { viewState: ViewState }) => {
+        setViewState(evt.viewState);
+    }, []);
+
+    const handleMouseMove = useCallback((event: MapLayerMouseEvent) => {
+        if (event.lngLat) {
+            setCursorPosition({
+                longitude: event.lngLat.lng,
+                latitude: event.lngLat.lat
+            });
+        }
     }, []);
 
     const getRegionBoundsGeoJSON = useCallback(() => {
@@ -86,38 +84,23 @@ const SaltyMap: React.FC<MapProps> = ({
     }, [selectedRegion]);
 
     return (
-        <div className="w-full h-full relative">
+        <div className="relative w-full h-full">
             <Map
                 ref={mapRef}
-                reuseMaps
-                onLoad={handleMapLoad}
-                initialViewState={DEFAULT_VIEW_STATE}
-                style={{ width: '100%', height: '100%' }}
-                mapStyle="mapbox://styles/snowcast/cm2xtr8gl00lu01pd38l35unx"
-                mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-                renderWorldCopies={false}
-                maxZoom={10}
-                minZoom={6}
-                interactiveLayerIds={datasets.map(d => `${d.id}-data`).concat('spots-points')}
-                optimizeForTerrain={false}
+                {...viewState}
+                onMove={handleMove}
                 onMouseMove={handleMouseMove}
-                onMouseLeave={() => setCursorPosition(null)}
+                onLoad={handleMapLoad}
+                mapStyle="mapbox://styles/mapbox/light-v11"
+                mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
             >
                 {isStyleLoaded && (
                     <>
                         <NavigationControl position="top-right" />
-                        <ScaleControl
-                            maxWidth={100}
-                            unit="nautical"
-                            position="bottom-left"
-                        />
+                        <ScaleControl maxWidth={100} unit="nautical" position="bottom-left" />
 
-                        {region && selectedDataset && (
-                            <MapLayer
-                                region={region}
-                                dataset={selectedDataset}
-                                selectedDate={selectedDate || ''}
-                            />
+                        {selectedRegion && selectedDataset && selectedDate && (
+                            <MapLayer />
                         )}
 
                         <Grid
@@ -149,17 +132,17 @@ const SaltyMap: React.FC<MapProps> = ({
             <CurrentStatusBar
                 regions={regions}
                 selectedRegion={selectedRegion}
-                onRegionSelect={onRegionSelect}
+                onRegionSelect={selectRegion}
                 cursorPosition={cursorPosition}
                 mapRef={mapRef.current?.getMap() ?? null}
                 dataset={selectedDataset}
             />
 
-            {region && selectedDataset && (
+            {selectedRegion && selectedDataset && (
                 <DateTimeline
                     dataset={selectedDataset}
                     selectedDate={selectedDate}
-                    onDateSelect={onDateSelect}
+                    onDateSelect={selectDate}
                 />
             )}
         </div>
