@@ -1,15 +1,62 @@
 import { Source, Layer } from 'react-map-gl';
-import { useMemo } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import useMapStore from '../../store/useMapStore';
+import { BreakInfo } from './BreakInfo';
 
-export const MapLayer: React.FC = () => {
-    const { layerData, loading, error, selectedRegion, selectedDataset, selectedDate } = useMapStore();
+export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
+    const { layerData, loading, error, selectedRegion, selectedDataset, selectedDate, contourLineInfo, setContourLineInfo } = useMapStore();
+    let hoveredStateId: string | null = null;
 
     const sourceIds = useMemo(() => ({
         data: `${selectedDataset?.id}-data`,
         contours: `${selectedDataset?.id}-contours`,
         image: `${selectedDataset?.id}-image`
     }), [selectedDataset?.id]);
+
+    useEffect(() => {
+        if (!layerData?.contours) return;
+
+        // Add mouse events to the contour layer
+        map.on('mousemove', sourceIds.contours, (e) => {
+            if (e.features?.length) {
+                if (hoveredStateId !== null) {
+                    map.setFeatureState(
+                        { source: sourceIds.contours, id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+
+                hoveredStateId = e.features[0].id as string;
+                map.setFeatureState(
+                    { source: sourceIds.contours, id: hoveredStateId },
+                    { hover: true }
+                );
+
+                // Update hover info for BreakInfo component
+                setContourLineInfo({
+                    temperature: e.features[0].properties.value,
+                    breakStrength: e.features[0].properties.break_strength,
+                    position: { x: e.point.x, y: e.point.y }
+                });
+            }
+        });
+
+        map.on('mouseleave', sourceIds.contours, () => {
+            if (hoveredStateId !== null) {
+                map.setFeatureState(
+                    { source: sourceIds.contours, id: hoveredStateId },
+                    { hover: false }
+                );
+                setContourLineInfo(null);
+            }
+            hoveredStateId = null;
+        });
+
+        return () => {
+            map.off('mousemove', sourceIds.contours);
+            map.off('mouseleave', sourceIds.contours);
+        };
+    }, [layerData?.contours]);
 
     if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
         return null;
@@ -65,23 +112,8 @@ export const MapLayer: React.FC = () => {
                     id={sourceIds.contours}
                     type="geojson"
                     data={layerData.contours}
+                    generateId={true}
                 >
-                    {/* Base line layer with white outline for key temperatures */}
-                    <Layer
-                        id={`${sourceIds.contours}-glow`}
-                        type="line"
-                        filter={['==', ['get', 'is_key_temp'], true]}
-                        paint={{
-                            'line-color': '#ffffff',
-                            'line-width': ['case',
-                                ['get', 'is_key_temp'], 5,
-                                3
-                            ],
-                            'line-opacity': 0.5
-                        }}
-                    />
-
-                    {/* Main contour lines */}
                     <Layer
                         id={sourceIds.contours}
                         type="line"
@@ -89,40 +121,36 @@ export const MapLayer: React.FC = () => {
                             'line-color': ['interpolate',
                                 ['linear'],
                                 ['get', 'value'],
-                                60, '#0072C4',
-                                65, '#1AA3FF',
-                                70, '#30BF9A',
-                                72, '#F0C649',
-                                75, '#FF6B00'
+                                44, '#0043CE',  // Very cold
+                                54, '#0072C4',  // Cold
+                                60, '#30BF9A',  // Transition
+                                65, '#F0C649',  // Prime fishing
+                                70, '#FF6B00',  // Prime fishing
+                                72, '#FF3333',  // Prime fishing
+                                75, '#CC0000'   // Warm
                             ],
-                            'line-width': ['case',
-                                ['get', 'is_key_temp'], 3,
-                                ['match',
-                                    ['get', 'break_strength'],
-                                    'strong', 3,
-                                    'moderate', 2,
+                            'line-width': [
+                                'case',
+                                ['boolean', ['feature-state', 'hover'], false],
+                                4,  // Width when hovered
+                                ['case',
+                                    ['==', ['get', 'break_strength'], 'strong'],
+                                    3,
+                                    ['==', ['get', 'break_strength'], 'moderate'],
+                                    2,
                                     1
                                 ]
                             ],
-                            'line-opacity': ['case',
-                                ['get', 'is_key_temp'],
+                            'line-opacity': [
+                                'case',
+                                ['boolean', ['feature-state', 'hover'], false],
+                                1,
                                 ['match',
                                     ['get', 'break_strength'],
-                                    'strong', 1.1,
-                                    'moderate', 1.0,
-                                    0.8
-                                ],
-                                ['match',
-                                    ['get', 'break_strength'],
-                                    'strong', 1.0,
-                                    'moderate', 0.9,
-                                    0.7
+                                    'strong', 1,
+                                    'moderate', 0.5,
+                                    0.25
                                 ]
-                            ],
-                            'line-dasharray': ['match',
-                                ['get', 'break_strength'],
-                                'moderate', ['literal', [5, 5]],
-                                ['literal', [1]]
                             ]
                         }}
                     />
@@ -132,7 +160,7 @@ export const MapLayer: React.FC = () => {
                         id={`${sourceIds.contours}-labels`}
                         type="symbol"
                         filter={['any',
-                            ['==', ['get', 'is_key_temp'], true],
+                            ['==', ['get', 'is_key_temp'], false],
                             ['==', ['get', 'break_strength'], 'strong']
                         ]}
                         paint={{
@@ -152,10 +180,14 @@ export const MapLayer: React.FC = () => {
                             'text-size': 14,
                             'text-max-angle': 30,
                             'text-allow-overlap': false,
-                            'symbol-spacing': 250
+                            'symbol-spacing': 300
                         }}
                     />
                 </Source>
+            )}
+
+            {contourLineInfo && (
+                <BreakInfo info={contourLineInfo} />
             )}
         </>
     );

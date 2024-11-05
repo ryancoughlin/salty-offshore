@@ -103,15 +103,16 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                         <NavigationControl position="top-right" />
                         <ScaleControl maxWidth={100} unit="nautical" position="bottom-left" />
 
-                        {selectedRegion && selectedDataset && selectedDate && (
-                            <MapLayer />
-                        )}
-
                         <Grid
                             visible={showGrid}
                             gridSize={gridSize}
                         />
                         <SpotLayer />
+
+
+                        {selectedRegion && selectedDataset && selectedDate && mapRef.current?.getMap() && (
+                            <MapLayer map={mapRef.current.getMap()} />
+                        )}
 
                         {selectedRegion?.bounds && (
                             <Source

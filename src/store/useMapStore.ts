@@ -12,6 +12,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
   layerData: null,
   loading: false,
   error: null,
+  contourLineInfo: null,
 
   // Actions
   selectRegion: (region) => {
@@ -90,6 +91,8 @@ export const useMapStore = create<MapStore>((set, get) => ({
       });
     }
   },
+
+  setContourLineInfo: (info) => set({ contourLineInfo: info }),
 }));
 
 export default useMapStore;
