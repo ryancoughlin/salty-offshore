@@ -121,13 +121,15 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                             'line-color': ['interpolate',
                                 ['linear'],
                                 ['get', 'value'],
-                                44, '#0043CE',  // Very cold
-                                54, '#0072C4',  // Cold
-                                60, '#30BF9A',  // Transition
-                                65, '#F0C649',  // Prime fishing
-                                70, '#FF6B00',  // Prime fishing
-                                72, '#FF3333',  // Prime fishing
-                                75, '#CC0000'   // Warm
+                                44, '#356b95',  // Very cold
+                                54, '#89d0e4',  // Cold (yellow)
+                                56, '#b1e095',  // Cold (light yellow)
+                                58, '#ebf66b',  // Cold (light yellow)
+                                60, '#ffee4f',  // Transition
+                                65, '#fdaa1c',  // Prime fishing
+                                70, '#e05a08',  // Prime fishing
+                                72, '#cc3f0b',  // Prime fishing
+                                75, '#9f2815'   // Warm
                             ],
                             'line-width': [
                                 'case',
@@ -148,8 +150,8 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                                 ['match',
                                     ['get', 'break_strength'],
                                     'strong', 1,
-                                    'moderate', 0.5,
-                                    0.25
+                                    'moderate', 1,
+                                    1
                                 ]
                             ]
                         }}

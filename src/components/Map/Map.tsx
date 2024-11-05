@@ -29,7 +29,6 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
         selectedRegion,
         selectedDataset,
         selectedDate,
-        selectRegion,
         setCursorPosition,
         setMapRef
     } = useMapStore();
