@@ -13,6 +13,8 @@ export const useMapStore = create<MapStore>((set, get) => ({
   loading: false,
   error: null,
   contourLineInfo: null,
+  cursorPosition: null,
+  mapRef: null,
 
   // Actions
   selectRegion: (region) => {
@@ -93,6 +95,9 @@ export const useMapStore = create<MapStore>((set, get) => ({
   },
 
   setContourLineInfo: (info) => set({ contourLineInfo: info }),
+
+  setCursorPosition: (position) => set({ cursorPosition: position }),
+  setMapRef: (ref) => set({ mapRef: ref }),
 }));
 
 export default useMapStore;

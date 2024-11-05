@@ -23,8 +23,8 @@ export const CurrentStatusBar = ({
     dataset
 }: CurrentStatusBarProps) => {
     return (
-        <div className="flex absolute top-0 left-0 right-0 bg-neutral-950">
-            <div className="flex justify-start items-center h-[86px] gap-[89px] px-6">
+        <div className="flex bg-neutral-950">
+            <div className="flex justify-start items-center h-20">
                 <RegionPicker
                     regions={regions}
                     selectedRegion={selectedRegion}
@@ -42,7 +42,6 @@ export const CurrentStatusBar = ({
                     />
                 )}
                 <GeographicInspector
-                    mapRef={mapRef}
                     cursorPosition={cursorPosition}
                 />
             </div>

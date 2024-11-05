@@ -4,10 +4,7 @@ import type { MapRef, MapLayerMouseEvent, ViewState } from 'react-map-gl';
 import Map, { NavigationControl, ScaleControl, Layer, Source } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { SpotLayer } from './SpotLayer';
-import { DateTimeline } from '../DateTimeline';
 import { Grid } from './Grid';
-import type { Coordinate } from '../../types/core';
-import { CurrentStatusBar } from '../CurrentStatusBar';
 import { RegionInfo } from '../../types/api';
 import useMapStore from '../../store/useMapStore';
 
@@ -27,18 +24,21 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
     const [isStyleLoaded, setIsStyleLoaded] = useState(false);
     const [gridSize] = useState(1);
     const [showGrid] = useState(true);
-    const [cursorPosition, setCursorPosition] = useState<Coordinate | null>(null);
 
     const {
         selectedRegion,
         selectedDataset,
         selectedDate,
         selectRegion,
-        selectDate
+        setCursorPosition,
+        setMapRef
     } = useMapStore();
 
     const handleMapLoad = () => {
         setIsStyleLoaded(true);
+        if (mapRef.current) {
+            setMapRef(mapRef.current.getMap());
+        }
     };
 
     useEffect(() => {
@@ -55,13 +55,11 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
     }, []);
 
     const handleMouseMove = useCallback((event: MapLayerMouseEvent) => {
-        if (event.lngLat) {
-            setCursorPosition({
-                longitude: event.lngLat.lng,
-                latitude: event.lngLat.lat
-            });
-        }
-    }, []);
+        setCursorPosition({
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat
+        });
+    }, [setCursorPosition]);
 
     const getRegionBoundsGeoJSON = useCallback(() => {
         if (!selectedRegion?.bounds) return null;
@@ -92,7 +90,7 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                 onMouseMove={handleMouseMove}
                 onLoad={handleMapLoad}
                 mapStyle="mapbox://styles/snowcast/cm2xtr8gl00lu01pd38l35unx"
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', borderRadius: '10px' }}
                 mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                 maxZoom={10}
                 minZoom={6}
@@ -133,23 +131,6 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                     </>
                 )}
             </Map>
-
-            <CurrentStatusBar
-                regions={regions}
-                selectedRegion={selectedRegion}
-                onRegionSelect={selectRegion}
-                cursorPosition={cursorPosition}
-                mapRef={mapRef.current?.getMap() ?? null}
-                dataset={selectedDataset}
-            />
-
-            {selectedRegion && selectedDataset && (
-                <DateTimeline
-                    dataset={selectedDataset}
-                    selectedDate={selectedDate}
-                    onDateSelect={selectDate}
-                />
-            )}
         </div>
     );
 };

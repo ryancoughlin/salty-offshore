@@ -28,7 +28,7 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
                 Location
             </span>
             <span
-                className="text-base font-semibold text-white"
+                className="text-xl font-semibold text-white"
                 onClick={handleFormatChange}
                 onKeyDown={(e) => e.key === 'Enter' && handleFormatChange()}
                 role="button"

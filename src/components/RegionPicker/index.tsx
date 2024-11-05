@@ -30,10 +30,10 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
     }, [handleClickOutside]);
 
     return (
-        <div ref={dropdownRef} className="relative">
+        <div ref={dropdownRef} className="relative h-full">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="h-[86px] px-6 bg-neutral-950 border-r border-white/20 text-white text-2xl font-semibold justify-center items-center gap-2 inline-flex transition-colors duration-150 ease-in-out hover:bg-white/5"
+                className="h-full flex px-6 bg-neutral-950 border-r border-white/20 text-white text-2xl font-semibold justify-center items-center gap-2 transition-colors duration-150 ease-in-out hover:bg-white/5"
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
             >

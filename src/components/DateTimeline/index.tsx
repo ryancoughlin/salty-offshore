@@ -33,37 +33,32 @@ export const DateTimeline: React.FC<DateTimelineProps> = ({
         console.error('No dates available for dataset:', dataset);
         return null;
     }
-
     return (
-        <div className="absolute bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4">
-            <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                {dates.map((date) => {
-                    const isSelected = date === selectedDate;
-                    const dateObj = new Date(date);
+        <div className="flex justify-center items-center overflow-x-auto">
+            {dates.map((date) => {
+                const isSelected = date === selectedDate;
+                const dateObj = new Date(date);
 
-                    return (
-                        <button
-                            key={date}
-                            onClick={() => onDateSelect(date)}
-                            className={`
-                                flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium
-                                transition-all duration-200 ease-in-out
-                                focus:outline-none focus:ring-2 focus:ring-blue-500
+                return (
+                    <button
+                        key={date}
+                        onClick={() => onDateSelect(date)}
+                        className={`
+                                h-16 p-6 border-r border-white/10 justify-center items-center inline-flex
                                 ${isSelected
-                                    ? 'bg-blue-500 text-white shadow-lg'
-                                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                                }
+                                ? 'bg-blue-500 text-white shadow-lg'
+                                : 'bg-neutral-950 text-gray-300 hover:bg-gray-700 hover:text-white'
+                            }
                             `}
-                            aria-label={`Select date ${dateObj.toLocaleDateString()}`}
-                            aria-pressed={isSelected}
-                        >
-                            <div className="flex flex-col items-center">
-                                <span>{formatDateForDisplay(parseISODate(date))}</span>
-                            </div>
-                        </button>
-                    );
-                })}
-            </div>
+                        aria-label={`Select date ${dateObj.toLocaleDateString()}`}
+                        aria-pressed={isSelected}
+                    >
+                        <div className="text-white text-base font-medium font-sans">
+                            {formatDateForDisplay(parseISODate(date))}
+                        </div>
+                    </button>
+                );
+            })}
         </div>
     );
 };
