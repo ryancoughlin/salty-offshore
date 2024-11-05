@@ -34,7 +34,7 @@ const App: React.FC = () => {
   }, [regionData, selectDefaultDataset]);
 
   return (
-    <div className="flex flex-col w-screen h-screen overflow-hidden p-6 pt-0 pb-0 bg-neutral-950">
+    <div className="flex justify-between flex-col w-screen h-screen overflow-hidden p-6 pt-0 pb-0 bg-neutral-950">
       <CurrentStatusBar
         regions={regions}
         selectedRegion={selectedRegion}
@@ -43,8 +43,10 @@ const App: React.FC = () => {
         mapRef={mapRef}
         dataset={selectedDataset}
       />
-      <SaltyMap regions={regions} />
-      {regionData && <LayerControls region={regionData} />}
+      <div className="flex-row flex h-full">
+        <SaltyMap regions={regions} />
+        {regionData && <LayerControls region={regionData} />}
+      </div>
       {selectedRegion && selectedDataset && (
         <DateTimeline
           dataset={selectedDataset}

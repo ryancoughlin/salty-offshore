@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react'
 import sstColorScale from '../utils/sst_color_scale.json';
 
 interface ColorGradientProps {
@@ -6,7 +6,7 @@ interface ColorGradientProps {
     max: number;
 }
 
-const ColorGradient: React.FC<ColorGradientProps> = ({ min, max }) => {
+export const ColorGradient = memo<ColorGradientProps>(({ min, max }) => {
     const gradient = `linear-gradient(to right, ${sstColorScale.colors.join(', ')})`;
 
     return (
@@ -21,6 +21,4 @@ const ColorGradient: React.FC<ColorGradientProps> = ({ min, max }) => {
             <span className="text-sm text-gray-200">{max}°</span>
         </div>
     );
-};
-
-export default ColorGradient; 
+});

@@ -1,11 +1,12 @@
 import { Source, Layer } from 'react-map-gl';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { BreakInfo } from './BreakInfo';
+import { ContourLineLayer } from './ContourLineLayer';
 
 export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
     const { layerData, loading, error, selectedRegion, selectedDataset, selectedDate, contourLineInfo, setContourLineInfo } = useMapStore();
-    let hoveredStateId: string | null = null;
+    const hoveredStateId = useRef<string | null>(null);
 
     const sourceIds = useMemo(() => ({
         data: `${selectedDataset?.id}-data`,
@@ -19,16 +20,16 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
         // Add mouse events to the contour layer
         map.on('mousemove', sourceIds.contours, (e) => {
             if (e.features?.length) {
-                if (hoveredStateId !== null) {
+                if (hoveredStateId.current !== null) {
                     map.setFeatureState(
-                        { source: sourceIds.contours, id: hoveredStateId },
+                        { source: sourceIds.contours, id: hoveredStateId.current },
                         { hover: false }
                     );
                 }
 
-                hoveredStateId = e.features[0].id as string;
+                hoveredStateId.current = e.features[0].id as string;
                 map.setFeatureState(
-                    { source: sourceIds.contours, id: hoveredStateId },
+                    { source: sourceIds.contours, id: hoveredStateId.current },
                     { hover: true }
                 );
 
@@ -42,21 +43,21 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
         });
 
         map.on('mouseleave', sourceIds.contours, () => {
-            if (hoveredStateId !== null) {
+            if (hoveredStateId.current !== null) {
                 map.setFeatureState(
-                    { source: sourceIds.contours, id: hoveredStateId },
+                    { source: sourceIds.contours, id: hoveredStateId.current },
                     { hover: false }
                 );
                 setContourLineInfo(null);
             }
-            hoveredStateId = null;
+            hoveredStateId.current = null;
         });
 
         return () => {
             map.off('mousemove', sourceIds.contours);
             map.off('mouseleave', sourceIds.contours);
         };
-    }, [layerData?.contours]);
+    }, [layerData?.contours, map, sourceIds.contours, setContourLineInfo]);
 
     if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
         return null;
@@ -106,86 +107,8 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                 </Source>
             )}
 
-            {layerData?.contours && selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
-                <Source
-                    key={`${sourceIds.contours}-source`}
-                    id={sourceIds.contours}
-                    type="geojson"
-                    data={layerData.contours}
-                    generateId={true}
-                >
-                    <Layer
-                        id={sourceIds.contours}
-                        type="line"
-                        paint={{
-                            'line-color': ['interpolate',
-                                ['linear'],
-                                ['get', 'value'],
-                                44, '#356b95',  // Very cold
-                                54, '#89d0e4',  // Cold (yellow)
-                                56, '#b1e095',  // Cold (light yellow)
-                                58, '#ebf66b',  // Cold (light yellow)
-                                60, '#ffee4f',  // Transition
-                                65, '#fdaa1c',  // Prime fishing
-                                70, '#e05a08',  // Prime fishing
-                                72, '#cc3f0b',  // Prime fishing
-                                75, '#9f2815'   // Warm
-                            ],
-                            'line-width': [
-                                'case',
-                                ['boolean', ['feature-state', 'hover'], false],
-                                4,  // Width when hovered
-                                ['case',
-                                    ['==', ['get', 'break_strength'], 'strong'],
-                                    3,
-                                    ['==', ['get', 'break_strength'], 'moderate'],
-                                    2,
-                                    1
-                                ]
-                            ],
-                            'line-opacity': [
-                                'case',
-                                ['boolean', ['feature-state', 'hover'], false],
-                                1,
-                                ['match',
-                                    ['get', 'break_strength'],
-                                    'strong', 1,
-                                    'moderate', 1,
-                                    1
-                                ]
-                            ]
-                        }}
-                    />
-
-                    {/* Temperature labels */}
-                    <Layer
-                        id={`${sourceIds.contours}-labels`}
-                        type="symbol"
-                        filter={['any',
-                            ['==', ['get', 'is_key_temp'], false],
-                            ['==', ['get', 'break_strength'], 'strong']
-                        ]}
-                        paint={{
-                            'text-color': '#000000',
-                            'text-halo-color': '#ffffff',
-                            'text-halo-width': 2
-                        }}
-                        layout={{
-                            'symbol-placement': 'line',
-                            'text-field': ['concat',
-                                ['number-format', ['get', 'value'],
-                                    { 'min-fraction-digits': 1, 'max-fraction-digits': 1 }
-                                ],
-                                '°F'
-                            ],
-                            'text-font': ['Arial Unicode MS Bold'],
-                            'text-size': 14,
-                            'text-max-angle': 30,
-                            'text-allow-overlap': false,
-                            'symbol-spacing': 300
-                        }}
-                    />
-                </Source>
+            {selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
+                <ContourLineLayer sourceIds={sourceIds} />
             )}
 
             {contourLineInfo && (

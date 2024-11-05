@@ -3,7 +3,7 @@ import { WaterTemperatureDisplay } from '../WaterTemperatureDisplay';
 import { GeographicInspector } from '../GeographicInspector';
 import type { Dataset, RegionInfo } from '../../types/api';
 import type { Coordinate } from '../../types/core';
-import ColorGradient from '../ColorGradient';
+import { ColorGradient } from '../ColorGradient';
 
 interface CurrentStatusBarProps {
     regions: RegionInfo[];

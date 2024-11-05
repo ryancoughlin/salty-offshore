@@ -21,13 +21,13 @@ const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
     }, {} as Record<string, Dataset[]>);
 
     return (
-        <div className="absolute top-4 right-4 bg-surface-base p-4 rounded shadow-lg">
+        <div className="bg-neutral-950 pl-6 pr-0">
             {Object.entries(datasetsByCategory).map(([category, datasets]) => (
-                <div key={category} className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                <div key={category} className="mb-4">
+                    <span className="text-xs font-semibold text-neutral-50 mb-1">
                         {CATEGORY_NAMES[category] || category}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
+                    </span>
+                    <div className="flex flex-col">
                         {datasets.map((dataset) => (
                             <LayerControl
                                 key={dataset.id}
