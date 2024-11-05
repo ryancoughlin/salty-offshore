@@ -40,14 +40,23 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
         }
     };
 
-    useEffect(() => {
-        if (isStyleLoaded && selectedRegion?.bounds && mapRef.current) {
+    const handleBoundsFitting = useCallback(() => {
+        if (!isStyleLoaded || !selectedRegion?.bounds || !mapRef.current) return;
+
+        try {
             mapRef.current.fitBounds(selectedRegion.bounds, {
                 padding: 50,
-                duration: 500
+                duration: 1000,
+                maxZoom: 10
             });
+        } catch (error) {
+            console.error('Error fitting bounds:', error);
         }
     }, [selectedRegion, isStyleLoaded]);
+
+    useEffect(() => {
+        handleBoundsFitting();
+    }, [handleBoundsFitting]);
 
     const handleMove = useCallback((evt: { viewState: ViewState }) => {
         setViewState(evt.viewState);

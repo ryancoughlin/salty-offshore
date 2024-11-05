@@ -18,13 +18,16 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
   // Actions
   selectRegion: (region) => {
-    layerCache.clear();
-    set({
-      selectedRegion: region,
-      selectedDataset: null,
-      selectedDate: null,
-      layerData: null,
-    });
+    if (region.id !== get().selectedRegion?.id) {
+      layerCache.clear();
+      set({
+        selectedRegion: region,
+        selectedDataset: null,
+        selectedDate: null,
+        layerData: null,
+        error: null,
+      });
+    }
   },
 
   selectDefaultDataset: (regionData) => {
