@@ -10,6 +10,7 @@ import { CurrentStatusBar } from './components/CurrentStatusBar'
 import useMapStore from './store/useMapStore'
 import { useUrlSync } from './hooks/useUrlSync'
 import { ROUTES } from './routes'
+import { usePrefetchRegionData } from './hooks/usePrefetchRegionData'
 
 const AppContainer: React.FC = () => {
   const { regions } = useRegions();
@@ -25,6 +26,7 @@ const AppContainer: React.FC = () => {
   } = useMapStore();
 
   useUrlSync();
+  usePrefetchRegionData(selectedRegion);
 
   const regionData = selectedRegion ? getRegionData(selectedRegion.id) : null;
 

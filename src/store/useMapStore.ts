@@ -3,6 +3,7 @@ import type { Dataset, CachedLayerData } from "../types/api";
 import type { MapStore } from "./types";
 
 const layerCache = new Map<string, CachedLayerData>();
+const MAX_CACHE_SIZE = 100; // Adjust based on memory constraints
 
 export const useMapStore = create<MapStore>((set, get) => ({
   // Initial State
@@ -64,7 +65,12 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return;
     }
 
-    set({ loading: true, error: null });
+    const isCurrentDataset = dataset.id === get().selectedDataset?.id;
+    const isCurrentDate = date === get().selectedDate;
+
+    if (isCurrentDataset && isCurrentDate) {
+      set({ loading: true, error: null });
+    }
 
     try {
       const dateEntry = dataset.dates.find((d) => d.date === date);
@@ -86,14 +92,27 @@ export const useMapStore = create<MapStore>((set, get) => ({
         image: dateEntry.layers.image,
       };
 
+      if (layerCache.size >= MAX_CACHE_SIZE) {
+        const firstKey = layerCache.keys().next().value;
+        layerCache.delete(firstKey);
+      }
+
       layerCache.set(cacheKey, layerData);
-      set({ layerData, loading: false });
+
+      if (isCurrentDataset && isCurrentDate) {
+        set({ layerData, loading: false });
+      }
     } catch (err) {
-      set({
-        error:
-          err instanceof Error ? err : new Error("Failed to fetch layer data"),
-        loading: false,
-      });
+      if (isCurrentDataset && isCurrentDate) {
+        set({
+          error:
+            err instanceof Error
+              ? err
+              : new Error("Failed to fetch layer data"),
+          loading: false,
+        });
+      }
+      console.error("Error prefetching data:", err);
     }
   },
 
