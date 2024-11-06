@@ -1,11 +1,20 @@
 import { Source, Layer } from 'react-map-gl';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useCallback, useEffect } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { BreakInfo } from './BreakInfo';
 import { ContourLineLayer } from './ContourLineLayer';
 
 export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
-    const { layerData, loading, error, selectedRegion, selectedDataset, selectedDate, contourLineInfo, setContourLineInfo } = useMapStore();
+    const {
+        layerData,
+        loading,
+        error,
+        selectedRegion,
+        selectedDataset,
+        selectedDate,
+        contourLineInfo,
+        setContourLineInfo
+    } = useMapStore();
     const hoveredStateId = useRef<string | null>(null);
 
     const sourceIds = useMemo(() => ({
@@ -14,50 +23,52 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
         image: `${selectedDataset?.id}-image`
     }), [selectedDataset?.id]);
 
+    const handleMouseMove = useCallback((e: mapboxgl.MapLayerMouseEvent) => {
+        if (!e.features?.length) return;
+
+        if (hoveredStateId.current !== null) {
+            map.setFeatureState(
+                { source: sourceIds.contours, id: hoveredStateId.current },
+                { hover: false }
+            );
+        }
+
+        hoveredStateId.current = e.features[0].id as string;
+        map.setFeatureState(
+            { source: sourceIds.contours, id: hoveredStateId.current },
+            { hover: true }
+        );
+
+        setContourLineInfo({
+            temperature: e.features[0].properties.value,
+            breakStrength: e.features[0].properties.break_strength,
+            position: { x: e.point.x, y: e.point.y },
+            length_nm: e.features[0].properties.length_nm
+        });
+    }, [map, sourceIds.contours, setContourLineInfo]);
+
+    const handleMouseLeave = useCallback(() => {
+        if (hoveredStateId.current !== null) {
+            map.setFeatureState(
+                { source: sourceIds.contours, id: hoveredStateId.current },
+                { hover: false }
+            );
+            setContourLineInfo(null);
+        }
+        hoveredStateId.current = null;
+    }, [map, sourceIds.contours, setContourLineInfo]);
+
     useEffect(() => {
         if (!layerData?.contours) return;
 
-        // Add mouse events to the contour layer
-        map.on('mousemove', sourceIds.contours, (e) => {
-            if (e.features?.length) {
-                if (hoveredStateId.current !== null) {
-                    map.setFeatureState(
-                        { source: sourceIds.contours, id: hoveredStateId.current },
-                        { hover: false }
-                    );
-                }
-
-                hoveredStateId.current = e.features[0].id as string;
-                map.setFeatureState(
-                    { source: sourceIds.contours, id: hoveredStateId.current },
-                    { hover: true }
-                );
-
-                // Update hover info for BreakInfo component
-                setContourLineInfo({
-                    temperature: e.features[0].properties.value,
-                    breakStrength: e.features[0].properties.break_strength,
-                    position: { x: e.point.x, y: e.point.y }
-                });
-            }
-        });
-
-        map.on('mouseleave', sourceIds.contours, () => {
-            if (hoveredStateId.current !== null) {
-                map.setFeatureState(
-                    { source: sourceIds.contours, id: hoveredStateId.current },
-                    { hover: false }
-                );
-                setContourLineInfo(null);
-            }
-            hoveredStateId.current = null;
-        });
+        map.on('mousemove', sourceIds.contours, handleMouseMove);
+        map.on('mouseleave', sourceIds.contours, handleMouseLeave);
 
         return () => {
-            map.off('mousemove', sourceIds.contours);
-            map.off('mouseleave', sourceIds.contours);
+            map.off('mousemove', sourceIds.contours, handleMouseMove);
+            map.off('mouseleave', sourceIds.contours, handleMouseLeave);
         };
-    }, [layerData?.contours, map, sourceIds.contours, setContourLineInfo]);
+    }, [map, sourceIds.contours, handleMouseMove, handleMouseLeave, layerData?.contours]);
 
     if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
         return null;

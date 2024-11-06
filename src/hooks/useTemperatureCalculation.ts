@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Point } from "mapbox-gl";
 import type { Dataset } from "../types/api";
 import type { Coordinate } from "../types/core";
@@ -8,45 +8,17 @@ interface TemperaturePoint {
   temp: number;
 }
 
+const SEARCH_RADIUS = 10;
+const MIN_VALID_TEMP = -273.15;
+
 const isValidTemperature = (value: number): boolean => {
-  return !isNaN(value) && isFinite(value) && value > -273.15; // Basic physics check
+  return !isNaN(value) && isFinite(value) && value > MIN_VALID_TEMP;
 };
 
 const calculateDistance = (point1: Point, point2: Point): number => {
-  return Math.sqrt(
-    Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
-  );
-};
-
-const getTemperatureFromFeature = (
-  feature: mapboxgl.MapboxGeoJSONFeature
-): number | null => {
-  const temp =
-    feature.properties?.temperature ??
-    feature.properties?.temp ??
-    feature.properties?.value;
-
-  return typeof temp === "number" && isValidTemperature(temp) ? temp : null;
-};
-
-const interpolateTemperature = (points: TemperaturePoint[]): number | null => {
-  if (points.length === 0) return null;
-
-  // If we have only one point, return it directly
-  if (points.length === 1) return points[0].temp;
-
-  const totalWeight = points.reduce(
-    (sum, p) => sum + 1 / Math.max(p.distance, 0.1),
-    0
-  );
-
-  const interpolated =
-    points.reduce(
-      (sum, p) => sum + p.temp * (1 / Math.max(p.distance, 0.1)),
-      0
-    ) / totalWeight;
-
-  return isValidTemperature(interpolated) ? interpolated : null;
+  const dx = point1.x - point2.x;
+  const dy = point1.y - point2.y;
+  return Math.sqrt(dx * dx + dy * dy);
 };
 
 export const useTemperatureCalculation = (
@@ -56,50 +28,31 @@ export const useTemperatureCalculation = (
 ) => {
   const [temperature, setTemperature] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!mapRef || !cursorPosition) {
-      setTemperature(null);
-      return;
-    }
+  const layerId = useMemo(() => `${dataset.id}-data`, [dataset.id]);
 
-    const layerId = `${dataset.id}-data`;
-    if (!mapRef.getLayer(layerId)) {
-      setTemperature(null);
-      return;
-    }
-
-    try {
-      const point = mapRef.project([
-        cursorPosition.longitude,
-        cursorPosition.latitude,
-      ]);
-      const searchRadius = 20;
-      const features = mapRef.queryRenderedFeatures(
-        [
-          [point.x - searchRadius, point.y - searchRadius],
-          [point.x + searchRadius, point.y + searchRadius],
-        ],
-        { layers: [layerId] }
-      );
-
-      if (!features.length) {
-        setTemperature(null);
-        return;
-      }
-
+  const calculateTemperature = useCallback(
+    (
+      point: Point,
+      features: mapboxgl.MapboxGeoJSONFeature[],
+      map: mapboxgl.Map
+    ): number | null => {
       const nearestPoints = features
         .map((feature) => {
-          const temp = getTemperatureFromFeature(feature);
-          if (temp === null) return null;
+          const temp =
+            feature.properties?.temperature ??
+            feature.properties?.temp ??
+            feature.properties?.value;
+
+          if (typeof temp !== "number" || !isValidTemperature(temp))
+            return null;
+
+          const featurePoint = map.project([
+            feature.geometry.coordinates[0],
+            feature.geometry.coordinates[1],
+          ]);
 
           return {
-            distance: calculateDistance(
-              point,
-              mapRef.project([
-                feature.geometry.coordinates[0],
-                feature.geometry.coordinates[1],
-              ])
-            ),
+            distance: calculateDistance(point, featurePoint),
             temp,
           };
         })
@@ -109,13 +62,53 @@ export const useTemperatureCalculation = (
         )
         .sort((a, b) => a.distance - b.distance);
 
-      const calculatedTemp = interpolateTemperature(nearestPoints);
+      if (nearestPoints.length === 0) return null;
+      if (nearestPoints.length === 1) return nearestPoints[0].temp;
+
+      const weights = nearestPoints.map((p) => 1 / Math.max(p.distance, 0.1));
+      const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+      const interpolated =
+        nearestPoints.reduce((sum, p, i) => sum + p.temp * weights[i], 0) /
+        totalWeight;
+
+      return isValidTemperature(interpolated) ? interpolated : null;
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!mapRef || !cursorPosition || !layerId) {
+      setTemperature(null);
+      return;
+    }
+
+    try {
+      if (!mapRef.getLayer(layerId)) {
+        setTemperature(null);
+        return;
+      }
+
+      const point = mapRef.project([
+        cursorPosition.longitude,
+        cursorPosition.latitude,
+      ]);
+
+      const features = mapRef.queryRenderedFeatures(
+        [
+          [point.x - SEARCH_RADIUS, point.y - SEARCH_RADIUS],
+          [point.x + SEARCH_RADIUS, point.y + SEARCH_RADIUS],
+        ],
+        { layers: [layerId] }
+      );
+
+      const calculatedTemp = calculateTemperature(point, features, mapRef);
       setTemperature(calculatedTemp);
     } catch (error) {
       console.error("Error calculating temperature:", error);
       setTemperature(null);
     }
-  }, [mapRef, dataset.id, cursorPosition]);
+  }, [mapRef, layerId, cursorPosition, calculateTemperature]);
 
   return temperature;
 };
