@@ -11,7 +11,7 @@ import useMapStore from './store/useMapStore'
 import { useUrlSync } from './hooks/useUrlSync'
 import { ROUTES } from './routes'
 
-const MapView: React.FC = () => {
+const AppContainer: React.FC = () => {
   const { regions } = useRegions();
   const { getRegionData } = useRegionDatasets();
   const {
@@ -56,10 +56,10 @@ const MapView: React.FC = () => {
 const App: React.FC = () => (
   <BrowserRouter>
     <Routes>
-      <Route path={ROUTES.HOME} element={<MapView />}>
-        <Route path={ROUTES.REGION} element={<MapView />} />
-        <Route path={ROUTES.DATASET} element={<MapView />} />
-        <Route path={ROUTES.DATE} element={<MapView />} />
+      <Route path={ROUTES.HOME} element={<AppContainer />}>
+        <Route path={ROUTES.REGION} element={<AppContainer />} />
+        <Route path={ROUTES.DATASET} element={<AppContainer />} />
+        <Route path={ROUTES.DATE} element={<AppContainer />} />
       </Route>
     </Routes>
   </BrowserRouter>
