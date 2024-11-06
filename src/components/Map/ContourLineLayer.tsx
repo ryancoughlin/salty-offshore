@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 
@@ -7,9 +8,7 @@ interface ContourLineLayerProps {
     };
 }
 
-export const ContourLineLayer: React.FC<ContourLineLayerProps> = ({
-    sourceIds,
-}) => {
+export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
     const { layerData } = useMapStore();
 
     if (!layerData?.contours) return null;
@@ -30,9 +29,9 @@ export const ContourLineLayer: React.FC<ContourLineLayerProps> = ({
                         ['linear'],
                         ['get', 'value'],
                         44, '#356b95',  // Very cold
-                        54, '#89d0e4',  // Cold (yellow)
-                        56, '#b1e095',  // Cold (light yellow)
-                        58, '#ebf66b',  // Cold (light yellow)
+                        54, '#89d0e4',  // Cold
+                        56, '#b1e095',  // Cold
+                        58, '#ebf66b',  // Cold
                         60, '#ffee4f',  // Transition
                         65, '#fdaa1c',  // Prime fishing
                         70, '#e05a08',  // Prime fishing
@@ -94,4 +93,6 @@ export const ContourLineLayer: React.FC<ContourLineLayerProps> = ({
             />
         </Source>
     );
-}; 
+});
+
+ContourLineLayer.displayName = 'ContourLineLayer'; 
