@@ -3,6 +3,7 @@ import { useMemo, useRef, useCallback, useEffect } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { BreakInfo } from './BreakInfo';
 import { ContourLineLayer } from './ContourLineLayer';
+import OceanCurrentAnimation from '../OceanCurrentAnimation';
 
 export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
     const {
@@ -70,6 +71,15 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
         };
     }, [map, sourceIds.contours, handleMouseMove, handleMouseLeave, layerData?.contours]);
 
+    const currentConfig = {
+        particleCount: 7000,
+        particleLifespan: 60,
+        particleColor: '#00ffff',
+        speedFactor: 0.15,
+        fadeOpacity: true,
+        bounds: selectedRegion.bounds
+    };
+
     if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
         return null;
     }
@@ -94,7 +104,7 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                 </Source>
             )}
 
-            {layerData.image && (
+            {/* {layerData.image && (
                 <Source
                     key={`${sourceIds.image}-source`}
                     id={sourceIds.image}
@@ -116,10 +126,26 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                         }}
                     />
                 </Source>
-            )}
+            )} */}
 
             {selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
                 <ContourLineLayer sourceIds={sourceIds} />
+            )}
+
+            {selectedDataset?.id === 'CMEMS_Global_Currents_Daily' && (
+                <OceanCurrentAnimation
+                    selectedRegion={selectedRegion}
+                    map={map}
+                    geoJsonData={layerData.data}
+                    config={{
+                        particleCount: 5000,
+                        particleLifespan: 200,
+                        particleColor: "#00ffff",
+                        speedFactor: 0.2,
+                        fadeOpacity: true,
+                        bounds: selectedRegion.bounds
+                    }}
+                />
             )}
 
             {contourLineInfo && (

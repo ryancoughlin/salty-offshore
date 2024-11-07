@@ -1,6 +1,6 @@
 import { RegionPicker } from '../RegionPicker';
-import { WaterTemperatureDisplay } from '../WaterTemperatureDisplay';
-import { GeographicInspector } from '../GeographicInspector';
+// import { WaterTemperatureDisplay } from '../WaterTemperatureDisplay';
+// import GeographicInspector from '../GeographicInspector';
 import type { Dataset, RegionInfo } from '../../types/api';
 import type { Coordinate } from '../../types/core';
 import { ColorGradient } from '../ColorGradient';
@@ -34,16 +34,16 @@ export const CurrentStatusBar = ({
 
             <div className="flex justify-start items-center gap-8">
                 <ColorGradient min={36} max={80} />
-                {dataset && cursorPosition && (
+                {/* {dataset && cursorPosition && (
                     <WaterTemperatureDisplay
                         dataset={dataset}
                         cursorPosition={cursorPosition}
                         mapRef={mapRef}
                     />
-                )}
-                <GeographicInspector
+                )} */}
+                {/* <GeographicInspector
                     cursorPosition={cursorPosition}
-                />
+                /> */}
             </div>
         </div>
     );

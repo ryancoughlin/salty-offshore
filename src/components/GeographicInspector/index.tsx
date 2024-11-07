@@ -1,46 +1,24 @@
-import { useState, useCallback, memo } from 'react';
-import { formatCoordinates } from '../../utils/formatCoordinates';
-import type { Coordinate } from '../../types/core';
+import { useRef, useEffect } from 'react';
+import { MapLayerMouseEvent } from 'react-map-gl';
 
-type CoordinateFormat = 'DD' | 'DMS' | 'DMM';
+const GeographicInspector: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
+  const coordinatesRef = useRef<{ lng: number; lat: number }>({ lng: 0, lat: 0 });
 
-interface GeographicInspectorProps {
-    cursorPosition: Coordinate | null;
-}
+  useEffect(() => {
+    const handleMouseMove = (event: MapLayerMouseEvent) => {
+      const { lng, lat } = event.lngLat;
+      coordinatesRef.current = { lng, lat };
+      console.log(`Longitude: ${lng}, Latitude: ${lat}`);
+    };
 
-export const GeographicInspector = memo<GeographicInspectorProps>(({
-    cursorPosition
-}) => {
-    const [format, setFormat] = useState<CoordinateFormat>('DMS');
+    map.on('mousemove', handleMouseMove);
 
-    const handleFormatToggle = useCallback(() => {
-        setFormat(currentFormat =>
-            currentFormat === 'DD' ? 'DMS' :
-                currentFormat === 'DMS' ? 'DMM' : 'DD'
-        );
-    }, []);
+    return () => {
+      map.off('mousemove', handleMouseMove);
+    };
+  }, [map]);
 
-    if (!cursorPosition) return null;
+  return null; // No UI component, just logging
+};
 
-    const formattedCoordinates = formatCoordinates(
-        [cursorPosition.longitude, cursorPosition.latitude],
-        format
-    );
-
-    return (
-        <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 relative gap-1">
-            <span className="opacity-50 text-xs font-medium font-mono uppercase text-white">
-                Location
-            </span>
-            <button
-                className="text-xl font-semibold text-white hover:text-blue-300 transition-colors"
-                onClick={handleFormatToggle}
-                aria-label={`Location coordinates: ${formattedCoordinates}. Click to change format.`}
-            >
-                {formattedCoordinates}
-            </button>
-        </div>
-    );
-});
-
-GeographicInspector.displayName = 'GeographicInspector';  
+export default GeographicInspector;  

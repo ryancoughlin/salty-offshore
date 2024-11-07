@@ -50,7 +50,7 @@ export const Grid: React.FC<GridProps> = ({
 
 
     return visible ? (
-        <Source id="grid-source" type="geojson" data={gridLines} interactive={false}>
+        <Source id="grid-source" type="geojson" data={gridLines}>
             <Layer
                 id="grid-lines"
                 type="line"
