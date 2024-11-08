@@ -6,7 +6,7 @@ export const vertexShader = `
     void main() {
         vec4 pos = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         gl_Position = pos;
-        gl_PointSize = 3.0 * u_zoom;
+        gl_PointSize = 5.0 * u_zoom;
         vVelocity = velocity;
     }
 `;

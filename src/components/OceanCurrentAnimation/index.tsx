@@ -19,7 +19,13 @@ const OceanCurrentAnimation = memo<CurrentAnimationProps>(({
     renderingMode: '2d',
     
     onAdd: function(map: mapboxgl.Map, gl: WebGLRenderingContext) {
-      particleSystem.current = new ParticleSystem(gl, selectedRegion, geoJsonData, config);
+      console.log('Custom layer onAdd:', {
+        mapCenter: map.getCenter(),
+        zoom: map.getZoom(),
+        glContext: gl.getParameter(gl.VERSION)
+      });
+      
+      particleSystem.current = new ParticleSystem(gl, selectedRegion, geoJsonData, map, config);
       
       const animate = () => {
         frameId.current = requestAnimationFrame(animate);
