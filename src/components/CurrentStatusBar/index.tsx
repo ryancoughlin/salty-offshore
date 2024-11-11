@@ -1,6 +1,6 @@
 import { RegionPicker } from '../RegionPicker';
 import { WaterTemperatureDisplay } from '../WaterTemperatureDisplay';
-import GeographicInspector from '../GeographicInspector';
+import { GeographicInspector } from '../GeographicInspector';
 import type { Dataset, RegionInfo } from '../../types/api';
 import type { Coordinate } from '../../types/core';
 import { ColorGradient } from '../ColorGradient';
@@ -22,8 +22,6 @@ export const CurrentStatusBar = ({
     mapRef,
     dataset
 }: CurrentStatusBarProps) => {
-    const showGeographicInspector = Boolean(mapRef?.loaded());
-
     return (
         <div className="flex bg-neutral-950">
             <div className="flex justify-start items-center h-20">
@@ -43,9 +41,7 @@ export const CurrentStatusBar = ({
                         mapRef={mapRef}
                     />
                 )}
-                {showGeographicInspector && (
-                    <GeographicInspector map={mapRef} />
-                )}
+                <GeographicInspector cursorPosition={cursorPosition} />
             </div>
         </div>
     );

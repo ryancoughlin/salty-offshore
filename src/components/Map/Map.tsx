@@ -114,7 +114,6 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
     );
 };
 
-// Extracted components for better organization
 const MapControls = () => (
     <>
         <NavigationControl position="top-right" />
