@@ -1,24 +1,40 @@
 import { useRef, useEffect } from 'react';
 import { MapLayerMouseEvent } from 'react-map-gl';
 
-const GeographicInspector: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
+interface GeographicInspectorProps {
+  map?: mapboxgl.Map | null;
+}
+
+const GeographicInspector: React.FC<GeographicInspectorProps> = ({ map }) => {
   const coordinatesRef = useRef<{ lng: number; lat: number }>({ lng: 0, lat: 0 });
 
   useEffect(() => {
+    if (!map) return;
+
     const handleMouseMove = (event: MapLayerMouseEvent) => {
       const { lng, lat } = event.lngLat;
       coordinatesRef.current = { lng, lat };
-      console.log(`Longitude: ${lng}, Latitude: ${lat}`);
     };
 
-    map.on('mousemove', handleMouseMove);
+    try {
+      map.on('mousemove', handleMouseMove);
+    } catch (error) {
+      console.error('Failed to attach map event listener:', error);
+    }
 
     return () => {
-      map.off('mousemove', handleMouseMove);
+      if (map && map.off) {
+        try {
+          map.off('mousemove', handleMouseMove);
+        } catch (error) {
+          console.error('Failed to remove map event listener:', error);
+        }
+      }
     };
   }, [map]);
 
-  return null; // No UI component, just logging
+  return null;
 };
 
-export default GeographicInspector;  
+export default GeographicInspector;
+  

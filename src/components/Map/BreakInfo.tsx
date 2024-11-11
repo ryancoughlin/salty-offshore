@@ -14,8 +14,6 @@ interface BreakInfoProps {
 export const BreakInfo: React.FC<BreakInfoProps> = ({ info }) => {
     const { temperature, breakStrength, position, length_nm } = info;
 
-    console.log(length_nm)
-
     if (!position) return null;
 
     const strengthColors = {

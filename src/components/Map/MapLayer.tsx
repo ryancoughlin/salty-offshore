@@ -104,7 +104,7 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                 </Source>
             )}
 
-            {/* {layerData.image && (
+            {layerData.image && (
                 <Source
                     key={`${sourceIds.image}-source`}
                     id={sourceIds.image}
@@ -126,7 +126,7 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                         }}
                     />
                 </Source>
-            )} */}
+            )}
 
             {selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
                 <ContourLineLayer sourceIds={sourceIds} />
