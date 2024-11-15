@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Dataset } from '../types/api';
 import { MapIcon } from '@heroicons/react/24/outline';
+import { getDatasetDisplayName } from '../config';
 
 interface LayerControlProps {
   isSelected: boolean;
@@ -13,6 +14,8 @@ const LayerControl: React.FC<LayerControlProps> = ({
   isSelected,
   onSelect,
 }) => {
+  const displayName = getDatasetDisplayName(dataset.id);
+  
   return (
     <button
       onClick={() => onSelect(dataset.id)}
@@ -26,14 +29,11 @@ const LayerControl: React.FC<LayerControlProps> = ({
           : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
         }
       `}
-      aria-label={`Select ${dataset.name} layer`}
+      aria-label={`Select ${displayName} layer`}
       aria-pressed={isSelected}
     >
-      <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-2">
-        <MapIcon className="w-6 h-6" />
-      </div>
       <span className="text-center font-medium">
-        {dataset.name}
+        {displayName}
       </span>
     </button>
   );

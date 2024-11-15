@@ -31,9 +31,9 @@ export const RegionBoundsLayer: React.FC<RegionBoundsLayerProps> = ({ bounds }) 
                 id="region-bounds-line"
                 type="line"
                 paint={{
-                    'line-color': '#ffffff',
+                    'line-color': '#000000',
                     'line-width': 2,
-                    'line-opacity': 0.5
+                    'line-opacity': 0.8
                 }}
             />
         </Source>

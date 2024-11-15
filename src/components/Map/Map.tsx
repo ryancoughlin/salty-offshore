@@ -10,6 +10,7 @@ import { RegionInfo } from '../../types/api';
 import useMapStore from '../../store/useMapStore';
 import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { MapErrorBoundary } from './MapErrorBoundary';
+import { BathymetryLayer } from './BathymetryLayer';
 
 // Constants
 const MAP_CONSTANTS = {
@@ -24,7 +25,7 @@ const MAP_CONSTANTS = {
         MAX_ZOOM: 10,
         MIN_ZOOM: 6,
     },
-    STYLE_URL: 'mapbox://styles/snowcast/cm2xtr8gl00lu01pd38l35unx',
+    STYLE_URL: 'mapbox://styles/snowcast/clwc3ly3001d401p926gthsj8',
 } as const;
 
 interface MapProps {
@@ -100,6 +101,7 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                                 gridSize={gridSize}
                             />
                             <SpotLayer />
+                            <BathymetryLayer />
                             <MapLayerComponents
                                 selectedRegion={selectedRegion}
                                 selectedDataset={selectedDataset}
