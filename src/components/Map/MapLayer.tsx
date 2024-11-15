@@ -25,28 +25,31 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
     }), [selectedDataset?.id]);
 
     const handleMouseMove = useCallback((e: mapboxgl.MapLayerMouseEvent) => {
-        if (!e.features?.length) return;
-
-        if (hoveredStateId.current !== null) {
+        if (!e.features?.[0]) return;
+        
+        const feature = e.features[0];
+        
+        // Update hover state
+        if (hoveredStateId.current) {
             map.setFeatureState(
                 { source: sourceIds.contours, id: hoveredStateId.current },
                 { hover: false }
             );
         }
-
-        hoveredStateId.current = e.features[0].id as string;
+        
+        hoveredStateId.current = feature.id as string;
         map.setFeatureState(
             { source: sourceIds.contours, id: hoveredStateId.current },
             { hover: true }
         );
 
         setContourLineInfo({
-            temperature: e.features[0].properties.value,
-            breakStrength: e.features[0].properties.break_strength,
+            temperature: feature.properties.value,
+            breakStrength: feature.properties.break_strength || 'weak',
             position: { x: e.point.x, y: e.point.y },
-            length_nm: e.features[0].properties.length_nm
+            length_nm: feature.properties.length_nm || 0
         });
-    }, [map, sourceIds.contours, setContourLineInfo]);
+    }, [map, setContourLineInfo, sourceIds.contours]);
 
     const handleMouseLeave = useCallback(() => {
         if (hoveredStateId.current !== null) {
@@ -128,9 +131,7 @@ export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
                 </Source>
             )}
 
-            {selectedDataset?.id === 'LEOACSPOSSTL3SnrtCDaily' && (
-                <ContourLineLayer sourceIds={sourceIds} />
-            )}
+            <ContourLineLayer sourceIds={sourceIds} />
 
             {selectedDataset?.id === 'CMEMS_Global_Currents_Daily' && (
                 <OceanCurrentAnimation

@@ -15,7 +15,6 @@ export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
 
     return (
         <Source
-            key={`${sourceIds.contours}-source`}
             id={sourceIds.contours}
             type="geojson"
             data={layerData.contours}
@@ -28,39 +27,27 @@ export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
                     'line-color': ['interpolate',
                         ['linear'],
                         ['get', 'value'],
-                        44, '#356b95',  // Very cold
-                        54, '#89d0e4',  // Cold
-                        56, '#b1e095',  // Cold
-                        58, '#ebf66b',  // Cold
-                        60, '#ffee4f',  // Transition
-                        65, '#fdaa1c',  // Prime fishing
-                        70, '#e05a08',  // Prime fishing
-                        72, '#cc3f0b',  // Prime fishing
-                        75, '#9f2815'   // Warm
+                        44, '#356b95',
+                        54, '#89d0e4',
+                        56, '#b1e095',
+                        58, '#ebf66b',
+                        60, '#ffee4f',
+                        65, '#fdaa1c',
+                        70, '#e05a08',
+                        72, '#cc3f0b',
+                        75, '#9f2815'
                     ],
                     'line-width': [
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
-                        4,  // Width when hovered
-                        ['case',
-                            ['==', ['get', 'break_strength'], 'strong'],
-                            3,
-                            ['==', ['get', 'break_strength'], 'moderate'],
-                            2,
+                        4,
+                        ['match', ['get', 'break_strength'],
+                            'strong', 3,
+                            'moderate', 2,
                             1
                         ]
                     ],
-                    'line-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1,
-                        ['match',
-                            ['get', 'break_strength'],
-                            'strong', 1,
-                            'moderate', 1,
-                            1
-                        ]
-                    ]
+                    'line-opacity': 1
                 }}
             />
 
