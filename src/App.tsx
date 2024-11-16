@@ -2,19 +2,14 @@ import './App.css'
 import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import SaltyMap from './components/Map/Map'
+import Dock from './components/Dock'
+import { DateTimeline } from './components/DateTimeline'
 import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
-import LayerControls from './components/LayerControls'
-import { DateTimeline } from './components/DateTimeline'
-import { CurrentStatusBar } from './components/CurrentStatusBar'
 import useMapStore from './store/useMapStore'
 import { useUrlSync } from './hooks/useUrlSync'
-import { ROUTES } from './routes'
 import { usePrefetchRegionData } from './hooks/usePrefetchRegionData'
-import Dock from './components/Dock'
-import AppBar from './AppBar';
-import RegionContent from './RegionContent';
-import type { Region, RegionInfo } from '../../types/api';
+import { ROUTES } from './routes'
 
 const AppContainer: React.FC = () => {
   const { regions } = useRegions();

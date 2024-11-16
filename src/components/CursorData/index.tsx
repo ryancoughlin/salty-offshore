@@ -1,25 +1,16 @@
 import { WaterTemperatureDisplay } from '../WaterTemperatureDisplay';
 import { GeographicInspector } from '../GeographicInspector';
-import type { Dataset } from '../../types/api';
-import type { Coordinate } from '../../types/core';
+import useMapStore from '../../store/useMapStore';
 
-interface CursorDataProps {
-  dataset: Dataset | null;
-  cursorPosition: Coordinate | null;
-  mapRef: mapboxgl.Map | null;
-}
+export const CursorData = () => {
+  const { selectedDataset, cursorPosition, mapRef } = useMapStore();
 
-export const CursorData: React.FC<CursorDataProps> = ({
-  dataset,
-  cursorPosition,
-  mapRef
-}) => {
-  if (!dataset || !cursorPosition || !mapRef) return null;
+  if (!selectedDataset || !cursorPosition || !mapRef) return null;
 
   return (
-    <div className="self-stretch p-4 bg-neutral-950 border-b border-white/20 flex-col gap-4 flex">
+    <div className="self-stretch h-36 p-4 bg-neutral-950 border-b border-white/20 flex-col gap-4 flex">
       <WaterTemperatureDisplay
-        dataset={dataset}
+        dataset={selectedDataset}
         cursorPosition={cursorPosition}
         mapRef={mapRef}
       />

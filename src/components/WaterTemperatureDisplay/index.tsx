@@ -1,29 +1,41 @@
-import { AppBar } from './AppBar';
-import { RegionContent } from './RegionContent';
-import type { Region, RegionInfo } from '../../types/api';
+import { useTemperatureCalculation } from '../../hooks/useTemperatureCalculation';
+import type { Dataset } from '../../types/api';
+import type { Coordinate } from '../../types/core';
 
-interface DockProps {
-  regions: RegionInfo[];
-  selectedRegion: RegionInfo | null;
-  onRegionSelect: (region: RegionInfo) => void;
-  regionData: Region | null;
+interface WaterTemperatureDisplayProps {
+  dataset: Dataset;
+  cursorPosition: Coordinate;
+  mapRef: mapboxgl.Map | null;
 }
 
-export const Dock: React.FC<DockProps> = ({
-  regions,
-  selectedRegion,
-  onRegionSelect,
-  regionData
+export const WaterTemperatureDisplay: React.FC<WaterTemperatureDisplayProps> = ({
+  dataset,
+  cursorPosition,
+  mapRef
 }) => {
+  const temperature = useTemperatureCalculation(dataset, cursorPosition, mapRef);
+
+  const displayValue = temperature !== null
+    ? `${temperature.toFixed(1)}°`
+    : 'N/A';
+
   return (
-    <div className="w-80 h-full flex">
-      <AppBar />
-      <RegionContent
-        regions={regions}
-        selectedRegion={selectedRegion}
-        onRegionSelect={onRegionSelect}
-        regionData={regionData}
-      />
+    <div 
+      className="flex-col justify-start items-start gap-2 flex"
+      role="status"
+      aria-live="polite"
+      aria-label={temperature !== null
+        ? `Water temperature: ${temperature.toFixed(1)} degrees`
+        : 'Temperature not available'}
+    >
+      <div className="flex-col justify-center items-start gap-2 flex">
+        <span className="opacity-50 text-white text-xs font-medium font-mono uppercase">
+          Water temp
+        </span>
+        <span className="text-white text-2xl font-medium font-sans">
+          {displayValue}
+        </span>
+      </div>
     </div>
   );
-}; 
+};
