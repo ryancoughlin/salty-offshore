@@ -11,6 +11,10 @@ import useMapStore from './store/useMapStore'
 import { useUrlSync } from './hooks/useUrlSync'
 import { ROUTES } from './routes'
 import { usePrefetchRegionData } from './hooks/usePrefetchRegionData'
+import Dock from './components/Dock'
+import AppBar from './AppBar';
+import RegionContent from './RegionContent';
+import type { Region, RegionInfo } from '../../types/api';
 
 const AppContainer: React.FC = () => {
   const { regions } = useRegions();
@@ -31,24 +35,15 @@ const AppContainer: React.FC = () => {
   const regionData = selectedRegion ? getRegionData(selectedRegion.id) : null;
 
   return (
-    <div className="flex flex-col w-screen h-screen overflow-hidden bg-neutral-950">
-      <div className="px-6">
-        <CurrentStatusBar
-          regions={regions}
-          selectedRegion={selectedRegion}
-          onRegionSelect={selectRegion}
-          cursorPosition={cursorPosition}
-          mapRef={mapRef}
-          dataset={selectedDataset}
-        />
-      </div>
-      <div className="flex-1 min-h-0 px-6">
-        <div className="flex h-full">
-          <SaltyMap regions={regions} />
-          {regionData && <LayerControls region={regionData} />}
-        </div>
-      </div>
-      <div className="px-6">
+    <div className="flex h-screen overflow-hidden bg-neutral-950">
+      <Dock
+        regions={regions}
+        selectedRegion={selectedRegion}
+        onRegionSelect={selectRegion}
+        regionData={regionData}
+      />
+      <main className="flex-1 relative">
+        <SaltyMap regions={regions} />
         {selectedRegion && selectedDataset && (
           <DateTimeline
             dataset={selectedDataset}
@@ -56,7 +51,7 @@ const AppContainer: React.FC = () => {
             onDateSelect={selectDate}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 };
