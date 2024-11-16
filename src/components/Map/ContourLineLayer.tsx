@@ -40,12 +40,19 @@ export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
                     'line-width': [
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
-                        4,
+                        3,
                         ['match', ['get', 'break_strength'],
                             'strong', 3,
                             'moderate', 2,
                             1
                         ]
+                    ],
+                    'line-dasharray': [
+                        'match',
+                        ['get', 'break_strength'],
+                        'strong', [1], // solid line
+                        'moderate', [1], // solid line
+                        [4, 4] // dashed line for minor breaks
                     ],
                     'line-opacity': 1
                 }}
