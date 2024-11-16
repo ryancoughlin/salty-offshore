@@ -9,12 +9,13 @@ interface DockProps {
   regionData: Region | null;
 }
 
-export const Dock: React.FC<DockProps> = ({
+// Changed to export default for consistency
+export default function Dock({
   regions,
   selectedRegion,
   onRegionSelect,
   regionData
-}) => {
+}: DockProps) {
   return (
     <div className="w-80 h-full flex">
       <AppBar />
@@ -26,4 +27,4 @@ export const Dock: React.FC<DockProps> = ({
       />
     </div>
   );
-}; 
+} 
