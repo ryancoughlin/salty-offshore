@@ -1,6 +1,6 @@
 import { RegionPicker } from '../RegionPicker';
-import { CursorData } from './CursorData';
-import { LayerControls } from '../LayerControls';
+import { CursorData } from '../CursorData';
+import LayerControls from '../LayerControls';
 import type { Region, RegionInfo } from '../../types/api';
 
 interface RegionContentProps {

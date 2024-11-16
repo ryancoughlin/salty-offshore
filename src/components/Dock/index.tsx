@@ -1,5 +1,5 @@
-import { AppBar } from './AppBar';
-import { RegionContent } from './RegionContent';
+import AppBar from './AppBar';
+import RegionContent from './RegionContent';
 import type { Region, RegionInfo } from '../../types/api';
 
 interface DockProps {
