@@ -20,8 +20,6 @@ const AppContainer: React.FC = () => {
     selectedDate,
     selectRegion,
     selectDate,
-    cursorPosition,
-    mapRef
   } = useMapStore();
 
   useUrlSync();
@@ -38,7 +36,7 @@ const AppContainer: React.FC = () => {
         regionData={regionData}
       />
       <main className="flex-1 relative">
-        <SaltyMap regions={regions} />
+        <SaltyMap />
         {selectedRegion && selectedDataset && (
           <DateTimeline
             dataset={selectedDataset}
