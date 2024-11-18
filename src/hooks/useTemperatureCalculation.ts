@@ -28,7 +28,7 @@ export const useTemperatureCalculation = (
 ) => {
   const [temperature, setTemperature] = useState<number | null>(null);
 
-  const layerId = useMemo(() => `${dataset.id}-data`, [dataset.id]);
+  const layerId = useMemo(() => 'data-layer', []);
 
   const calculateTemperature = useCallback(
     (

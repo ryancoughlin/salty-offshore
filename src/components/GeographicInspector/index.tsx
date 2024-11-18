@@ -3,7 +3,7 @@ import { formatCoordinates } from '../../utils/formatCoordinates';
 import type { Coordinate } from '../../types/core';
 
 interface GeographicInspectorProps {
-  cursorPosition: Coordinate;
+  cursorPosition: Coordinate | null;
 }
 
 export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
@@ -11,6 +11,10 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
 }) => {
   const [format, setFormat] = useState<'DD' | 'DMS' | 'DMM'>('DMS');
   
+  if (!cursorPosition) {
+    return null;
+  }
+
   const formattedCoordinates = formatCoordinates(
     [cursorPosition.longitude, cursorPosition.latitude],
     format
