@@ -1,27 +1,50 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 
+const CONTOUR_SOURCE = 'main-contours' as const;
+
 interface ContourLineLayerProps {
-    sourceIds: {
-        contours: string;
-    };
+    map: mapboxgl.Map;
+    onMouseMove?: (e: mapboxgl.MapLayerMouseEvent) => void;
 }
 
-export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
-    const { layerData } = useMapStore();
+export const ContourLineLayer = memo<ContourLineLayerProps>(({ map, onMouseMove }) => {
+    const { layerData, selectedDataset } = useMapStore();
+    // Update source data only when dataset changes
+    useEffect(() => {
+        if (!map || !layerData?.contours) return;
 
-    if (!layerData?.contours) return null;
+        const source = map.getSource(CONTOUR_SOURCE) as mapboxgl.GeoJSONSource;
+        if (source) {
+            source.setData(layerData.contours);
+        }
+    }, [map, selectedDataset]); // Only update when dataset changes
+
+    // Setup mouse events once
+    useEffect(() => {
+        if (!map || !onMouseMove) return;
+        
+        map.on('mousemove', CONTOUR_SOURCE, onMouseMove);
+        return () => {
+            map.off('mousemove', CONTOUR_SOURCE, onMouseMove);
+        };
+    }, [map]); // Only setup events once
+
+    // Initial source/layer setup
+    if (!layerData?.contours || map.getSource(CONTOUR_SOURCE)) {
+        return null;
+    }
 
     return (
         <Source
-            id={sourceIds.contours}
+            id={CONTOUR_SOURCE}
             type="geojson"
             data={layerData.contours}
             generateId={true}
         >
             <Layer
-                id={sourceIds.contours}
+                id={CONTOUR_SOURCE}
                 type="line"
                 paint={{
                     'line-color': ['interpolate',
@@ -50,16 +73,16 @@ export const ContourLineLayer = memo<ContourLineLayerProps>(({ sourceIds }) => {
                     'line-dasharray': [
                         'match',
                         ['get', 'break_strength'],
-                        'strong', [1], // solid line
-                        'moderate', [1], // solid line
-                        [4, 4] // dashed line for minor breaks
+                        'strong', [1],
+                        'moderate', [1],
+                        [4, 4]
                     ],
                     'line-opacity': 1
                 }}
             />
 
             <Layer
-                id={`${sourceIds.contours}-labels`}
+                id={`${CONTOUR_SOURCE}-labels`}
                 type="symbol"
                 filter={['any',
                     ['==', ['get', 'is_key_temp'], false],
