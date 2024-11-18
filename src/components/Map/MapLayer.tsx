@@ -7,6 +7,7 @@ import { ContourLineLayer } from './ContourLineLayer';
 const baseLayer = {
     id: 'data-layer',
     type: 'fill' as const,
+    source: 'data-layer',
     paint: {
         'fill-opacity': 0,
         'fill-color': '#007cbf'
@@ -28,17 +29,22 @@ interface MapLayerProps {
 
 export const MapLayer = memo<MapLayerProps>(({ map }) => {
     const { layerData, selectedRegion } = useMapStore();
+    
+    // Add debug log
+    console.log('MapLayer render:', {
+        hasLayerData: !!layerData,
+        layerDataContent: layerData,
+        selectedRegion
+    });
 
     if (!layerData || !selectedRegion) return null;
 
     return (
         <>
-            {/* Base data layer */}
-            <Source type="geojson" data={layerData.data}>
+            <Source id="data-layer" type="geojson" data={layerData.data}>
                 <Layer {...baseLayer} />
             </Source>
 
-            {/* Image layer */}
             {layerData.image && (
                 <Source 
                     type="image" 
@@ -54,7 +60,6 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                 </Source>
             )}
 
-            {/* Contour lines layer */}
             {layerData.contours && (
                 <ContourLineLayer map={map} />
             )}

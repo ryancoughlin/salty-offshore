@@ -13,7 +13,15 @@ export const WaterTemperatureDisplay: React.FC<WaterTemperatureDisplayProps> = (
   cursorPosition,
   mapRef
 }) => {
+  console.log('WaterTemperatureDisplay:', {
+    dataset,
+    cursorPosition,
+    hasMapRef: !!mapRef,
+  });
+
   const temperature = useTemperatureCalculation(dataset, cursorPosition, mapRef);
+
+  console.log('Temperature:', temperature);
 
   const displayValue = temperature !== null
     ? `${temperature.toFixed(1)}°`

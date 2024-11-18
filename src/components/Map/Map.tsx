@@ -42,7 +42,6 @@ const SaltyMap: React.FC = () => {
         setCursorPosition,
         setMapRef,
         selectDefaultDataset,
-        selectDataset
     } = useMapStore();
 
     const { isStyleLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);

@@ -5,6 +5,12 @@ import useMapStore from '../../store/useMapStore';
 export const CursorData = () => {
   const { selectedDataset, cursorPosition, mapRef } = useMapStore();
 
+  console.log({
+    hasDataset: !!selectedDataset,
+    hasCursor: !!cursorPosition,
+    hasMap: !!mapRef
+  });
+
   if (!selectedDataset || !cursorPosition || !mapRef) return null;
 
   return (
