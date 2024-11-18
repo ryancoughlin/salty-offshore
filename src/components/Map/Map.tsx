@@ -28,11 +28,8 @@ const MAP_CONSTANTS = {
     STYLE_URL: 'mapbox://styles/snowcast/clwc3ly3001d401p926gthsj8',
 } as const;
 
-interface MapProps {
-    regions: RegionInfo[];
-}
 
-const SaltyMap: React.FC<MapProps> = ({ regions }) => {
+const SaltyMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
     const [viewState, setViewState] = useState<Partial<ViewState>>(MAP_CONSTANTS.DEFAULT_VIEW);
     const [gridSize] = useState(1);
