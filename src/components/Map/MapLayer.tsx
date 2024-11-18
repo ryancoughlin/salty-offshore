@@ -1,157 +1,98 @@
-import { Source, Layer } from 'react-map-gl';
-import { useMemo, useRef, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { BreakInfo } from './BreakInfo';
-import { ContourLineLayer } from './ContourLineLayer';
-import OceanCurrentAnimation from '../OceanCurrentAnimation';
 
 export const MapLayer: React.FC<{ map: mapboxgl.Map }> = ({ map }) => {
     const {
         layerData,
-        loading,
-        error,
         selectedRegion,
         selectedDataset,
         selectedDate,
-        contourLineInfo,
-        setContourLineInfo
+        contourLineInfo
     } = useMapStore();
-    const hoveredStateId = useRef<string | null>(null);
 
-    const sourceIds = useMemo(() => ({
-        data: `${selectedDataset?.id}-data`,
-        contours: `${selectedDataset?.id}-contours`,
-        image: `${selectedDataset?.id}-image`
-    }), [selectedDataset?.id]);
-
-    const handleMouseMove = useCallback((e: mapboxgl.MapLayerMouseEvent) => {
-        if (!e.features?.[0]) return;
-        
-        const feature = e.features[0];
-        
-        // Update hover state
-        if (hoveredStateId.current) {
-            map.setFeatureState(
-                { source: sourceIds.contours, id: hoveredStateId.current },
-                { hover: false }
-            );
+    // Memoize layer configuration to prevent unnecessary recalculations
+    const layerConfig = useMemo(() => {
+        if (!selectedDataset?.id || !layerData?.image || !selectedRegion) {
+            return null;
         }
-        
-        hoveredStateId.current = feature.id as string;
-        map.setFeatureState(
-            { source: sourceIds.contours, id: hoveredStateId.current },
-            { hover: true }
-        );
 
-        setContourLineInfo({
-            temperature: feature.properties.value,
-            breakStrength: feature.properties.break_strength || 'weak',
-            position: { x: e.point.x, y: e.point.y },
-            length_nm: feature.properties.length_nm || 0
-        });
-    }, [map, setContourLineInfo, sourceIds.contours]);
-
-    const handleMouseLeave = useCallback(() => {
-        if (hoveredStateId.current !== null) {
-            map.setFeatureState(
-                { source: sourceIds.contours, id: hoveredStateId.current },
-                { hover: false }
-            );
-            setContourLineInfo(null);
-        }
-        hoveredStateId.current = null;
-    }, [map, sourceIds.contours, setContourLineInfo]);
-
-    useEffect(() => {
-        if (!layerData?.contours) return;
-
-        map.on('mousemove', sourceIds.contours, handleMouseMove);
-        map.on('mouseleave', sourceIds.contours, handleMouseLeave);
-
-        return () => {
-            map.off('mousemove', sourceIds.contours, handleMouseMove);
-            map.off('mouseleave', sourceIds.contours, handleMouseLeave);
+        return {
+            sourceId: `${selectedDataset.id}-source`,
+            layerId: `${selectedDataset.id}-layer`,
+            imageUrl: layerData.image,
+            coordinates: [
+                [selectedRegion.bounds[0][0], selectedRegion.bounds[1][1]],
+                [selectedRegion.bounds[1][0], selectedRegion.bounds[1][1]],
+                [selectedRegion.bounds[1][0], selectedRegion.bounds[0][1]],
+                [selectedRegion.bounds[0][0], selectedRegion.bounds[0][1]]
+            ]
         };
-    }, [map, sourceIds.contours, handleMouseMove, handleMouseLeave, layerData?.contours]);
+    }, [selectedDataset?.id, layerData?.image, selectedRegion]);
 
-    const currentConfig = {
-        particleCount: 7000,
-        particleLifespan: 60,
-        particleColor: '#00ffff',
-        speedFactor: 0.15,
-        fadeOpacity: true,
-        bounds: selectedRegion.bounds
-    };
+    // Handle layer cleanup
+    const removeLayer = useCallback(() => {
+        if (!map) return;
 
-    if (!selectedDataset || !selectedRegion || !selectedDate || loading || error || !layerData) {
+        // Remove existing layers and sources
+        const layers = map.getStyle().layers || [];
+        layers.forEach(layer => {
+            if (layer.id.endsWith('-layer')) {
+                map.removeLayer(layer.id);
+            }
+        });
+
+        // Remove sources
+        const sources = Object.keys(map.getStyle().sources || {});
+        sources.forEach(sourceId => {
+            if (sourceId.endsWith('-source')) {
+                map.removeSource(sourceId);
+            }
+        });
+    }, [map]);
+
+    // Handle layer management
+    useEffect(() => {
+        if (!map || !layerConfig) return;
+
+        // Remove existing layers first
+        removeLayer();
+
+        try {
+            // Add new source and layer
+            map.addSource(layerConfig.sourceId, {
+                type: 'image',
+                url: layerConfig.imageUrl,
+                coordinates: layerConfig.coordinates
+            });
+
+            map.addLayer({
+                id: layerConfig.layerId,
+                type: 'raster',
+                source: layerConfig.sourceId,
+                paint: {
+                    'raster-opacity': 1,
+                    'raster-fade-duration': 0,
+                    'raster-resampling': 'nearest'
+                }
+            });
+        } catch (error) {
+            console.error('Error managing map layer:', error);
+        }
+
+        // Cleanup on unmount or when dependencies change
+        return () => {
+            removeLayer();
+        };
+    }, [map, layerConfig, removeLayer]);
+
+    if (!map || !selectedDataset || !selectedRegion || !selectedDate || !layerData) {
         return null;
     }
 
     return (
         <>
-            {layerData.data && (
-                <Source
-                    key={`${sourceIds.data}-source`}
-                    id={sourceIds.data}
-                    type="geojson"
-                    data={layerData.data}
-                >
-                    <Layer
-                        id={sourceIds.data}
-                        type="fill"
-                        paint={{
-                            'fill-opacity': 0,
-                            'fill-color': '#007cbf'
-                        }}
-                    />
-                </Source>
-            )}
-
-            {layerData.image && (
-                <Source
-                    key={`${sourceIds.image}-source`}
-                    id={sourceIds.image}
-                    type="image"
-                    url={layerData.image}
-                    coordinates={[
-                        [selectedRegion.bounds[0][0], selectedRegion.bounds[1][1]],
-                        [selectedRegion.bounds[1][0], selectedRegion.bounds[1][1]],
-                        [selectedRegion.bounds[1][0], selectedRegion.bounds[0][1]],
-                        [selectedRegion.bounds[0][0], selectedRegion.bounds[0][1]]
-                    ]}
-                >
-                    <Layer
-                        id={sourceIds.image}
-                        type="raster"
-                        paint={{
-                            'raster-opacity': 1,
-                            'raster-fade-duration': 0
-                        }}
-                    />
-                </Source>
-            )}
-
-            <ContourLineLayer sourceIds={sourceIds} />
-
-            {selectedDataset?.id === 'CMEMS_Global_Currents_Daily' && (
-                <OceanCurrentAnimation
-                    selectedRegion={selectedRegion}
-                    map={map}
-                    geoJsonData={layerData.data}
-                    config={{
-                        particleCount: 5000,
-                        particleLifespan: 200,
-                        particleColor: "#00ffff",
-                        speedFactor: 0.2,
-                        fadeOpacity: true,
-                        bounds: selectedRegion.bounds
-                    }}
-                />
-            )}
-
-            {contourLineInfo && (
-                <BreakInfo info={contourLineInfo} />
-            )}
+            {contourLineInfo && <BreakInfo info={contourLineInfo} />}
         </>
     );
 }; 

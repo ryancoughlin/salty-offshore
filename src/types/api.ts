@@ -35,6 +35,7 @@ export interface RegionInfo {
   name: string;
   description: string;
   bounds: Bounds;
+  datasets: Dataset[];
   thumbnail: string;
 }
 
