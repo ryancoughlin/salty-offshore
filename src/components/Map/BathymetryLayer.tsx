@@ -12,7 +12,7 @@ export const BathymetryLayer = memo<BathymetryLayerProps>(({ visible = true }) =
     id="bathymetry"
     type="vector"
     tiles={[
-        'http://157.245.10.94/bathymetry/tiles/static/{z}/{x}/{y}.pbf'
+        'http://157.245.10.94/assets/bathymetry/tiles/static/{z}/{x}/{y}.pbf'
     ]}
 >
     <Layer
