@@ -1,87 +1,123 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Source, Layer } from 'react-map-gl';
+import type { Expression } from 'mapbox-gl';
 import useMapStore from '../../store/useMapStore';
+import { BreakInfo } from './BreakInfo';
 
-const CONTOUR_SOURCE = 'main-contours' as const;
+const CONTOUR_SOURCE = 'contour-layer' as const;
+
+interface ContourLineInfo {
+    temperature: number;
+    breakStrength: 'strong' | 'moderate' | 'weak';
+    position: { x: number; y: number };
+    length_nm: number;
+}
 
 interface ContourLineLayerProps {
     map: mapboxgl.Map;
-    onMouseMove?: (e: mapboxgl.MapLayerMouseEvent) => void;
 }
 
-export const ContourLineLayer = memo<ContourLineLayerProps>(({ map, onMouseMove }) => {
-    const { layerData, selectedDataset } = useMapStore();
-    // Update source data only when dataset changes
-    useEffect(() => {
-        if (!map || !layerData?.contours) return;
+export const ContourLineLayer = memo<ContourLineLayerProps>(({ map }) => {
+    const { layerData } = useMapStore();
+    const [contourLineInfo, setContourLineInfo] = useState<ContourLineInfo | null>(null);
+    const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-        const source = map.getSource(CONTOUR_SOURCE) as mapboxgl.GeoJSONSource;
-        if (source) {
-            source.setData(layerData.contours);
-        }
-    }, [map, selectedDataset]); // Only update when dataset changes
-
-    // Setup mouse events once
     useEffect(() => {
-        if (!map || !onMouseMove) return;
-        
-        map.on('mousemove', CONTOUR_SOURCE, onMouseMove);
-        return () => {
-            map.off('mousemove', CONTOUR_SOURCE, onMouseMove);
+        if (!map) return;
+
+        const handleMouseMove = (e: mapboxgl.MapLayerMouseEvent) => {
+            if (!e.features?.[0]) return;
+            const feature = e.features[0];
+
+            if (hoveredId !== null) {
+                map.setFeatureState(
+                    { source: CONTOUR_SOURCE, id: hoveredId },
+                    { hover: false }
+                );
+            }
+
+            const newHoverId = feature.id as number;
+            setHoveredId(newHoverId);
+            map.setFeatureState(
+                { source: CONTOUR_SOURCE, id: newHoverId },
+                { hover: true }
+            );
+
+            setContourLineInfo({
+                temperature: feature.properties.value,
+                breakStrength: feature.properties.break_strength ?? 'weak',
+                position: { x: e.point.x, y: e.point.y },
+                length_nm: feature.properties.length_nm ?? 0
+            });
         };
-    }, [map]); // Only setup events once
 
-    // Initial source/layer setup
-    if (!layerData?.contours || map.getSource(CONTOUR_SOURCE)) {
-        return null;
-    }
+        const handleMouseLeave = () => {
+            if (hoveredId !== null) {
+                map.setFeatureState(
+                    { source: CONTOUR_SOURCE, id: hoveredId },
+                    { hover: false }
+                );
+            }
+            setHoveredId(null);
+            setContourLineInfo(null);
+        };
+
+        map.on('mousemove', CONTOUR_SOURCE, handleMouseMove);
+        map.on('mouseleave', CONTOUR_SOURCE, handleMouseLeave);
+
+        return () => {
+            if (hoveredId !== null) {
+                map.setFeatureState(
+                    { source: CONTOUR_SOURCE, id: hoveredId },
+                    { hover: false }
+                );
+            }
+            map.off('mousemove', CONTOUR_SOURCE, handleMouseMove);
+            map.off('mouseleave', CONTOUR_SOURCE, handleMouseLeave);
+        };
+    }, [map, hoveredId]);
+
+    if (!layerData?.contours) return null;
 
     return (
-        <Source
-            id={CONTOUR_SOURCE}
-            type="geojson"
-            data={layerData.contours}
-            generateId={true}
-        >
-            <Layer
+        <>
+            <Source 
                 id={CONTOUR_SOURCE}
-                type="line"
-                paint={{
-                    'line-color': ['interpolate',
-                        ['linear'],
-                        ['get', 'value'],
-                        44, '#356b95',
-                        54, '#89d0e4',
-                        56, '#b1e095',
-                        58, '#ebf66b',
-                        60, '#ffee4f',
-                        65, '#fdaa1c',
-                        70, '#e05a08',
-                        72, '#cc3f0b',
-                        75, '#9f2815'
-                    ],
-                    'line-width': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        3,
-                        ['match', ['get', 'break_strength'],
-                            'strong', 3,
-                            'moderate', 2,
-                            1
-                        ]
-                    ],
-                    'line-dasharray': [
-                        'match',
-                        ['get', 'break_strength'],
-                        'strong', [1],
-                        'moderate', [1],
-                        [4, 4]
-                    ],
-                    'line-opacity': 1
-                }}
-            />
-
-            <Layer
+                type="geojson"
+                data={layerData.contours}
+                generateId={true}
+            >
+                <Layer
+                    id={CONTOUR_SOURCE}
+                    type="line"
+                    paint={{
+                        'line-color': ['interpolate',
+                            ['linear'],
+                            ['get', 'value'],
+                            44, '#356b95',
+                            54, '#89d0e4',
+                            56, '#b1e095',
+                            58, '#ebf66b',
+                            60, '#ffee4f',
+                            65, '#fdaa1c',
+                            70, '#e05a08',
+                            72, '#cc3f0b',
+                            75, '#9f2815'
+                        ] as Expression,
+                        'line-width': [
+                            'case',
+                            ['boolean', ['feature-state', 'hover'], false],
+                            3,
+                            ['match', ['get', 'break_strength'],
+                                'strong', 3,
+                                'moderate', 2,
+                                1
+                            ]
+                        ] as Expression,
+                        'line-opacity': 1
+                    }}
+                />
+                <Layer
                 id={`${CONTOUR_SOURCE}-labels`}
                 type="symbol"
                 filter={['any',
@@ -108,7 +144,9 @@ export const ContourLineLayer = memo<ContourLineLayerProps>(({ map, onMouseMove 
                     'symbol-spacing': 300
                 }}
             />
-        </Source>
+            </Source>
+            {contourLineInfo && <BreakInfo info={contourLineInfo} />}
+        </>
     );
 });
 
