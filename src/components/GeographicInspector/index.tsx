@@ -18,8 +18,8 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
 
   return (
     <div className="flex-col justify-center items-start gap-2 flex">
-      <span className="opacity-50 text-white text-xs font-medium font-mono uppercase">
-        Longitude
+      <span className="subtle-heading">
+        Location
       </span>
       <button
         onClick={() => setFormat(f => f === 'DD' ? 'DMS' : f === 'DMS' ? 'DMM' : 'DD')}

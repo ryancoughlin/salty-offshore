@@ -7,6 +7,7 @@ export interface Dataset {
   name: string;
   supportedLayers: LayerType[];
   dates: DateEntry[];
+  metadata: DatasetMetadata;
 }
 
 export interface DateEntry {
@@ -34,6 +35,7 @@ export interface RegionInfo {
   name: string;
   description: string;
   bounds: Bounds;
+  thumbnail: string;
 }
 
 export interface Regions {
@@ -49,9 +51,11 @@ export interface CachedLayerData {
   image?: string;
 }
 
-export const isDatasetFromRegion = (
-  dataset: Dataset,
-  regionId: string
-): boolean => {
-  return dataset.regionId === regionId;
-};
+export interface DatasetMetadata {
+  'cloud-free'?: string;
+  frequency?: string;
+  resolution?: string;
+  description?: string;
+  'Dataset URL'?: string;
+  [key: string]: string | undefined;
+}

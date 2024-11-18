@@ -22,7 +22,7 @@ export class MapErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex items-center justify-center h-full bg-neutral-100 rounded-lg">
+                <div className="flex items-center justify-center h-full bg-neutral-100">
                     <div className="text-center">
                         <p className="text-neutral-600 mb-2">Unable to load map</p>
                         <button
