@@ -13,11 +13,11 @@ interface ContourLineInfo {
     length_nm: number;
 }
 
-interface ContourLineLayerProps {
+interface ContourLineProps {
     map: mapboxgl.Map;
 }
 
-export const ContourLineLayer = memo<ContourLineLayerProps>(({ map }) => {
+export const ContourLineLayer = memo<ContourLineProps>(({ map }) => {
     const { layerData } = useMapStore();
     const [contourLineInfo, setContourLineInfo] = useState<ContourLineInfo | null>(null);
     const [hoveredId, setHoveredId] = useState<number | null>(null);
