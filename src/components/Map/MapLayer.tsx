@@ -3,23 +3,12 @@ import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 import { ContourLineLayer } from './ContourLineLayer';
 
-// Memoize static layer configurations
-const baseLayer = {
-    id: 'data-layer',
-    type: 'fill' as const,
-    source: 'data-layer',
-    paint: {
-        'fill-opacity': 0,
-        'fill-color': '#007cbf'
-    }
-};
-
 const imageLayer = {
     id: 'image-layer',
     type: 'raster' as const,
     paint: {
         'raster-opacity': 1,
-        'raster-fade-duration': 0
+        'raster-fade-duration': 250
     }
 };
 
@@ -42,7 +31,14 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
     return (
         <>
             <Source id="data-layer" type="geojson" data={layerData.data}>
-                <Layer {...baseLayer} />
+            <Layer
+                id="data-layer"
+                type="fill"
+                paint={{
+                    'fill-opacity': 0,
+                    'fill-color': '#007cbf'
+                }}
+            />
             </Source>
 
             {layerData.image && (
