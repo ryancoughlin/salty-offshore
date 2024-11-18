@@ -6,52 +6,39 @@ import { useRegionDatasets } from "./useRegionDatasets";
 
 export const useUrlSync = () => {
   const navigate = useNavigate();
-  const { regionId, datasetId, date } = useParams();
+  const params = useParams();
   const { regions } = useRegions();
   const { getRegionData } = useRegionDatasets();
-  const {
-    selectedRegion,
-    selectedDataset,
-    selectedDate,
-    selectRegion,
-    selectDataset,
-    selectDate,
-    selectDefaultDataset,
-  } = useMapStore();
+  const mapStore = useMapStore();
 
   // Sync URL to state
   useEffect(() => {
     if (!regions.length) return;
 
-    if (regionId) {
-      const region = regions.find((r) => r.id === regionId);
+    const syncFromUrl = async () => {
+      const region = regions.find(r => r.id === params.regionId);
       if (!region) return;
 
-      selectRegion(region);
+      mapStore.selectRegion(region);
       const regionData = getRegionData(region.id);
       if (!regionData) return;
 
-      if (datasetId) {
-        const dataset = regionData.datasets.find((d) => d.id === datasetId);
-        if (dataset) {
-          selectDataset(dataset);
-          date && selectDate(date);
-        }
+      if (params.datasetId) {
+        const dataset = regionData.datasets.find(d => d.id === params.datasetId);
+        dataset && mapStore.selectDataset(dataset);
+        params.date && mapStore.selectDate(params.date);
       } else {
-        selectDefaultDataset(regionData);
+        mapStore.selectDefaultDataset(regionData);
       }
-    }
-  }, [regions, regionId, datasetId, date]);
+    };
+
+    syncFromUrl();
+  }, [regions, params]);
 
   // Sync state to URL
   useEffect(() => {
-    const parts = [
-      selectedRegion?.id,
-      selectedDataset?.id,
-      selectedDate,
-    ].filter(Boolean);
-
-    const newUrl = `/${parts.join("/")}`;
-    navigate(newUrl, { replace: true });
-  }, [selectedRegion?.id, selectedDataset?.id, selectedDate]);
+    const { selectedRegion, selectedDataset, selectedDate } = mapStore;
+    const parts = [selectedRegion?.id, selectedDataset?.id, selectedDate].filter(Boolean);
+    navigate(`/${parts.join("/")}`, { replace: true });
+  }, [mapStore.selectedRegion?.id, mapStore.selectedDataset?.id, mapStore.selectedDate]);
 };

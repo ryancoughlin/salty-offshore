@@ -21,6 +21,11 @@ const calculateDistance = (point1: Point, point2: Point): number => {
   return Math.sqrt(dx * dx + dy * dy);
 };
 
+const calculateInterpolatedTemperature = (nearestPoints: TemperaturePoint[], weights: number[]) => {
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  return nearestPoints.reduce((sum, p, i) => sum + p.temp * weights[i], 0) / totalWeight;
+};
+
 export const useTemperatureCalculation = (
   dataset: Dataset,
   cursorPosition: Coordinate | null,
@@ -31,46 +36,31 @@ export const useTemperatureCalculation = (
   const layerId = useMemo(() => 'data-layer', []);
 
   const calculateTemperature = useCallback(
-    (
-      point: Point,
-      features: mapboxgl.MapboxGeoJSONFeature[],
-      map: mapboxgl.Map
-    ): number | null => {
+    (point: Point, features: mapboxgl.MapboxGeoJSONFeature[], map: mapboxgl.Map) => {
       const nearestPoints = features
-        .map((feature) => {
-          const temp =
-            feature.properties?.temperature ??
-            feature.properties?.temp ??
-            feature.properties?.value;
-
-          if (typeof temp !== "number" || !isValidTemperature(temp))
-            return null;
-
-          const featurePoint = map.project([
-            feature.geometry.coordinates[0],
-            feature.geometry.coordinates[1],
-          ]);
-
+        .map(feature => {
+          const temp = feature.properties?.temperature ?? 
+                      feature.properties?.temp ?? 
+                      feature.properties?.value;
+          
+          if (!isValidTemperature(temp)) return null;
+          
+          const featurePoint = map.project(feature.geometry.coordinates);
           return {
             distance: calculateDistance(point, featurePoint),
             temp,
           };
         })
-        .filter(
-          (point): point is TemperaturePoint =>
-            point !== null && isValidTemperature(point.temp)
+        .filter((point): point is TemperaturePoint => 
+          point !== null && isValidTemperature(point.temp)
         )
         .sort((a, b) => a.distance - b.distance);
 
       if (nearestPoints.length === 0) return null;
       if (nearestPoints.length === 1) return nearestPoints[0].temp;
 
-      const weights = nearestPoints.map((p) => 1 / Math.max(p.distance, 0.1));
-      const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-
-      const interpolated =
-        nearestPoints.reduce((sum, p, i) => sum + p.temp * weights[i], 0) /
-        totalWeight;
+      const weights = nearestPoints.map(p => 1 / Math.max(p.distance, 0.1));
+      const interpolated = calculateInterpolatedTemperature(nearestPoints, weights);
 
       return isValidTemperature(interpolated) ? interpolated : null;
     },

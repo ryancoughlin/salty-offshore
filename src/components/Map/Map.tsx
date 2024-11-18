@@ -124,12 +124,12 @@ const SaltyMap: React.FC = () => {
     );
 };
 
-const MapControls = () => (
+const MapControls = memo(() => (
     <>
         <NavigationControl position="top-right" />
         <ScaleControl maxWidth={100} unit="nautical" position="bottom-left" />
     </>
-);
+));
 
 interface MapLayerComponentsProps {
     selectedRegion: RegionInfo | null;
