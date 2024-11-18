@@ -17,7 +17,7 @@ export const BathymetryLayer = memo<BathymetryLayerProps>(({ visible = true }) =
 >
     <Layer
         id="bathymetry-layer"
-        type="line"  // Changed to "fill" to handle polygon (type 3) data
+        type="line"
         source-layer="bathymetry"
         paint={{
             'line-color': '#0080ff',

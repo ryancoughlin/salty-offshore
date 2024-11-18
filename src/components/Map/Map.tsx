@@ -43,7 +43,9 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
         selectedDataset,
         selectedDate,
         setCursorPosition,
-        setMapRef
+        setMapRef,
+        selectDefaultDataset,
+        selectDataset
     } = useMapStore();
 
     const { isStyleLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
@@ -77,6 +79,16 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
         });
     }, [setCursorPosition]);
 
+    useEffect(() => {
+        if (selectedRegion && !selectedDataset) {
+            const regionData = {
+                id: selectedRegion.id,
+                datasets: selectedRegion.datasets
+            };
+            selectDefaultDataset(regionData);
+        }
+    }, [selectedRegion, selectedDataset, selectDefaultDataset]);
+
     return (
         <MapErrorBoundary>
             <div className="relative w-full h-full">
@@ -101,13 +113,13 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                                 gridSize={gridSize}
                             />
                             <SpotLayer />
-                            <BathymetryLayer />
                             <MapLayerComponents
                                 selectedRegion={selectedRegion}
                                 selectedDataset={selectedDataset}
                                 selectedDate={selectedDate}
                                 mapRef={mapRef}
                             />
+                            <BathymetryLayer />
                         </Suspense>
                     )}
                 </Map>
@@ -136,6 +148,20 @@ const MapLayerComponents = memo(({
     selectedDate,
     mapRef
 }: MapLayerComponentsProps) => {
+    const { selectDataset } = useMapStore();
+
+    // Handle initial dataset selection
+    useEffect(() => {
+        if (selectedRegion?.datasets && !selectedDataset) {
+            const sstDataset = selectedRegion.datasets.find(
+                (d) => d.id === "LEOACSPOSSTL3SnrtCDaily"
+            );
+            if (sstDataset) {
+                selectDataset(sstDataset);
+            }
+        }
+    }, [selectedRegion, selectedDataset, selectDataset]);
+
     if (!selectedRegion || !selectedDataset || !selectedDate || !mapRef.current) {
         return null;
     }
