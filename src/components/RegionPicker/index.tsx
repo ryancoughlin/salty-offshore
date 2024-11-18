@@ -19,6 +19,10 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [persistedRegionId, setPersistedRegionId] = usePersistedState<string>('selectedRegionId', '');
 
+  const sortedRegions = [...regions].sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
+
   const handleRegionSelect = useCallback((region: RegionInfo) => {
     setPersistedRegionId(region.id);
     onRegionSelect(region);
@@ -52,10 +56,11 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
 
       {isOpen && (
         <div className="absolute left-0 right-0 bg-neutral-950 border-b border-white/20 z-50">
-          {regions.map(region => (
+          {sortedRegions.map(region => (
             <RegionSelectItem
               key={region.id}
               name={region.name}
+              thumbnail={region.thumbnail}
               selected={region.id === selectedRegion?.id}
               onClick={() => handleRegionSelect(region)}
             />

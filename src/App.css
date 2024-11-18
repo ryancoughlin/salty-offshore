@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap');
-@import 'mapbox-gl/dist/mapbox-gl.css';
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap");
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +15,10 @@ body {
   html {
     @apply antialiased text-neutral-900 font-sans;
   }
-/*   
+  .subtle-heading {
+    @apply opacity-50 text-white text-xs font-medium uppercase font-mono;
+  }
+  /*   
   h1 {
     @apply text-4xl font-display font-bold tracking-tight;
   }
@@ -43,4 +46,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-} 
+}

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Dataset } from '../types/api';
-import { MapIcon } from '@heroicons/react/24/outline';
 import { getDatasetDisplayName } from '../config';
+import DatasetInfo from './DatasetInfo/DatasetInfo';
 
 interface LayerControlProps {
   isSelected: boolean;
@@ -16,26 +16,46 @@ const LayerControl: React.FC<LayerControlProps> = ({
 }) => {
   const displayName = getDatasetDisplayName(dataset.id);
   
+  const handleClick = () => {
+    onSelect(dataset.id);
+  };
+
   return (
-    <button
-      onClick={() => onSelect(dataset.id)}
-      className={`
-        w-24 h-24 p-2 rounded-lg
-        flex flex-col items-center justify-center
-        text-sm transition-all
-        hover:scale-105
-        ${isSelected
-          ? 'bg-blue-500 text-white shadow-lg'
-          : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
-        }
-      `}
-      aria-label={`Select ${displayName} layer`}
-      aria-pressed={isSelected}
-    >
-      <span className="text-center font-medium">
-        {displayName}
-      </span>
-    </button>
+    <div className="flex flex-col">
+      <button
+        onClick={handleClick}
+        className={`
+          w-full h-12 px-4
+          flex items-center justify-between
+          border-b transition-colors duration-500
+          ${isSelected 
+            ? 'bg-white border-white/10 text-neutral-900' 
+            : 'bg-neutral-950 border-white/10 text-zinc-100 hover:bg-neutral-900/80'
+          }
+        `}
+        aria-expanded={isSelected}
+        aria-controls={`dataset-info-${dataset.id}`}
+      >
+        <span className="text-base font-medium font-sans">
+          {displayName}
+        </span>
+        <div className="flex items-center gap-2">
+          {dataset.thumbnail && (
+            <div className={`w-8 h-8 relative rounded overflow-hidden
+              ${isSelected ? '' : 'opacity-50 bg-white'}`}
+            >
+              <img 
+                src={dataset.thumbnail} 
+                alt=""
+                className="w-12 h-8 object-cover -ml-[14px]"
+              />
+            </div>
+          )}
+        </div>
+      </button>
+
+      <DatasetInfo dataset={dataset} isSelected={isSelected} />
+    </div>
   );
 };
 

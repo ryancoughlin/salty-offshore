@@ -21,10 +21,10 @@ const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
     }, {} as Record<string, Dataset[]>);
 
     return (
-        <div className="bg-neutral-950 pl-6 pr-0">
+        <div className="bg-neutral-950">
             {Object.entries(datasetsByCategory).map(([category, datasets]) => (
                 <div key={category} className="mb-4">
-                    <span className="text-xs font-semibold text-neutral-50 mb-1">
+                    <span className="subtle-heading pl-4">
                         {CATEGORY_NAMES[category] || category}
                     </span>
                     <div className="flex flex-col">

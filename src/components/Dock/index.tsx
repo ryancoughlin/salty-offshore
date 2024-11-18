@@ -17,7 +17,7 @@ export default function Dock({
   regionData
 }: DockProps) {
   return (
-    <div className="w-80 h-full flex">
+    <div className="w-96 h-full flex">
       <AppBar />
       <RegionContent
         regions={regions}

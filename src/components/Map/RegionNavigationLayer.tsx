@@ -20,8 +20,6 @@ export const RegionNavigationLayer = memo<RegionNavigationLayerProps>(({ regions
     const onMouseEnter = (e: mapboxgl.MapMouseEvent) => {
       const feature = e.features?.[0];
       const featureId = feature?.properties?.id;
-      console.log('Mouse enter feature:', feature);
-      console.log('featureId', featureId);
       
       if (feature?.properties?.id) {
         // Clear previous hover state

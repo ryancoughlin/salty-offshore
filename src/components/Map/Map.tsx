@@ -87,7 +87,7 @@ const SaltyMap: React.FC<MapProps> = ({ regions }) => {
                     onMouseMove={handleMouseMove}
                     onLoad={handleMapLoad}
                     mapStyle={MAP_CONSTANTS.STYLE_URL}
-                    className="w-full h-full rounded-lg"
+                    className="w-full h-full"
                     mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                     maxZoom={MAP_CONSTANTS.BOUNDS.MAX_ZOOM}
                     minZoom={MAP_CONSTANTS.BOUNDS.MIN_ZOOM}

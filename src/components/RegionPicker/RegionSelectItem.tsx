@@ -1,20 +1,35 @@
+import { RegionImage } from './RegionImage';
+
 interface RegionSelectItemProps {
     name: string;
-    selected?: boolean;
+    thumbnail: string;
+    selected: boolean;
     onClick: () => void;
 }
 
 export const RegionSelectItem: React.FC<RegionSelectItemProps> = ({
     name,
+    thumbnail,
     selected,
     onClick,
-}) => (
-    <button
-        onClick={onClick}
-        className="w-full px-6 py-4 text-white text-xl font-['Spline Sans'] text-left transition-colors duration-150 ease-in-out hover:bg-white/5"
-        role="option"
-        aria-selected={selected}
-    >
-        {name}
-    </button>
-); 
+}) => {
+    return (
+        <div 
+            onClick={onClick}
+            className={`
+                flex justify-between p-4 cursor-pointer
+                hover:bg-white/5 transition-colors duration-150
+                ${selected ? 'bg-white/10' : ''}
+            `}
+            role="button"
+            tabIndex={0}
+            aria-selected={selected}
+            onKeyDown={(e) => e.key === 'Enter' && onClick()}
+        >
+            <div className="text-white text-lg font-['Spline Sans']">
+                {name}
+            </div>
+            <RegionImage thumbnail={thumbnail} name={name} />
+        </div>
+    );
+}; 

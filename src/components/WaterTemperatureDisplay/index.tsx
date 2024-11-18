@@ -29,7 +29,7 @@ export const WaterTemperatureDisplay: React.FC<WaterTemperatureDisplayProps> = (
         : 'Temperature not available'}
     >
       <div className="flex-col justify-center items-start gap-2 flex">
-        <span className="opacity-50 text-white text-xs font-medium font-mono uppercase">
+        <span className="subtle-heading">
           Water temp
         </span>
         <span className="text-white text-2xl font-medium font-sans">
