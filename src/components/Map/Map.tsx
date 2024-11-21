@@ -25,14 +25,16 @@ const MAP_CONSTANTS = {
         MAX_ZOOM: 10,
         MIN_ZOOM: 6,
     },
-    STYLE_URL: 'mapbox://styles/snowcast/clwc3ly3001d401p926gthsj8',
+    STYLE_URL: 'mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6',
+    //STYLE_URL: 'mapbox://styles/snowcast/clwc3ly3001d401p926gthsj8',
+
+    
 } as const;
 
 
 const SaltyMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
     const [viewState, setViewState] = useState<Partial<ViewState>>(MAP_CONSTANTS.DEFAULT_VIEW);
-    const [gridSize] = useState(1);
     const [showGrid] = useState(true);
 
     const {
@@ -104,11 +106,6 @@ const SaltyMap: React.FC = () => {
                     {isStyleLoaded && (
                         <Suspense fallback={null}>
                             <MapControls />
-                            <Grid
-                                visible={showGrid}
-                                gridSize={gridSize}
-                            />
-                            <SpotLayer />
                             <MapLayerComponents
                                 selectedRegion={selectedRegion}
                                 selectedDataset={selectedDataset}
@@ -116,6 +113,7 @@ const SaltyMap: React.FC = () => {
                                 mapRef={mapRef}
                             />
                             <BathymetryLayer />
+                            <Grid visible={showGrid} />
                         </Suspense>
                     )}
                 </Map>

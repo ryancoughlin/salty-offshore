@@ -17,6 +17,7 @@ export const SpotLayer: React.FC<SpotLayerProps> = ({
             <Layer
                 id="spots-labels"
                 type="symbol"
+                slot="top"
                 minzoom={minZoom}
                 maxzoom={maxZoom}
                 layout={{

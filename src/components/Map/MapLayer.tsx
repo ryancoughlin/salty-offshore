@@ -2,13 +2,16 @@ import { memo } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 import { ContourLineLayer } from './ContourLineLayer';
+import WaveHeightLayer from './WaveHeightLayer';
+import { SpotLayer } from './SpotLayer';
 
 const imageLayer = {
     id: 'image-layer',
+    slot: 'middle',
     type: 'raster' as const,
     paint: {
         'raster-opacity': 1,
-        'raster-fade-duration': 250
+        'raster-fade-duration': 150
     }
 };
 
@@ -17,29 +20,32 @@ interface MapLayerProps {
 }
 
 export const MapLayer = memo<MapLayerProps>(({ map }) => {
-    const { layerData, selectedRegion } = useMapStore();
-    
-    // Add debug log
-    console.log('MapLayer render:', {
-        hasLayerData: !!layerData,
-        layerDataContent: layerData,
-        selectedRegion
-    });
+    const { layerData, selectedRegion, selectedDataset } = useMapStore();
 
     if (!layerData || !selectedRegion) return null;
+    const isWaveDataset = selectedDataset?.id === "CMEMS_Global_Waves_Daily";
 
     return (
         <>
-            <Source id="data-layer" type="geojson" data={layerData.data}>
-            <Layer
-                id="data-layer"
-                type="fill"
-                paint={{
-                    'fill-opacity': 0,
-                    'fill-color': '#007cbf'
-                }}
-            />
-            </Source>
+            {!isWaveDataset && (
+                <Source id="data-layer" type="geojson" data={layerData.data}>
+                    <Layer
+                        id="data-layer"
+                        type="fill"
+                        paint={{
+                            'fill-opacity': 0,
+                            'fill-color': '#007cbf'
+                        }}
+                    />
+                </Source>
+            )}
+
+            {isWaveDataset && layerData.data && (
+                <WaveHeightLayer 
+                    map={map}
+                    data={layerData.data}
+                />
+            )}
 
             {layerData.image && (
                 <Source 
@@ -55,6 +61,8 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                     <Layer {...imageLayer} />
                 </Source>
             )}
+
+            <SpotLayer />
 
             {layerData.contours && (
                 <ContourLineLayer map={map} />

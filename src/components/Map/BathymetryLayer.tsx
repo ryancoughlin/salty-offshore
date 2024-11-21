@@ -20,9 +20,9 @@ export const BathymetryLayer = memo<BathymetryLayerProps>(({ visible = true }) =
         type="line"
         source-layer="bathymetry"
         paint={{
-            'line-color': '#0080ff',
+            'line-color': '#000',
             'line-width': 1,
-            'line-opacity': visible ? 0.2 : 0
+            'line-opacity': visible ? 0.1 : 0
         }}
     />
 </Source>

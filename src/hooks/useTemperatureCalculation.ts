@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Point } from "mapbox-gl";
-import type { Dataset } from "../types/api";
 import type { Coordinate } from "../types/core";
 
 interface TemperaturePoint {
@@ -27,7 +26,6 @@ const calculateInterpolatedTemperature = (nearestPoints: TemperaturePoint[], wei
 };
 
 export const useTemperatureCalculation = (
-  dataset: Dataset,
   cursorPosition: Coordinate | null,
   mapRef: mapboxgl.Map | null
 ) => {
