@@ -1,27 +1,17 @@
 import { useTemperatureCalculation } from '../../hooks/useTemperatureCalculation';
-import type { Dataset } from '../../types/api';
 import type { Coordinate } from '../../types/core';
 
 interface WaterTemperatureDisplayProps {
-  dataset: Dataset;
   cursorPosition: Coordinate;
   mapRef: mapboxgl.Map | null;
 }
 
 export const WaterTemperatureDisplay: React.FC<WaterTemperatureDisplayProps> = ({
-  dataset,
   cursorPosition,
   mapRef
 }) => {
-  console.log('WaterTemperatureDisplay:', {
-    dataset,
-    cursorPosition,
-    hasMapRef: !!mapRef,
-  });
 
-  const temperature = useTemperatureCalculation(dataset, cursorPosition, mapRef);
-
-  console.log('Temperature:', temperature);
+  const temperature = useTemperatureCalculation(cursorPosition, mapRef);
 
   const displayValue = temperature !== null
     ? `${temperature.toFixed(1)}°`

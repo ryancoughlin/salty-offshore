@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Source, Layer } from 'react-map-gl';
 
+// Constants
+const GRID_CONSTANTS = {
+    SIZE: 1, // Static grid size in degrees
+    LINE_STYLE: {
+        COLOR: "#000",
+        OPACITY: 0.1,
+        WIDTH: 1
+    }
+} as const;
+
 interface GridProps {
     visible?: boolean;
-    gridSize: number;
 }
 
-export const Grid: React.FC<GridProps> = ({
-    visible = true,
-    gridSize
-}) => {
+export const Grid: React.FC<GridProps> = ({ visible = true }) => {
     const [gridLines, setGridLines] = useState<GeoJSON.FeatureCollection>({
         type: 'FeatureCollection',
         features: []
@@ -18,8 +24,8 @@ export const Grid: React.FC<GridProps> = ({
     useEffect(() => {
         // Generate latitude lines
         const latitudeLines = Array.from(
-            { length: Math.floor(180 / gridSize) + 1 },
-            (_, i) => -90 + i * gridSize
+            { length: Math.floor(180 / GRID_CONSTANTS.SIZE) + 1 },
+            (_, i) => -90 + i * GRID_CONSTANTS.SIZE
         ).map(lat => ({
             type: 'Feature' as const,
             geometry: {
@@ -31,8 +37,8 @@ export const Grid: React.FC<GridProps> = ({
 
         // Generate longitude lines 
         const longitudeLines = Array.from(
-            { length: Math.floor(360 / gridSize) + 1 },
-            (_, i) => -180 + i * gridSize
+            { length: Math.floor(360 / GRID_CONSTANTS.SIZE) + 1 },
+            (_, i) => -180 + i * GRID_CONSTANTS.SIZE
         ).map(lon => ({
             type: 'Feature' as const,
             geometry: {
@@ -46,8 +52,7 @@ export const Grid: React.FC<GridProps> = ({
             type: 'FeatureCollection',
             features: [...latitudeLines, ...longitudeLines]
         });
-    }, [gridSize]);
-
+    }, []); // Empty dependency array since GRID_CONSTANTS.SIZE is static
 
     return visible ? (
         <Source id="grid-source" type="geojson" data={gridLines}>
@@ -56,9 +61,9 @@ export const Grid: React.FC<GridProps> = ({
                 type="line"
                 source="grid-source"
                 paint={{
-                    "line-color": "#000",
-                    "line-opacity": 0.1,
-                    "line-width": 1
+                    "line-color": GRID_CONSTANTS.LINE_STYLE.COLOR,
+                    "line-opacity": GRID_CONSTANTS.LINE_STYLE.OPACITY,
+                    "line-width": GRID_CONSTANTS.LINE_STYLE.WIDTH
                 }}
             />
         </Source>
