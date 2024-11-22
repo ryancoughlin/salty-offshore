@@ -3,7 +3,6 @@ import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 import { ContourLineLayer } from './ContourLineLayer';
 import WaveHeightLayer from './WaveHeightLayer';
-import { SpotLayer } from './SpotLayer';
 
 const imageLayer = {
     id: 'image-layer',

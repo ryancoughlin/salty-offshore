@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, useCallback, Suspense, memo } from 'react'
 import type { MapRef, MapLayerMouseEvent, ViewState } from 'react-map-gl';
 import Map, { NavigationControl, ScaleControl } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
-import { SpotLayer } from './SpotLayer';
 import { RegionBoundsLayer } from './RegionBoundsLayer';
 import { Grid } from './Grid';
 import { RegionInfo } from '../../types/api';
@@ -11,6 +10,7 @@ import useMapStore from '../../store/useMapStore';
 import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { MapErrorBoundary } from './MapErrorBoundary';
 import { BathymetryLayer } from './BathymetryLayer';
+import { SpotLayer } from './SpotLayer';
 
 // Constants
 const MAP_CONSTANTS = {
@@ -21,7 +21,7 @@ const MAP_CONSTANTS = {
     },
     BOUNDS: {
         PADDING: 50,
-        ANIMATION_DURATION: 1000,
+        ANIMATION_DURATION: 2500,
         MAX_ZOOM: 10,
         MIN_ZOOM: 6,
     },
@@ -31,6 +31,14 @@ const MAP_CONSTANTS = {
     
 } as const;
 
+// Add new ZoomDisplay component
+const ZoomDisplay = memo(({ zoom }: { zoom: number }) => (
+  <div className="absolute bottom-5 right-5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-md shadow-sm border border-gray-200">
+    <span className="text-sm font-medium text-gray-700">
+      Zoom: {zoom.toFixed(1)}
+    </span>
+  </div>
+));
 
 const SaltyMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
@@ -112,11 +120,14 @@ const SaltyMap: React.FC = () => {
                                 selectedDate={selectedDate}
                                 mapRef={mapRef}
                             />
+
                             <BathymetryLayer />
                             <Grid visible={showGrid} />
+                            <SpotLayer />
                         </Suspense>
                     )}
                 </Map>
+                <ZoomDisplay zoom={viewState.zoom || MAP_CONSTANTS.DEFAULT_VIEW.zoom} />
             </div>
         </MapErrorBoundary>
     );
