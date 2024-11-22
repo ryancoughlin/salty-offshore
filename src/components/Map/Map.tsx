@@ -25,7 +25,6 @@ const MAP_CONSTANTS = {
         MAX_ZOOM: 10,
         MIN_ZOOM: 6,
     },
-    STYLE_URL: 'mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6',
 } as const;
 
 const SaltyMap: React.FC = () => {
@@ -74,11 +73,7 @@ const SaltyMap: React.FC = () => {
 
     useEffect(() => {
         if (selectedRegion && !selectedDataset) {
-            const regionData = {
-                id: selectedRegion.id,
-                datasets: selectedRegion.datasets
-            };
-            selectDefaultDataset(regionData);
+            selectDefaultDataset(selectedRegion);
         }
     }, [selectedRegion, selectedDataset, selectDefaultDataset]);
 
@@ -91,7 +86,7 @@ const SaltyMap: React.FC = () => {
                     onMove={handleMove}
                     onMouseMove={handleMouseMove}
                     onLoad={handleMapLoad}
-                    mapStyle={MAP_CONSTANTS.STYLE_URL}
+                    mapStyle='mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6'
                     className="w-full h-full"
                     mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                     maxZoom={MAP_CONSTANTS.BOUNDS.MAX_ZOOM}
