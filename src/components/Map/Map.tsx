@@ -111,21 +111,19 @@ const SaltyMap: React.FC = () => {
                     minZoom={MAP_CONSTANTS.BOUNDS.MIN_ZOOM}
                     optimizeForTerrain={false}
                 >
-                    {isStyleLoaded && (
-                        <Suspense fallback={null}>
-                            <MapControls />
-                            <MapLayerComponents
-                                selectedRegion={selectedRegion}
-                                selectedDataset={selectedDataset}
-                                selectedDate={selectedDate}
-                                mapRef={mapRef}
-                            />
+                    <Suspense fallback={null}>
+                        <MapControls />
+                        <MapLayerComponents
+                            selectedRegion={selectedRegion}
+                            selectedDataset={selectedDataset}
+                            selectedDate={selectedDate}
+                            mapRef={mapRef}
+                        />
 
-                            <BathymetryLayer />
-                            <Grid visible={showGrid} />
-                            <SpotLayer />
-                        </Suspense>
-                    )}
+                        <BathymetryLayer />
+                        <Grid visible={showGrid} />
+                        <SpotLayer />
+                    </Suspense>
                 </Map>
                 <ZoomDisplay zoom={viewState.zoom || MAP_CONSTANTS.DEFAULT_VIEW.zoom} />
             </div>
