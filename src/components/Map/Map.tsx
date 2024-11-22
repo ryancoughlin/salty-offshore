@@ -26,9 +26,6 @@ const MAP_CONSTANTS = {
         MIN_ZOOM: 6,
     },
     STYLE_URL: 'mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6',
-    //STYLE_URL: 'mapbox://styles/snowcast/clwc3ly3001d401p926gthsj8',
-
-    
 } as const;
 
 // Add new ZoomDisplay component
