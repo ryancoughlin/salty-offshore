@@ -1,13 +1,14 @@
 export enum DatasetValueKey {
-    BLENDED_SST = 'sea_surface_temperature',
-    LEO_SST = 'analysed_sst',
-    CHLOROPHYLL = 'chlor_a',
+    BLENDED_SST = 'value',
+    LEO_SST = 'value',
+    CHLOROPHYLL = 'value',
     WAVE_HEIGHT = 'height',
     CURRENT_VELOCITY = 'current_velocity'
   }
   
   export enum DatasetRangeKey {
-    SEA_SURFACE_TEMPERATURE = 'sea_surface_temperature',
+    BLENDED_SST = 'sea_surface_temperature',
+    LEO_SST = 'analysed_sst',
     CHLOROPHYLL = 'chlor_a',
     WAVE_HEIGHT = 'VHM0',
     CURRENT_VELOCITY = 'current_velocity'
@@ -25,7 +26,7 @@ export enum DatasetValueKey {
   export const DATASET_CONFIGS: Record<string, DatasetConfig> = {
     'LEOACSPOSSTL3SnrtCDaily': {
       valueKey: DatasetValueKey.LEO_SST,
-      rangeKey: DatasetRangeKey.SEA_SURFACE_TEMPERATURE,
+      rangeKey: DatasetRangeKey.LEO_SST,
       unit: '°',
       label: 'Water temp',
       formatValue: (value: number) => `${value.toFixed(1)}°`,
@@ -33,7 +34,7 @@ export enum DatasetValueKey {
     },
     'BLENDEDsstDNDaily': {
       valueKey: DatasetValueKey.BLENDED_SST,
-      rangeKey: DatasetRangeKey.SEA_SURFACE_TEMPERATURE,
+      rangeKey: DatasetRangeKey.BLENDED_SST,
       unit: '°',
       label: 'Water temp',
       formatValue: (value: number) => `${value.toFixed(1)}°`,
@@ -52,8 +53,8 @@ export enum DatasetValueKey {
         rangeKey: DatasetRangeKey.WAVE_HEIGHT,
         unit: 'ft',
         label: 'Wave Height',
-        formatValue: (value: number) => `${value.toFixed(2)}'`,
-        formatRange: (min: number, max: number) => `${min.toFixed(2)} - ${max.toFixed(2)}'`
+        formatValue: (value: number) => `${value.toFixed(1)}'`,
+        formatRange: (min: number, max: number) => `${min.toFixed(1)} - ${max.toFixed(1)}'`
       }
   };
   

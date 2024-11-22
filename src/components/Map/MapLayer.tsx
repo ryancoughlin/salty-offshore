@@ -26,18 +26,16 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
 
     return (
         <>
-            {!isWaveDataset && (
-                <Source id="data-layer" type="geojson" data={layerData.data}>
-                    <Layer
-                        id="data-layer"
-                        type="fill"
-                        paint={{
-                            'fill-opacity': 0,
-                            'fill-color': '#007cbf'
-                        }}
-                    />
-                </Source>
-            )}
+            <Source id="data-layer" type="geojson" data={layerData.data}>
+                <Layer
+                    id="data-layer"
+                    type="fill"
+                    paint={{
+                        'fill-opacity': 0,
+                        'fill-color': '#007cbf'
+                    }}
+                />
+            </Source>
 
             {isWaveDataset && layerData.data && (
                 <WaveHeightLayer 
