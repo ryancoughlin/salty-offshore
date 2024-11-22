@@ -1,13 +1,7 @@
 import { Layer, Source } from 'react-map-gl';
 import spots from '../../utils/spots.json';
 
-interface SpotLayerProps {
-    visible?: boolean;
-}
-
-export const SpotLayer: React.FC<SpotLayerProps> = ({
-    visible = true,
-}) => {
+export const SpotLayer: React.FC = () => {
     return (
         <Source id="spots-source" type="geojson" data={spots}>
             <Layer
@@ -20,7 +14,7 @@ export const SpotLayer: React.FC<SpotLayerProps> = ({
                     'text-anchor': 'center',
                     'text-allow-overlap': true,
                     'text-ignore-placement': true,
-                    'visibility': visible ? 'visible' : 'none',
+                    'visibility': 'visible',
                     'text-offset': [0, 0],
                     'text-justify': 'center',
                     'text-max-width': 12,
