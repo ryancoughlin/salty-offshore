@@ -1,220 +1,5 @@
 {
-  "zoom_hierarchy": {
-    "overview": {
-      "zoom": [
-        5,
-        7
-      ],
-      "ids": [
-        9,
-        30,
-        32,
-        35,
-        37,
-        67,
-        69,
-        70,
-        71,
-        72,
-        73,
-        76,
-        78,
-        83,
-        91,
-        101,
-        135,
-        159,
-        7353,
-        7383,
-        7384,
-        7390,
-        7409,
-        7420
-      ]
-    },
-    "popular_spots": {
-      "zoom": [
-        8,
-        10
-      ],
-      "ids": [
-        86,
-        95,
-        97,
-        145,
-        152,
-        157,
-        160,
-        161,
-        162,
-        170,
-        218,
-        219,
-        221,
-        222,
-        223,
-        224,
-        232,
-        7386,
-        7414,
-        7417,
-        7429,
-        7431,
-        7459,
-        7477,
-        7484,
-        7485,
-        7494,
-        7495
-      ]
-    },
-    "detailed": {
-      "zoom": [
-        11,
-        13
-      ],
-      "ids": [
-        15,
-        16,
-        31,
-        36,
-        38,
-        65,
-        66,
-        68,
-        74,
-        79,
-        80,
-        87,
-        88,
-        93,
-        96,
-        99,
-        100,
-        137,
-        141,
-        142,
-        146,
-        147,
-        148,
-        150,
-        158,
-        163,
-        164,
-        165,
-        166,
-        167,
-        168,
-        169,
-        171,
-        172,
-        177,
-        208,
-        209,
-        216,
-        217,
-        220,
-        225,
-        233,
-        234,
-        235,
-        236,
-        238,
-        242,
-        7351,
-        7352,
-        7354,
-        7356,
-        7359,
-        7360,
-        7361,
-        7362,
-        7363,
-        7364,
-        7365,
-        7366,
-        7367,
-        7368,
-        7369,
-        7373,
-        7374,
-        7375,
-        7376,
-        7377,
-        7378,
-        7379,
-        7381,
-        7382,
-        7385,
-        7387,
-        7388,
-        7389,
-        7408,
-        7410,
-        7411,
-        7412,
-        7413,
-        7415,
-        7416,
-        7418,
-        7419,
-        7421,
-        7422,
-        7425,
-        7426,
-        7430,
-        7432,
-        7433,
-        7445,
-        7446,
-        7447,
-        7448,
-        7454,
-        7455,
-        7456,
-        7457,
-        7458,
-        7460,
-        7461,
-        7462,
-        7463,
-        7464,
-        7465,
-        7466,
-        7467,
-        7468,
-        7469,
-        7470,
-        7471,
-        7472,
-        7473,
-        7474,
-        7475,
-        7476,
-        7478,
-        7479,
-        7480,
-        7481,
-        7482,
-        7483,
-        7486,
-        7487,
-        7488,
-        7489,
-        7490,
-        7491,
-        7492,
-        7493,
-        7496,
-        7528,
-        7529,
-        7530,
-        7531,
-        7532,
-        7533
-      ]
-    }
-  },
+  "type": "FeatureCollection",
   "features": [
     {
       "type": "Feature",
@@ -227,9 +12,7 @@
       },
       "properties": {
         "id": 9,
-        "name": "Oceanographer Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Oceanographer Canyon"
       }
     },
     {
@@ -243,9 +26,7 @@
       },
       "properties": {
         "id": 15,
-        "name": "Massachusetts",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Massachusetts"
       }
     },
     {
@@ -259,9 +40,7 @@
       },
       "properties": {
         "id": 16,
-        "name": "Boston",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Boston"
       }
     },
     {
@@ -275,9 +54,7 @@
       },
       "properties": {
         "id": 30,
-        "name": "Atlantis Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Atlantis Canyon"
       }
     },
     {
@@ -291,9 +68,7 @@
       },
       "properties": {
         "id": 31,
-        "name": "Bear Seamount",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Bear Seamount"
       }
     },
     {
@@ -307,9 +82,7 @@
       },
       "properties": {
         "id": 32,
-        "name": "Hydrographer Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Hydrographer Canyon"
       }
     },
     {
@@ -323,9 +96,7 @@
       },
       "properties": {
         "id": 35,
-        "name": "Georges Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Georges Bank"
       }
     },
     {
@@ -339,9 +110,7 @@
       },
       "properties": {
         "id": 36,
-        "name": "Nantucket",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Nantucket"
       }
     },
     {
@@ -355,9 +124,7 @@
       },
       "properties": {
         "id": 37,
-        "name": "Corsair Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Corsair Canyon"
       }
     },
     {
@@ -371,9 +138,7 @@
       },
       "properties": {
         "id": 38,
-        "name": "Cape Cod",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cape Cod"
       }
     },
     {
@@ -387,9 +152,7 @@
       },
       "properties": {
         "id": 65,
-        "name": "Picket Seamount",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Picket Seamount"
       }
     },
     {
@@ -403,9 +166,7 @@
       },
       "properties": {
         "id": 66,
-        "name": "Retriever Seamount",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Retriever Seamount"
       }
     },
     {
@@ -419,9 +180,7 @@
       },
       "properties": {
         "id": 67,
-        "name": "Alvin Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Alvin Canyon"
       }
     },
     {
@@ -435,9 +194,7 @@
       },
       "properties": {
         "id": 68,
-        "name": "Physalia Seamount",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Physalia Seamount"
       }
     },
     {
@@ -451,9 +208,7 @@
       },
       "properties": {
         "id": 69,
-        "name": "Veatch Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Veatch Canyon"
       }
     },
     {
@@ -467,9 +222,7 @@
       },
       "properties": {
         "id": 70,
-        "name": "Welker Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Welker Canyon"
       }
     },
     {
@@ -483,9 +236,7 @@
       },
       "properties": {
         "id": 71,
-        "name": "Gilbert Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Gilbert Canyon"
       }
     },
     {
@@ -499,9 +250,7 @@
       },
       "properties": {
         "id": 72,
-        "name": "Lydonia Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Lydonia Canyon"
       }
     },
     {
@@ -515,9 +264,7 @@
       },
       "properties": {
         "id": 73,
-        "name": "Powell Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Powell Canyon"
       }
     },
     {
@@ -531,9 +278,7 @@
       },
       "properties": {
         "id": 74,
-        "name": "SW Part",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "SW Part"
       }
     },
     {
@@ -547,9 +292,7 @@
       },
       "properties": {
         "id": 76,
-        "name": "Munson Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Munson Canyon"
       }
     },
     {
@@ -563,9 +306,7 @@
       },
       "properties": {
         "id": 78,
-        "name": "Nygren Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Nygren Canyon"
       }
     },
     {
@@ -579,9 +320,7 @@
       },
       "properties": {
         "id": 79,
-        "name": "Dump",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Dump"
       }
     },
     {
@@ -595,9 +334,7 @@
       },
       "properties": {
         "id": 80,
-        "name": "Tylers Gap",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Tylers Gap"
       }
     },
     {
@@ -611,9 +348,7 @@
       },
       "properties": {
         "id": 83,
-        "name": "Phelps Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Phelps Bank"
       }
     },
     {
@@ -627,9 +362,7 @@
       },
       "properties": {
         "id": 86,
-        "name": "Nantucket Shoals",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Nantucket Shoals"
       }
     },
     {
@@ -643,9 +376,7 @@
       },
       "properties": {
         "id": 87,
-        "name": "Little Georges",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Little Georges"
       }
     },
     {
@@ -659,9 +390,7 @@
       },
       "properties": {
         "id": 88,
-        "name": "SE Part",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "SE Part"
       }
     },
     {
@@ -675,9 +404,7 @@
       },
       "properties": {
         "id": 91,
-        "name": "Georges Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Georges Canyon"
       }
     },
     {
@@ -691,9 +418,7 @@
       },
       "properties": {
         "id": 93,
-        "name": "Martha's Vinyard",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Martha's Vinyard"
       }
     },
     {
@@ -707,9 +432,7 @@
       },
       "properties": {
         "id": 95,
-        "name": "Cultivator Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Cultivator Shoal"
       }
     },
     {
@@ -723,9 +446,7 @@
       },
       "properties": {
         "id": 96,
-        "name": "New Bedford",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "New Bedford"
       }
     },
     {
@@ -739,9 +460,7 @@
       },
       "properties": {
         "id": 97,
-        "name": "Georges Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Georges Shoal"
       }
     },
     {
@@ -755,9 +474,7 @@
       },
       "properties": {
         "id": 99,
-        "name": "Cape Cod Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cape Cod Bay"
       }
     },
     {
@@ -771,9 +488,7 @@
       },
       "properties": {
         "id": 100,
-        "name": "NE Peak",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "NE Peak"
       }
     },
     {
@@ -787,9 +502,7 @@
       },
       "properties": {
         "id": 101,
-        "name": "Heezen Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Heezen Canyon"
       }
     },
     {
@@ -803,9 +516,7 @@
       },
       "properties": {
         "id": 135,
-        "name": "Nantucket Canyon",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Nantucket Canyon"
       }
     },
     {
@@ -819,9 +530,7 @@
       },
       "properties": {
         "id": 137,
-        "name": "Banana",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Banana"
       }
     },
     {
@@ -835,9 +544,7 @@
       },
       "properties": {
         "id": 141,
-        "name": "Fingers",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Fingers"
       }
     },
     {
@@ -851,9 +558,7 @@
       },
       "properties": {
         "id": 142,
-        "name": "31 Fa. Hole",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "31 Fa. Hole"
       }
     },
     {
@@ -867,9 +572,7 @@
       },
       "properties": {
         "id": 145,
-        "name": "Davis South Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Davis South Shoal"
       }
     },
     {
@@ -883,9 +586,7 @@
       },
       "properties": {
         "id": 146,
-        "name": "Middle Rip",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Middle Rip"
       }
     },
     {
@@ -899,9 +600,7 @@
       },
       "properties": {
         "id": 147,
-        "name": "Fishing Rip",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Fishing Rip"
       }
     },
     {
@@ -915,9 +614,7 @@
       },
       "properties": {
         "id": 148,
-        "name": "Gordans Gully",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Gordans Gully"
       }
     },
     {
@@ -931,9 +628,7 @@
       },
       "properties": {
         "id": 150,
-        "name": "Claw",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Claw"
       }
     },
     {
@@ -947,9 +642,7 @@
       },
       "properties": {
         "id": 152,
-        "name": "Cox Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Cox Ledge"
       }
     },
     {
@@ -963,9 +656,7 @@
       },
       "properties": {
         "id": 157,
-        "name": "SW Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "SW Shoal"
       }
     },
     {
@@ -979,9 +670,7 @@
       },
       "properties": {
         "id": 158,
-        "name": "Nomans Land",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Nomans Land"
       }
     },
     {
@@ -995,9 +684,7 @@
       },
       "properties": {
         "id": 159,
-        "name": "Davis Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Davis Bank"
       }
     },
     {
@@ -1011,9 +698,7 @@
       },
       "properties": {
         "id": 160,
-        "name": "Orion Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Orion Shoal"
       }
     },
     {
@@ -1027,9 +712,7 @@
       },
       "properties": {
         "id": 161,
-        "name": "Monomy Shoals",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Monomy Shoals"
       }
     },
     {
@@ -1043,9 +726,7 @@
       },
       "properties": {
         "id": 162,
-        "name": "Horseshoe Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Horseshoe Shoal"
       }
     },
     {
@@ -1059,9 +740,7 @@
       },
       "properties": {
         "id": 163,
-        "name": "Buzzards Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Buzzards Bay"
       }
     },
     {
@@ -1075,9 +754,7 @@
       },
       "properties": {
         "id": 164,
-        "name": "Monomy Point",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Monomy Point"
       }
     },
     {
@@ -1091,9 +768,7 @@
       },
       "properties": {
         "id": 165,
-        "name": "Falmouth",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Falmouth"
       }
     },
     {
@@ -1107,9 +782,7 @@
       },
       "properties": {
         "id": 166,
-        "name": "Hyannis",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Hyannis"
       }
     },
     {
@@ -1123,9 +796,7 @@
       },
       "properties": {
         "id": 167,
-        "name": "Chatham",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Chatham"
       }
     },
     {
@@ -1139,9 +810,7 @@
       },
       "properties": {
         "id": 168,
-        "name": "Orleans",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Orleans"
       }
     },
     {
@@ -1155,9 +824,7 @@
       },
       "properties": {
         "id": 169,
-        "name": "Wellfleet",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wellfleet"
       }
     },
     {
@@ -1171,9 +838,7 @@
       },
       "properties": {
         "id": 170,
-        "name": "Fishing Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Fishing Ledge"
       }
     },
     {
@@ -1187,9 +852,7 @@
       },
       "properties": {
         "id": 171,
-        "name": "Plymouth",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Plymouth"
       }
     },
     {
@@ -1203,9 +866,7 @@
       },
       "properties": {
         "id": 172,
-        "name": "Franklin Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Franklin Basin"
       }
     },
     {
@@ -1219,9 +880,7 @@
       },
       "properties": {
         "id": 177,
-        "name": "Fall River",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Fall River"
       }
     },
     {
@@ -1235,9 +894,7 @@
       },
       "properties": {
         "id": 208,
-        "name": "Inside Fingers",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Inside Fingers"
       }
     },
     {
@@ -1251,9 +908,7 @@
       },
       "properties": {
         "id": 209,
-        "name": "360",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "360"
       }
     },
     {
@@ -1267,9 +922,7 @@
       },
       "properties": {
         "id": 216,
-        "name": "Rose and Crown",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Rose and Crown"
       }
     },
     {
@@ -1283,9 +936,7 @@
       },
       "properties": {
         "id": 217,
-        "name": "Gay Head",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Gay Head"
       }
     },
     {
@@ -1299,9 +950,7 @@
       },
       "properties": {
         "id": 218,
-        "name": "Tuckernuck Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Tuckernuck Shoal"
       }
     },
     {
@@ -1315,9 +964,7 @@
       },
       "properties": {
         "id": 219,
-        "name": "Hawes Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Hawes Shoal"
       }
     },
     {
@@ -1331,9 +978,7 @@
       },
       "properties": {
         "id": 220,
-        "name": "Cuttyhunk",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cuttyhunk"
       }
     },
     {
@@ -1347,9 +992,7 @@
       },
       "properties": {
         "id": 221,
-        "name": "Halfmoon Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Halfmoon Shoal"
       }
     },
     {
@@ -1363,9 +1006,7 @@
       },
       "properties": {
         "id": 222,
-        "name": "Great Round Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Great Round Shoal"
       }
     },
     {
@@ -1379,9 +1020,7 @@
       },
       "properties": {
         "id": 223,
-        "name": "Stone Horse Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Stone Horse Shoal"
       }
     },
     {
@@ -1395,9 +1034,7 @@
       },
       "properties": {
         "id": 224,
-        "name": "L'Hommedieu Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "L'Hommedieu Shoal"
       }
     },
     {
@@ -1411,9 +1048,7 @@
       },
       "properties": {
         "id": 225,
-        "name": "Bishop and Clerks",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Bishop and Clerks"
       }
     },
     {
@@ -1427,9 +1062,7 @@
       },
       "properties": {
         "id": 232,
-        "name": "Billingsgate Shoal",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Billingsgate Shoal"
       }
     },
     {
@@ -1443,9 +1076,7 @@
       },
       "properties": {
         "id": 233,
-        "name": "Sandwich",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Sandwich"
       }
     },
     {
@@ -1459,9 +1090,7 @@
       },
       "properties": {
         "id": 234,
-        "name": "Barnstable",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Barnstable"
       }
     },
     {
@@ -1475,9 +1104,7 @@
       },
       "properties": {
         "id": 235,
-        "name": "Edgartown",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Edgartown"
       }
     },
     {
@@ -1491,9 +1118,7 @@
       },
       "properties": {
         "id": 236,
-        "name": "Great Point",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Great Point"
       }
     },
     {
@@ -1507,9 +1132,7 @@
       },
       "properties": {
         "id": 238,
-        "name": "Vinyard Haven",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Vinyard Haven"
       }
     },
     {
@@ -1523,9 +1146,7 @@
       },
       "properties": {
         "id": 242,
-        "name": "Wareham",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wareham"
       }
     },
     {
@@ -1539,9 +1160,7 @@
       },
       "properties": {
         "id": 7351,
-        "name": "NH",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "NH"
       }
     },
     {
@@ -1555,9 +1174,7 @@
       },
       "properties": {
         "id": 7352,
-        "name": "Maine",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Maine"
       }
     },
     {
@@ -1571,9 +1188,7 @@
       },
       "properties": {
         "id": 7353,
-        "name": "Browns Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Browns Bank"
       }
     },
     {
@@ -1587,9 +1202,7 @@
       },
       "properties": {
         "id": 7354,
-        "name": "292",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "292"
       }
     },
     {
@@ -1603,9 +1216,7 @@
       },
       "properties": {
         "id": 7356,
-        "name": "371",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "371"
       }
     },
     {
@@ -1619,9 +1230,7 @@
       },
       "properties": {
         "id": 7359,
-        "name": "Scituate",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Scituate"
       }
     },
     {
@@ -1635,9 +1244,7 @@
       },
       "properties": {
         "id": 7360,
-        "name": "Salem",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Salem"
       }
     },
     {
@@ -1651,9 +1258,7 @@
       },
       "properties": {
         "id": 7361,
-        "name": "Cape Ann",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cape Ann"
       }
     },
     {
@@ -1667,9 +1272,7 @@
       },
       "properties": {
         "id": 7362,
-        "name": "Gloucester",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Gloucester"
       }
     },
     {
@@ -1683,9 +1286,7 @@
       },
       "properties": {
         "id": 7363,
-        "name": "Rockport",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Rockport"
       }
     },
     {
@@ -1699,9 +1300,7 @@
       },
       "properties": {
         "id": 7364,
-        "name": "Portsmouth",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Portsmouth"
       }
     },
     {
@@ -1715,9 +1314,7 @@
       },
       "properties": {
         "id": 7365,
-        "name": "Newburyport",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Newburyport"
       }
     },
     {
@@ -1731,9 +1328,7 @@
       },
       "properties": {
         "id": 7366,
-        "name": "Northeast Channel",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Northeast Channel"
       }
     },
     {
@@ -1747,9 +1342,7 @@
       },
       "properties": {
         "id": 7367,
-        "name": "Crowell Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Crowell Basin"
       }
     },
     {
@@ -1763,9 +1356,7 @@
       },
       "properties": {
         "id": 7368,
-        "name": "Georges Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Georges Basin"
       }
     },
     {
@@ -1779,9 +1370,7 @@
       },
       "properties": {
         "id": 7369,
-        "name": "Northern Edge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Northern Edge"
       }
     },
     {
@@ -1795,9 +1384,7 @@
       },
       "properties": {
         "id": 7373,
-        "name": "Sewell Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Sewell Ridge"
       }
     },
     {
@@ -1811,9 +1398,7 @@
       },
       "properties": {
         "id": 7374,
-        "name": "Wright Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wright Swell"
       }
     },
     {
@@ -1827,9 +1412,7 @@
       },
       "properties": {
         "id": 7375,
-        "name": "Stout Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Stout Swell"
       }
     },
     {
@@ -1843,9 +1426,7 @@
       },
       "properties": {
         "id": 7376,
-        "name": "Rodgers Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Rodgers Swell"
       }
     },
     {
@@ -1859,9 +1440,7 @@
       },
       "properties": {
         "id": 7377,
-        "name": "Rodgers Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Rodgers Basin"
       }
     },
     {
@@ -1875,9 +1454,7 @@
       },
       "properties": {
         "id": 7378,
-        "name": "Howell Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Howell Swell"
       }
     },
     {
@@ -1891,9 +1468,7 @@
       },
       "properties": {
         "id": 7379,
-        "name": "Franklin Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Franklin Swell"
       }
     },
     {
@@ -1907,9 +1482,7 @@
       },
       "properties": {
         "id": 7381,
-        "name": "Fundian Valley",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Fundian Valley"
       }
     },
     {
@@ -1923,9 +1496,7 @@
       },
       "properties": {
         "id": 7382,
-        "name": "Massachusetts Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Massachusetts Bay"
       }
     },
     {
@@ -1939,9 +1510,7 @@
       },
       "properties": {
         "id": 7383,
-        "name": "Stellwagen Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Stellwagen Bank"
       }
     },
     {
@@ -1955,9 +1524,7 @@
       },
       "properties": {
         "id": 7384,
-        "name": "Tillies Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Tillies Bank"
       }
     },
     {
@@ -1971,9 +1538,7 @@
       },
       "properties": {
         "id": 7385,
-        "name": "Scantum Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Scantum Basin"
       }
     },
     {
@@ -1987,9 +1552,7 @@
       },
       "properties": {
         "id": 7386,
-        "name": "Jeffreys Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Jeffreys Ledge"
       }
     },
     {
@@ -2003,9 +1566,7 @@
       },
       "properties": {
         "id": 7387,
-        "name": "Bigelow Bight",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Bigelow Bight"
       }
     },
     {
@@ -2019,9 +1580,7 @@
       },
       "properties": {
         "id": 7388,
-        "name": "Jeffreys Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Jeffreys Basin"
       }
     },
     {
@@ -2035,9 +1594,7 @@
       },
       "properties": {
         "id": 7389,
-        "name": "Mistaken Ground",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Mistaken Ground"
       }
     },
     {
@@ -2051,9 +1608,7 @@
       },
       "properties": {
         "id": 7390,
-        "name": "Platts Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Platts Bank"
       }
     },
     {
@@ -2067,9 +1622,7 @@
       },
       "properties": {
         "id": 7408,
-        "name": "Outer Fall",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Outer Fall"
       }
     },
     {
@@ -2083,9 +1636,7 @@
       },
       "properties": {
         "id": 7409,
-        "name": "Jeffreys Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "Jeffreys Bank"
       }
     },
     {
@@ -2099,9 +1650,7 @@
       },
       "properties": {
         "id": 7410,
-        "name": "Toothaker Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Toothaker Ridge"
       }
     },
     {
@@ -2115,9 +1664,7 @@
       },
       "properties": {
         "id": 7411,
-        "name": "Harvey Blacks Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Harvey Blacks Ridge"
       }
     },
     {
@@ -2131,9 +1678,7 @@
       },
       "properties": {
         "id": 7412,
-        "name": "Wilkinson Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wilkinson Basin"
       }
     },
     {
@@ -2147,9 +1692,7 @@
       },
       "properties": {
         "id": 7413,
-        "name": "Murray Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Murray Basin"
       }
     },
     {
@@ -2163,9 +1706,7 @@
       },
       "properties": {
         "id": 7414,
-        "name": "Fippennies ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Fippennies ledge"
       }
     },
     {
@@ -2179,9 +1720,7 @@
       },
       "properties": {
         "id": 7415,
-        "name": "55 Fathom Bunch",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "55 Fathom Bunch"
       }
     },
     {
@@ -2195,9 +1734,7 @@
       },
       "properties": {
         "id": 7416,
-        "name": "Cashes Basin",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cashes Basin"
       }
     },
     {
@@ -2211,9 +1748,7 @@
       },
       "properties": {
         "id": 7417,
-        "name": "Cashes Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Cashes Ledge"
       }
     },
     {
@@ -2227,9 +1762,7 @@
       },
       "properties": {
         "id": 7418,
-        "name": "Parker Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Parker Ridge"
       }
     },
     {
@@ -2243,9 +1776,7 @@
       },
       "properties": {
         "id": 7419,
-        "name": "Mayo Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Mayo Swell"
       }
     },
     {
@@ -2259,9 +1790,7 @@
       },
       "properties": {
         "id": 7420,
-        "name": "German Bank",
-        "minzoom": 6,
-        "maxzoom": 11
+        "name": "German Bank"
       }
     },
     {
@@ -2275,9 +1804,7 @@
       },
       "properties": {
         "id": 7421,
-        "name": "Davis Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Davis Swell"
       }
     },
     {
@@ -2291,9 +1818,7 @@
       },
       "properties": {
         "id": 7422,
-        "name": "Lindenkohl Knoll",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Lindenkohl Knoll"
       }
     },
     {
@@ -2307,9 +1832,7 @@
       },
       "properties": {
         "id": 7425,
-        "name": "Brazil Rock",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Brazil Rock"
       }
     },
     {
@@ -2323,9 +1846,7 @@
       },
       "properties": {
         "id": 7426,
-        "name": "Truxton Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Truxton Swell"
       }
     },
     {
@@ -2339,9 +1860,7 @@
       },
       "properties": {
         "id": 7429,
-        "name": "Isles of Shoals",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Isles of Shoals"
       }
     },
     {
@@ -2355,9 +1874,7 @@
       },
       "properties": {
         "id": 7430,
-        "name": "Gosport Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Gosport Harbor"
       }
     },
     {
@@ -2371,9 +1888,7 @@
       },
       "properties": {
         "id": 7431,
-        "name": "Southwest Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Southwest Ledge"
       }
     },
     {
@@ -2387,9 +1902,7 @@
       },
       "properties": {
         "id": 7432,
-        "name": "Old Scantum",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Old Scantum"
       }
     },
     {
@@ -2403,9 +1916,7 @@
       },
       "properties": {
         "id": 7433,
-        "name": "New Scantum",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "New Scantum"
       }
     },
     {
@@ -2419,9 +1930,7 @@
       },
       "properties": {
         "id": 7445,
-        "name": "Wilkinson Divide",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wilkinson Divide"
       }
     },
     {
@@ -2435,9 +1944,7 @@
       },
       "properties": {
         "id": 7446,
-        "name": "Wildcat Knoll",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wildcat Knoll"
       }
     },
     {
@@ -2451,9 +1958,7 @@
       },
       "properties": {
         "id": 7447,
-        "name": "Peck Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Peck Ridge"
       }
     },
     {
@@ -2467,9 +1972,7 @@
       },
       "properties": {
         "id": 7448,
-        "name": "Sigsbee Knoll",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Sigsbee Knoll"
       }
     },
     {
@@ -2483,9 +1986,7 @@
       },
       "properties": {
         "id": 7454,
-        "name": "Sharrer Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Sharrer Ridge"
       }
     },
     {
@@ -2499,9 +2000,7 @@
       },
       "properties": {
         "id": 7455,
-        "name": "Jacques Swell",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Jacques Swell"
       }
     },
     {
@@ -2515,9 +2014,7 @@
       },
       "properties": {
         "id": 7456,
-        "name": "Three Dory Ridge",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Three Dory Ridge"
       }
     },
     {
@@ -2531,9 +2028,7 @@
       },
       "properties": {
         "id": 7457,
-        "name": "Duxbury Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Duxbury Bay"
       }
     },
     {
@@ -2547,9 +2042,7 @@
       },
       "properties": {
         "id": 7458,
-        "name": "Cohasset Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cohasset Harbor"
       }
     },
     {
@@ -2563,9 +2056,7 @@
       },
       "properties": {
         "id": 7459,
-        "name": "Thieves Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Thieves Ledge"
       }
     },
     {
@@ -2579,9 +2070,7 @@
       },
       "properties": {
         "id": 7460,
-        "name": "Hull Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Hull Bay"
       }
     },
     {
@@ -2595,9 +2084,7 @@
       },
       "properties": {
         "id": 7461,
-        "name": "Hingham Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Hingham Bay"
       }
     },
     {
@@ -2611,9 +2098,7 @@
       },
       "properties": {
         "id": 7462,
-        "name": "North Weymouth",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "North Weymouth"
       }
     },
     {
@@ -2627,9 +2112,7 @@
       },
       "properties": {
         "id": 7463,
-        "name": "Winthrop",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Winthrop"
       }
     },
     {
@@ -2643,9 +2126,7 @@
       },
       "properties": {
         "id": 7464,
-        "name": "Quincy",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Quincy"
       }
     },
     {
@@ -2659,9 +2140,7 @@
       },
       "properties": {
         "id": 7465,
-        "name": "Lynn",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Lynn"
       }
     },
     {
@@ -2675,9 +2154,7 @@
       },
       "properties": {
         "id": 7466,
-        "name": "Manchester by the Sea",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Manchester by the Sea"
       }
     },
     {
@@ -2691,9 +2168,7 @@
       },
       "properties": {
         "id": 7467,
-        "name": "Hampton Harbor Inlet",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Hampton Harbor Inlet"
       }
     },
     {
@@ -2707,9 +2182,7 @@
       },
       "properties": {
         "id": 7468,
-        "name": "Quincy Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Quincy Bay"
       }
     },
     {
@@ -2723,9 +2196,7 @@
       },
       "properties": {
         "id": 7469,
-        "name": "Town River Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Town River Bay"
       }
     },
     {
@@ -2739,9 +2210,7 @@
       },
       "properties": {
         "id": 7470,
-        "name": "Dorchester Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Dorchester Bay"
       }
     },
     {
@@ -2755,9 +2224,7 @@
       },
       "properties": {
         "id": 7471,
-        "name": "Boston Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Boston Harbor"
       }
     },
     {
@@ -2771,9 +2238,7 @@
       },
       "properties": {
         "id": 7472,
-        "name": "Merrimack River",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Merrimack River"
       }
     },
     {
@@ -2787,9 +2252,7 @@
       },
       "properties": {
         "id": 7473,
-        "name": "Nantasket Roads",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Nantasket Roads"
       }
     },
     {
@@ -2803,9 +2266,7 @@
       },
       "properties": {
         "id": 7474,
-        "name": "Broad Sound",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Broad Sound"
       }
     },
     {
@@ -2819,9 +2280,7 @@
       },
       "properties": {
         "id": 7475,
-        "name": "Nahant Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Nahant Bay"
       }
     },
     {
@@ -2835,9 +2294,7 @@
       },
       "properties": {
         "id": 7476,
-        "name": "Marblehead Channel",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Marblehead Channel"
       }
     },
     {
@@ -2851,9 +2308,7 @@
       },
       "properties": {
         "id": 7477,
-        "name": "Tinkers Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Tinkers Ledge"
       }
     },
     {
@@ -2867,9 +2322,7 @@
       },
       "properties": {
         "id": 7478,
-        "name": "Salem Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Salem Harbor"
       }
     },
     {
@@ -2883,9 +2336,7 @@
       },
       "properties": {
         "id": 7479,
-        "name": "Beverly Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Beverly Harbor"
       }
     },
     {
@@ -2899,9 +2350,7 @@
       },
       "properties": {
         "id": 7480,
-        "name": "Plum Cove",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Plum Cove"
       }
     },
     {
@@ -2915,9 +2364,7 @@
       },
       "properties": {
         "id": 7481,
-        "name": "Salem Sound",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Salem Sound"
       }
     },
     {
@@ -2931,9 +2378,7 @@
       },
       "properties": {
         "id": 7482,
-        "name": "Eagle Island Channel",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Eagle Island Channel"
       }
     },
     {
@@ -2947,9 +2392,7 @@
       },
       "properties": {
         "id": 7483,
-        "name": "Southeast Breakers",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Southeast Breakers"
       }
     },
     {
@@ -2963,9 +2406,7 @@
       },
       "properties": {
         "id": 7484,
-        "name": "Gales Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Gales Ledge"
       }
     },
     {
@@ -2979,9 +2420,7 @@
       },
       "properties": {
         "id": 7485,
-        "name": "Saturday Night Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Saturday Night Ledge"
       }
     },
     {
@@ -2995,9 +2434,7 @@
       },
       "properties": {
         "id": 7486,
-        "name": "Gloucester Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Gloucester Harbor"
       }
     },
     {
@@ -3011,9 +2448,7 @@
       },
       "properties": {
         "id": 7487,
-        "name": "Provincetown",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Provincetown"
       }
     },
     {
@@ -3027,9 +2462,7 @@
       },
       "properties": {
         "id": 7488,
-        "name": "Provincetown Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Provincetown Harbor"
       }
     },
     {
@@ -3043,9 +2476,7 @@
       },
       "properties": {
         "id": 7489,
-        "name": "Wood End Bar",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wood End Bar"
       }
     },
     {
@@ -3059,9 +2490,7 @@
       },
       "properties": {
         "id": 7490,
-        "name": "Folly Cove",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Folly Cove"
       }
     },
     {
@@ -3075,9 +2504,7 @@
       },
       "properties": {
         "id": 7491,
-        "name": "Ipswich Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Ipswich Bay"
       }
     },
     {
@@ -3091,9 +2518,7 @@
       },
       "properties": {
         "id": 7492,
-        "name": "Essex Bay",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Essex Bay"
       }
     },
     {
@@ -3107,9 +2532,7 @@
       },
       "properties": {
         "id": 7493,
-        "name": "York Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "York Harbor"
       }
     },
     {
@@ -3123,9 +2546,7 @@
       },
       "properties": {
         "id": 7494,
-        "name": "Sanders Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Sanders Ledge"
       }
     },
     {
@@ -3139,9 +2560,7 @@
       },
       "properties": {
         "id": 7495,
-        "name": "Boon Island Ledge",
-        "minzoom": 8,
-        "maxzoom": 11
+        "name": "Boon Island Ledge"
       }
     },
     {
@@ -3155,9 +2574,7 @@
       },
       "properties": {
         "id": 7496,
-        "name": "Biddeford Pool",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Biddeford Pool"
       }
     },
     {
@@ -3171,9 +2588,7 @@
       },
       "properties": {
         "id": 7528,
-        "name": "Cape Neddick",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Cape Neddick"
       }
     },
     {
@@ -3187,9 +2602,7 @@
       },
       "properties": {
         "id": 7529,
-        "name": "Biddeford",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Biddeford"
       }
     },
     {
@@ -3203,9 +2616,7 @@
       },
       "properties": {
         "id": 7530,
-        "name": "Kennebunkport",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Kennebunkport"
       }
     },
     {
@@ -3219,9 +2630,7 @@
       },
       "properties": {
         "id": 7531,
-        "name": "Wells Harbor",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Wells Harbor"
       }
     },
     {
@@ -3235,9 +2644,7 @@
       },
       "properties": {
         "id": 7532,
-        "name": "Piscataqua River",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Piscataqua River"
       }
     },
     {
@@ -3251,9 +2658,7 @@
       },
       "properties": {
         "id": 7533,
-        "name": "Race Point",
-        "minzoom": 9,
-        "maxzoom": 11
+        "name": "Race Point"
       }
     }
   ]
