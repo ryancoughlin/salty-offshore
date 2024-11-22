@@ -24,6 +24,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
   contourLineInfo: null,
   cursorPosition: null,
   mapRef: null,
+  ranges: null,
 
   // Actions
   selectRegion: (region: Region) => {
@@ -76,6 +77,14 @@ export const useMapStore = create<MapStore>((set, get) => ({
     if (!selectedDataset) return;
 
     set({ selectedDate: date, layerData: null });
+
+    const dateEntry = selectedDataset.dates.find(d => d.date === date);
+    if (dateEntry?.ranges) {
+      set({ ranges: dateEntry.ranges });
+    } else {
+      set({ ranges: null });
+    }
+
     get().fetchLayerData(selectedDataset, date);
   },
 

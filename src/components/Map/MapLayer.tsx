@@ -61,8 +61,6 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                 </Source>
             )}
 
-            <SpotLayer />
-
             {layerData.contours && (
                 <ContourLineLayer map={map} />
             )}
