@@ -8,7 +8,7 @@ interface ValuePoint {
   value: number;
 }
 
-const SEARCH_RADIUS = 10;
+const SEARCH_RADIUS = 32;
 const MIN_VALID_VALUE = -273.15;
 
 const isValidValue = (value: number): boolean => {
@@ -22,8 +22,31 @@ const calculateDistance = (point1: Point, point2: Point): number => {
 };
 
 const calculateInterpolatedValue = (nearestPoints: ValuePoint[], weights: number[]) => {
-  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-  return nearestPoints.reduce((sum, p, i) => sum + p.value * weights[i], 0) / totalWeight;
+  const SIMILARITY_THRESHOLD = 0.5;
+  
+  const groupedPoints = nearestPoints.reduce((groups, point) => {
+    const group = groups.find(g => 
+      Math.abs(g.value - point.value) <= SIMILARITY_THRESHOLD
+    );
+    
+    if (group) {
+      group.points.push(point);
+      group.totalWeight += weights[nearestPoints.indexOf(point)];
+    } else {
+      groups.push({
+        value: point.value,
+        points: [point],
+        totalWeight: weights[nearestPoints.indexOf(point)]
+      });
+    }
+    return groups;
+  }, [] as Array<{value: number; points: ValuePoint[]; totalWeight: number}>);
+
+  const dominantGroup = groupedPoints.reduce((max, group) => 
+    group.totalWeight > max.totalWeight ? group : max
+  );
+
+  return dominantGroup.value;
 };
 
 export const useDatasetValue = (
@@ -32,6 +55,8 @@ export const useDatasetValue = (
   valueKey: DatasetValueKey
 ) => {
   const [value, setValue] = useState<number | null>(null);
+
+console.log(valueKey, mapRef, cursorPosition)
   
   useDebugValue(value !== null ? `${value.toFixed(2)}` : 'No value');
 
