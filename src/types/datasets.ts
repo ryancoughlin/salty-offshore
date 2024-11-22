@@ -1,65 +1,63 @@
-export enum DatasetRangeKey {
-  SEA_SURFACE_TEMPERATURE = 'sea_surface_temperature',
-  WAVE_HEIGHT = 'VHM0',
-  CHLOROPHYLL = 'chlor_a',
-  CURRENT_VELOCITY = 'current_velocity'
-}
-
-export enum DatasetDisplayNames {
-  SEA_SURFACE_TEMPERATURE = 'Sea Surface Temperature',
-  WAVE_HEIGHT = 'Wave Height',
-  CHLOROPHYLL = 'Chlorophyll',
-  CURRENT_VELOCITY = 'Current Velocity'
-}
-
-export interface DatasetRange {
-  min: number;
-  max: number;
-}
-
-export interface DatasetConfig {
-  key: DatasetRangeKey;
-  displayName: DatasetDisplayNames;
-  unit: string;
-  formatValue: (value: number) => string;
-}
-
-export const DATASET_CONFIGS: Record<DatasetRangeKey, DatasetConfig> = {
-  [DatasetRangeKey.SEA_SURFACE_TEMPERATURE]: {
-    key: DatasetRangeKey.SEA_SURFACE_TEMPERATURE,
-    displayName: DatasetDisplayNames.SEA_SURFACE_TEMPERATURE,
-    unit: '°C',
-    formatValue: (value: number) => `${value.toFixed(1)}°C`
-  },
-  [DatasetRangeKey.WAVE_HEIGHT]: {
-    key: DatasetRangeKey.WAVE_HEIGHT,
-    displayName: DatasetDisplayNames.WAVE_HEIGHT,
-    unit: 'm',
-    formatValue: (value: number) => `${value.toFixed(1)}m`
-  },
-  [DatasetRangeKey.CHLOROPHYLL]: {
-    key: DatasetRangeKey.CHLOROPHYLL,
-    displayName: DatasetDisplayNames.CHLOROPHYLL,
-    unit: 'mg/m³',
-    formatValue: (value: number) => `${value.toFixed(2)} mg/m³`
-  },
-  [DatasetRangeKey.CURRENT_VELOCITY]: {
-    key: DatasetRangeKey.CURRENT_VELOCITY,
-    displayName: DatasetDisplayNames.CURRENT_VELOCITY,
-    unit: 'm/s',
-    formatValue: (value: number) => `${value.toFixed(1)} m/s`
+export enum DatasetValueKey {
+    BLENDED_SST = 'sea_surface_temperature',
+    LEO_SST = 'analysed_sst',
+    CHLOROPHYLL = 'chlor_a',
+    WAVE_HEIGHT = 'height',
+    CURRENT_VELOCITY = 'current_velocity'
   }
-};
-
-export function getDatasetConfig(key: DatasetRangeKey): DatasetConfig {
-  const config = DATASET_CONFIGS[key];
-  if (!config) {
-    throw new Error(`No configuration found for dataset key: ${key}`);
+  
+  export enum DatasetRangeKey {
+    SEA_SURFACE_TEMPERATURE = 'sea_surface_temperature',
+    CHLOROPHYLL = 'chlor_a',
+    WAVE_HEIGHT = 'VHM0',
+    CURRENT_VELOCITY = 'current_velocity'
   }
-  return config;
-}
-
-export function getDatasetValue(feature: GeoJSON.Feature, datasetKey: DatasetRangeKey): number | null {
-  const value = feature.properties?.[datasetKey];
-  return typeof value === 'number' && isFinite(value) ? value : null;
-} 
+  
+  export interface DatasetConfig {
+    valueKey: DatasetValueKey;    // Key for getting values from feature properties
+    rangeKey: DatasetRangeKey;    // Key for getting ranges from date entry
+    unit: string;
+    label: string;
+    formatValue: (value: number) => string;
+    formatRange: (min: number, max: number) => string;
+  }
+  
+  export const DATASET_CONFIGS: Record<string, DatasetConfig> = {
+    'LEOACSPOSSTL3SnrtCDaily': {
+      valueKey: DatasetValueKey.LEO_SST,
+      rangeKey: DatasetRangeKey.SEA_SURFACE_TEMPERATURE,
+      unit: '°',
+      label: 'Water temp',
+      formatValue: (value: number) => `${value.toFixed(1)}°`,
+      formatRange: (min: number, max: number) => `${min.toFixed(1)}° - ${max.toFixed(1)}°`
+    },
+    'BLENDEDsstDNDaily': {
+      valueKey: DatasetValueKey.BLENDED_SST,
+      rangeKey: DatasetRangeKey.SEA_SURFACE_TEMPERATURE,
+      unit: '°',
+      label: 'Water temp',
+      formatValue: (value: number) => `${value.toFixed(1)}°`,
+      formatRange: (min: number, max: number) => `${min.toFixed(1)}° - ${max.toFixed(1)}°`
+    },
+    'chlorophyll_oci': {
+      valueKey: DatasetValueKey.CHLOROPHYLL,
+      rangeKey: DatasetRangeKey.CHLOROPHYLL,
+      unit: 'mg/m³',
+      label: 'Chlorophyll',
+      formatValue: (value: number) => `${value.toFixed(2)} mg/m³`,
+      formatRange: (min: number, max: number) => `${min.toFixed(2)} - ${max.toFixed(2)} mg/m³`
+    },
+    'CMEMS_Global_Waves_Daily': {
+        valueKey: DatasetValueKey.WAVE_HEIGHT,
+        rangeKey: DatasetRangeKey.WAVE_HEIGHT,
+        unit: 'ft',
+        label: 'Wave Height',
+        formatValue: (value: number) => `${value.toFixed(2)}'`,
+        formatRange: (min: number, max: number) => `${min.toFixed(2)} - ${max.toFixed(2)}'`
+      }
+  };
+  
+  export function getDatasetConfig(datasetId: string): DatasetConfig | undefined {
+    return DATASET_CONFIGS[datasetId];
+  }
+  
