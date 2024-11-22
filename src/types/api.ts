@@ -15,6 +15,13 @@ export interface DateEntry {
   layers: {
     [key in LayerType]?: string;
   };
+  ranges?: {
+    [key: string]: {
+      min: number;
+      max: number;
+      unit?: string;
+    };
+  };
 }
 
 export interface Region {

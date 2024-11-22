@@ -12,6 +12,13 @@ export interface MapState {
   error: Error | null;
   cursorPosition: Coordinate | null;
   mapRef: MapboxMap | null;
+  ranges: {
+    [key: string]: {
+      min: number;
+      max: number;
+      unit?: string;
+    };
+  } | null;
 }
 
 export interface MapActions {
