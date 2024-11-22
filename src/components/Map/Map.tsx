@@ -28,19 +28,9 @@ const MAP_CONSTANTS = {
     STYLE_URL: 'mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6',
 } as const;
 
-// Add new ZoomDisplay component
-const ZoomDisplay = memo(({ zoom }: { zoom: number }) => (
-  <div className="absolute bottom-5 right-5 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-md shadow-sm border border-gray-200">
-    <span className="text-sm font-medium text-gray-700">
-      Zoom: {zoom.toFixed(1)}
-    </span>
-  </div>
-));
-
 const SaltyMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
     const [viewState, setViewState] = useState<Partial<ViewState>>(MAP_CONSTANTS.DEFAULT_VIEW);
-    const [showGrid] = useState(true);
 
     const {
         selectedRegion,
@@ -118,11 +108,10 @@ const SaltyMap: React.FC = () => {
                         />
 
                         <BathymetryLayer />
-                        <Grid visible={showGrid} />
+                        <Grid />
                         <SpotLayer />
                     </Suspense>
                 </Map>
-                <ZoomDisplay zoom={viewState.zoom || MAP_CONSTANTS.DEFAULT_VIEW.zoom} />
             </div>
         </MapErrorBoundary>
     );
