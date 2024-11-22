@@ -14,7 +14,6 @@ const WaveHeightLayer = memo(({ data, map, visible = true }: WaveHeightLayerProp
     const popupRef = useRef<mapboxgl.Popup | null>(null);
     const [hoveredFeatureId, setHoveredFeatureId] = useState<number | null>(null);
     
-    // Keep existing Voronoi processing
     const processedData = useMemo(() => {
         try {
             const points = data.features.map(f => ({

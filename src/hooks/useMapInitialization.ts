@@ -1,4 +1,5 @@
-import { useState, useCallback, RefObject } from "react";
+import { useCallback, useState } from "react";
+import type { RefObject } from "react";
 import type { MapRef } from "react-map-gl";
 
 export const useMapInitialization = (
