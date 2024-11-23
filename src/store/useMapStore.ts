@@ -1,13 +1,12 @@
 import { create } from "zustand";
-import type { Dataset, CachedLayerData, RegionInfo } from "../types/api";
+import type { Dataset, CachedLayerData, Region } from "../types/api";
 import type { MapStore } from "./types";
 
 const layerCache = new Map<string, CachedLayerData>();
-const MAX_CACHE_SIZE = 200; // Increased cache size
-const PREFETCH_WINDOW = 2; // Number of dates to prefetch before/after
+const MAX_CACHE_SIZE = 200;
+const PREFETCH_WINDOW = 2;
 
-// Parallel fetch helper
-const fetchLayerUrl = async (url: string | undefined) => {
+const fetchLayerUrl = async (url: string | undefined): Promise<any> => {
   if (!url) return null;
   const response = await fetch(url);
   return response.ok ? response.json() : null;
@@ -37,27 +36,18 @@ export const useMapStore = create<MapStore>((set, get) => ({
         layerData: null,
         error: null,
       });
-      
-      // Pass the entire region object
+
       get().selectDefaultDataset(region);
     }
   },
 
   selectDefaultDataset: (region: Region) => {
-    console.log('Selecting default dataset:', {
-      hasDatasets: !!region?.datasets,
-      datasetCount: region?.datasets?.length,
-      datasets: region?.datasets?.map(d => d.id)
-    });
-    
-    if (!region?.datasets) return;
-    
+    if (!region.datasets) return;
+
     const sstDataset = region.datasets.find(
-      (d) => d.id === "LEOACSPOSSTL3SnrtCDaily"
+      (d: Dataset) => d.id === "LEOACSPOSSTL3SnrtCDaily"
     );
-    
-    console.log('Found SST dataset:', !!sstDataset);
-    
+
     if (sstDataset) {
       get().selectDataset(sstDataset);
     }
@@ -149,7 +139,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
         // Prefetch in background
         Promise.all(
           datesToPrefetch.map(d => 
-            get().fetchLayerData(dataset, d.date, 'low')
+            get().fetchLayerData(dataset, d.date)
           )
         ).catch(console.error);
       }
@@ -164,8 +154,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
       console.error("Error fetching data:", err);
     }
   },
-
-  setContourLineInfo: (info) => set({ contourLineInfo: info }),
 
   setCursorPosition: (position) => set({ cursorPosition: position }),
   setMapRef: (ref) => set({ mapRef: ref }),

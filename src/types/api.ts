@@ -1,5 +1,7 @@
 import type { Category, LayerType, Bounds } from "./core";
 import type { ISODateString } from "./date";
+import type { FeatureCollection } from 'geojson';
+
 export interface Dataset {
   id: string;
   regionId: string;
@@ -30,6 +32,7 @@ export interface Region {
   description: string;
   bounds: Bounds;
   datasets: Dataset[];
+  thumbnail: string;
 }
 
 export interface APIResponse {
@@ -37,17 +40,8 @@ export interface APIResponse {
   lastUpdated: string;
 }
 
-export interface RegionInfo {
-  id: string;
-  name: string;
-  description: string;
-  bounds: Bounds;
-  datasets: Dataset[];
-  thumbnail: string;
-}
-
 export interface Regions {
-  regions: RegionInfo[];
+  regions: Region[];
 }
 
 export interface CachedLayerData {
@@ -64,6 +58,5 @@ export interface DatasetMetadata {
   frequency?: string;
   resolution?: string;
   description?: string;
-  'Dataset URL'?: string;
   [key: string]: string | undefined;
 }

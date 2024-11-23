@@ -1,65 +1,93 @@
 import * as turf from '@turf/turf';
+import type { Feature, FeatureCollection, Point, Polygon } from 'geojson';
 
-interface ProcessedWaveData extends GeoJSON.FeatureCollection {
-    features: Array<GeoJSON.Feature<GeoJSON.Polygon>>;
+// Clear type definitions
+interface WaveProperties {
+    height: number | null;
+    direction: number | null;
+    mean_period: number | null;
+    wave_energy: number | null;
 }
 
-export const processWaveData = (data: GeoJSON.FeatureCollection): ProcessedWaveData => {
-    // Create a bounding box from the points
-    const bbox = turf.bbox(data);
-    
-    // Create a grid of points for interpolation
-    const cellSize = 0.025; // degrees
-    const options = { units: 'degrees' as const };
-    const grid = turf.pointGrid(bbox, cellSize, options);
+interface ProcessedWaveData extends FeatureCollection<Polygon, WaveProperties> {
+    features: Array<Feature<Polygon, WaveProperties>>;
+}
 
-    // Get all the wave height values
-    const waveHeights = data.features.map(f => ({
-        longitude: f.geometry.coordinates[0],
-        latitude: f.geometry.coordinates[1],
-        height: f.properties?.height || 0
-    }));
+export const processWaveData = (data: FeatureCollection<Point, WaveProperties>): ProcessedWaveData => {
+    try {
+        // Create properly typed points for Turf operations
+        const points = data.features
+            .filter(feature => feature.properties?.height != null)
+            .map(feature => turf.point(
+                feature.geometry.coordinates,
+                feature.properties
+            ));
 
-    // Convert points to polygons and interpolate heights
-    const features = grid.features.map(point => {
-        const [lon, lat] = point.geometry.coordinates;
+        const pointCollection = turf.featureCollection(points);
+        const bbox = turf.bbox(pointCollection);
         
-        // Use IDW (Inverse Distance Weighting) for interpolation
-        let weightedSum = 0;
-        let weightSum = 0;
-        
-        waveHeights.forEach(wave => {
-            const distance = turf.distance(
-                [lon, lat],
-                [wave.longitude, wave.latitude],
-                { units: 'kilometers' }
+        // Create interpolation grid
+        const cellSize = 0.025; // degrees
+        const grid = turf.pointGrid(bbox, cellSize, { units: 'degrees' });
+
+        // Process grid points with proper typing
+        const features = grid.features.map(point => {
+            const interpolatedProperties = interpolateWaveProperties(
+                point.geometry.coordinates,
+                data.features
             );
-            
-            // Avoid division by zero
-            const weight = distance === 0 ? 1 : 1 / Math.pow(distance, 2);
-            weightedSum += wave.height * weight;
-            weightSum += weight;
-        });
 
-        const interpolatedHeight = weightSum === 0 ? 0 : weightedSum / weightSum;
+            const cell = turf.buffer(point, cellSize / 2, {
+                units: 'degrees',
+                steps: 4
+            });
 
-        // Create a polygon feature for the grid cell
-        const cell = turf.buffer(point, cellSize / 2, {
-            units: 'degrees',
-            steps: 4
+            return {
+                type: 'Feature' as const,
+                geometry: cell?.geometry as Polygon,
+                properties: interpolatedProperties
+            };
         });
 
         return {
-            type: 'Feature',
-            geometry: cell.geometry,
-            properties: {
-                height: interpolatedHeight
-            }
-        } as GeoJSON.Feature<GeoJSON.Polygon>;
+            type: 'FeatureCollection',
+            features
+        };
+    } catch (error) {
+        console.error('Error processing wave data:', error);
+        return {
+            type: 'FeatureCollection',
+            features: []
+        };
+    }
+};
+
+const interpolateWaveProperties = (
+    targetPoint: number[], 
+    sourceFeatures: Array<Feature<Point, WaveProperties>>
+): WaveProperties => {
+    let weightedSum = 0;
+    let weightSum = 0;
+
+    sourceFeatures.forEach(feature => {
+        if (!feature.properties?.height) return;
+
+        const distance = turf.distance(
+            targetPoint,
+            feature.geometry.coordinates,
+            { units: 'kilometers' }
+        );
+
+        // Use inverse distance weighting
+        const weight = distance === 0 ? 1 : 1 / Math.pow(distance, 2);
+        weightedSum += feature.properties.height * weight;
+        weightSum += weight;
     });
 
     return {
-        type: 'FeatureCollection',
-        features
+        height: weightSum === 0 ? null : weightedSum / weightSum,
+        direction: null, // These would follow similar interpolation patterns
+        mean_period: null,
+        wave_energy: null
     };
 }; 

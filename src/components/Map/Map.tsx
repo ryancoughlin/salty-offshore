@@ -5,14 +5,13 @@ import Map, { NavigationControl, ScaleControl } from 'react-map-gl';
 import { MapLayer } from './MapLayer';
 import { RegionBoundsLayer } from './RegionBoundsLayer';
 import { Grid } from './Grid';
-import { RegionInfo } from '../../types/api';
 import useMapStore from '../../store/useMapStore';
 import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { MapErrorBoundary } from './MapErrorBoundary';
 import { BathymetryLayer } from './BathymetryLayer';
 import { SpotLayer } from './SpotLayer';
+import { Region, Dataset } from '@/types/api';
 
-// Constants
 const MAP_CONSTANTS = {
     DEFAULT_VIEW: {
         longitude: -71.0,
@@ -87,7 +86,7 @@ const SaltyMap: React.FC = () => {
                     onMouseMove={handleMouseMove}
                     onLoad={handleMapLoad}
                     mapStyle='mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6'
-                    className="w-full h-full"
+                    style={{ width: '100%', height: '100%' }}
                     mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                     maxZoom={MAP_CONSTANTS.BOUNDS.MAX_ZOOM}
                     minZoom={MAP_CONSTANTS.BOUNDS.MIN_ZOOM}
@@ -120,7 +119,7 @@ const MapControls = memo(() => (
 ));
 
 interface MapLayerComponentsProps {
-    selectedRegion: RegionInfo | null;
+    selectedRegion: Region | null;
     selectedDataset: Dataset | null;
     selectedDate: string | null;
     mapRef: React.RefObject<MapRef>;
