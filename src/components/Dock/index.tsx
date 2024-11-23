@@ -1,11 +1,11 @@
 import AppBar from './AppBar';
 import RegionContent from './RegionContent';
-import type { Region, RegionInfo } from '../../types/api';
+import type { Region } from '../../types/api';
 
 interface DockProps {
-  regions: RegionInfo[];
-  selectedRegion: RegionInfo | null;
-  onRegionSelect: (region: RegionInfo) => void;
+  regions: Region[];
+  selectedRegion: Region | null;
+  onRegionSelect: (region: Region) => void;
   regionData: Region | null;
 }
 

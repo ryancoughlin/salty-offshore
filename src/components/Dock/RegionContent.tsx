@@ -1,12 +1,12 @@
 import { RegionPicker } from '../RegionPicker';
 import { CursorData } from '../CursorData';
 import LayerControls from '../LayerControls';
-import type { Region, RegionInfo } from '../../types/api';
+import type { Region } from '../../types/api';
 
 interface RegionContentProps {
-  regions: RegionInfo[];
-  selectedRegion: RegionInfo | null;
-  onRegionSelect: (region: RegionInfo) => void;
+  regions: Region[];
+  selectedRegion: Region | null;
+  onRegionSelect: (region: Region) => void;
   regionData: Region | null;
 }
 
