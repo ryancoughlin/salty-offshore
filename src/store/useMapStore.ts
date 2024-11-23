@@ -4,6 +4,7 @@ import type { MapStore } from "./types";
 import type { FeatureCollection } from 'geojson';
 
 const layerCache = new Map<string, CachedLayerData>();
+
 const MAX_CACHE_SIZE = 500;
 
 const fetchLayerUrl = async (url: string | undefined): Promise<FeatureCollection | null> => {

@@ -44,12 +44,6 @@ export interface Regions {
   regions: Region[];
 }
 
-export interface LayerData {
-  data: FeatureCollection | null;
-  contours: FeatureCollection | null;
-  image: string | null;
-}
-
 export interface CachedLayerData {
   regionId: string;
   datasetId: string;
