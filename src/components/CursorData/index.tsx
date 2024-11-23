@@ -9,7 +9,7 @@ export const CursorData = () => {
   if (!selectedDataset || !cursorPosition || !mapRef) return null;
 
   return (
-    <div className="self-stretch h-36 p-4 bg-neutral-950 border-b border-white/20 flex-col gap-4 flex">
+    <div className="self-stretch p-4 bg-neutral-950 border-b border-white/20 flex-col gap-4 flex">
       <div className="flex flex-col gap-1">
         <DatasetValueDisplay
           dataset={selectedDataset}

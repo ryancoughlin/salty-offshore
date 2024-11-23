@@ -27,7 +27,7 @@ export const GeographicInspector: React.FC<GeographicInspectorProps> = ({
       </span>
       <button
         onClick={() => setFormat(f => f === 'DD' ? 'DMS' : f === 'DMS' ? 'DMM' : 'DD')}
-        className="text-white text-base font-medium font-sans hover:text-primary-300 transition-colors"
+        className="text-white text-sm font-normal font-mono hover:text-primary-300 transition-colors"
       >
         {formattedCoordinates}
       </button>

@@ -6,7 +6,7 @@ import { BreakInfo } from './BreakInfo';
 
 const CONTOUR_SOURCE = 'contour-layer' as const;
 
-interface ContourHoverInfo {
+interface ContourLineInfo {
     temperature: number;
     breakStrength: 'weak' | 'moderate' | 'strong' | null;
     position: { x: number; y: number };
@@ -27,7 +27,7 @@ interface Feature {
 
 export const ContourLineLayer = memo<ContourLineProps>(({ map }) => {
     const { layerData } = useMapStore();
-    const [hoveredContourInfo, setHoveredContourInfo] = useState<ContourHoverInfo | undefined>();
+    const [hoveredContourInfo, setHoveredContourInfo] = useState<ContourLineInfo | undefined>();
     const [hoveredFeatureId, setHoveredFeatureId] = useState<number | null>(null);
 
     const handleContourMouseMove = useCallback((e: mapboxgl.MapLayerMouseEvent) => {

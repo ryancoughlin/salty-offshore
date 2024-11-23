@@ -6,57 +6,55 @@ interface ContourLineInfo {
     position: { x: number; y: number };
     length_nm: number;
 }
+
+const BreakStrengthIndicator = ({ strength }: { strength: ContourLineInfo['breakStrength'] }) => {
+    const strengthConfig = {
+        strong: {
+            label: 'Strong',
+            classes: 'bg-red-500'
+        },
+        moderate: {
+            label: 'Moderate',
+            classes: 'bg-yellow-500'
+        },
+        weak: {
+            label: 'Weak',
+            classes: 'bg-blue-500'
+        }
+    } as const;
+
+    const config = strength && strengthConfig[strength] ? strengthConfig[strength] : strengthConfig.weak;
+
+    return (
+        <div className={`px-1 py-0.5 ${config.classes} justify-center items-center gap-2 flex`}>
+            <div className="text-white text-xs font-normal font-sans">
+                {config.label}
+            </div>
+        </div>
+    );
+};
+
 export const BreakInfo = memo<{ info: ContourLineInfo }>(({ info }) => {
-    const { temperature, breakStrength = 'weak', length_nm } = info;
+    const { temperature, breakStrength, length_nm } = info;
 
     if (!info.position) return null;
 
-    const strengthColors = {
-        strong: 'bg-red-500',
-        moderate: 'bg-yellow-500',
-        weak: 'bg-blue-500'
-    };
-
-    const strengthDescriptions = {
-        strong: "Major temperature break - Prime fishing area",
-        moderate: "Moderate temperature change - Good structure",
-        weak: "Minor temperature variation"
-    };
-
-    const currentStrength = breakStrength ?? 'weak';
-
     return (
         <div
-            className="absolute z-[9999] p-3 rounded-lg shadow-lg bg-black/80 backdrop-blur-sm border border-white/10"
+            className="absolute z-[9999] h-10 p-2 bg-neutral-950 justify-center items-center gap-2 inline-flex shadow-lg"
             style={{
                 left: `${info.position.x}px`,
                 top: `${info.position.y}px`,
-                transform: 'translate(10px, -50%)',
-                pointerEvents: 'none',
-                minWidth: '200px'
+                transform: 'translate(4px, 8px)',
+                pointerEvents: 'none'
             }}
         >
-            <div className="space-y-2">
-                <div className="text-lg font-bold text-white">
-                    {temperature.toFixed(1)}°F
-                </div>
-                <div className="flex items-center gap-2">
-                    <span
-                        className={`inline-block w-2 h-2 rounded-full ${strengthColors[currentStrength]}`}
-                    />
-                    <span className="text-sm text-white/90">
-                        {strengthDescriptions[currentStrength]}
-                    </span>
-                </div>
-                <div className="text-sm text-white/90">
-                    Length: {length_nm} nm
-                </div>
-                {temperature >= 68 && temperature <= 75 && (
-                    <div className="text-xs text-emerald-400 font-medium mt-1">
-                        🎯 Prime fishing temperature range
-                    </div>
-                )}
+            <BreakStrengthIndicator strength={breakStrength} />
+            <div className="text-white text-sm font-normal font-mono">
+                {temperature.toFixed(1)}° for {length_nm} nm
             </div>
         </div>
     );
 });
+
+BreakInfo.displayName = 'BreakInfo';
