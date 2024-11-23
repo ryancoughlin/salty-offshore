@@ -16,14 +16,8 @@ const MAP_CONSTANTS = {
     DEFAULT_VIEW: {
         longitude: -71.0,
         latitude: 39.0,
-        zoom: 4,
-    },
-    BOUNDS: {
-        PADDING: 50,
-        ANIMATION_DURATION: 2500,
-        MAX_ZOOM: 10,
-        MIN_ZOOM: 4,
-    },
+        zoom: 6,
+    }
 } as const;
 
 const SaltyMap: React.FC = () => {
@@ -46,9 +40,9 @@ const SaltyMap: React.FC = () => {
 
         try {
             mapRef.current.fitBounds(selectedRegion.bounds, {
-                padding: 50,
-                duration: 3200,
-                maxZoom: 5
+                padding: 10,
+                duration: 2400,
+                maxZoom: 7
             });
         } catch (error) {
             console.error('Error fitting bounds:', error);
@@ -88,8 +82,8 @@ const SaltyMap: React.FC = () => {
                     mapStyle='mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6'
                     style={{ width: '100%', height: '100%' }}
                     mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-                    maxZoom={MAP_CONSTANTS.BOUNDS.MAX_ZOOM}
-                    minZoom={MAP_CONSTANTS.BOUNDS.MIN_ZOOM}
+                    maxZoom={10}
+                    minZoom={4}
                     optimizeForTerrain={false}
                 >
                     <Suspense fallback={null}>
