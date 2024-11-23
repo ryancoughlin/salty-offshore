@@ -5,13 +5,6 @@ export type Coordinate = {
 };
 export type Bounds = [[number, number], [number, number]];
 
-// Geographic base types
-export interface GeographicEntity {
-  id: string;
-  name: string;
-  bounds: Bounds;
-}
-
 // Data classification
 export type Category = "sst" | "currents" | "chlorophyll";
 

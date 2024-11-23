@@ -1,20 +1,15 @@
-import React from 'react';
+import { memo } from 'react';
 
 interface ContourLineInfo {
     temperature: number;
-    breakStrength: 'strong' | 'moderate' | 'weak';
+    breakStrength: 'weak' | 'moderate' | 'strong' | null;
     position: { x: number; y: number };
     length_nm: number;
 }
+export const BreakInfo = memo<{ info: ContourLineInfo }>(({ info }) => {
+    const { temperature, breakStrength = 'weak', length_nm } = info;
 
-interface BreakInfoProps {
-    info: ContourLineInfo;
-}
-
-export const BreakInfo: React.FC<BreakInfoProps> = ({ info }) => {
-    const { temperature, breakStrength, position, length_nm } = info;
-
-    if (!position) return null;
+    if (!info.position) return null;
 
     const strengthColors = {
         strong: 'bg-red-500',
@@ -28,12 +23,14 @@ export const BreakInfo: React.FC<BreakInfoProps> = ({ info }) => {
         weak: "Minor temperature variation"
     };
 
+    const currentStrength = breakStrength ?? 'weak';
+
     return (
         <div
             className="absolute z-[9999] p-3 rounded-lg shadow-lg bg-black/80 backdrop-blur-sm border border-white/10"
             style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
+                left: `${info.position.x}px`,
+                top: `${info.position.y}px`,
                 transform: 'translate(10px, -50%)',
                 pointerEvents: 'none',
                 minWidth: '200px'
@@ -45,10 +42,10 @@ export const BreakInfo: React.FC<BreakInfoProps> = ({ info }) => {
                 </div>
                 <div className="flex items-center gap-2">
                     <span
-                        className={`inline-block w-2 h-2 rounded-full ${strengthColors[breakStrength]}`}
+                        className={`inline-block w-2 h-2 rounded-full ${strengthColors[currentStrength]}`}
                     />
                     <span className="text-sm text-white/90">
-                        {strengthDescriptions[breakStrength]}
+                        {strengthDescriptions[currentStrength]}
                     </span>
                 </div>
                 <div className="text-sm text-white/90">
@@ -62,4 +59,4 @@ export const BreakInfo: React.FC<BreakInfoProps> = ({ info }) => {
             </div>
         </div>
     );
-}; 
+});

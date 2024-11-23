@@ -3,9 +3,18 @@ import { Source, Layer } from 'react-map-gl';
 import type { LayerProps } from 'react-map-gl';
 import * as turf from '@turf/turf';
 import mapboxgl from 'mapbox-gl';
+import type { Point, Position } from 'geojson';
+import { WaveInfo } from './WaveInfo';
+
+interface WaveProperties {
+    height: number;
+    direction: number;
+    mean_period: number;
+    wave_energy: number;
+}
 
 interface WaveHeightLayerProps {
-    data: GeoJSON.FeatureCollection;
+    data: GeoJSON.FeatureCollection<Point, WaveProperties>;
     map: mapboxgl.Map;
     visible?: boolean;
 }
@@ -13,33 +22,44 @@ interface WaveHeightLayerProps {
 const WaveHeightLayer = memo(({ data, map, visible = true }: WaveHeightLayerProps) => {
     const popupRef = useRef<mapboxgl.Popup | null>(null);
     const [hoveredFeatureId, setHoveredFeatureId] = useState<number | null>(null);
+    const [waveInfo, setWaveInfo] = useState<{
+        height: number;
+        direction: number;
+        mean_period: number;
+        wave_energy: number;
+        position: { x: number; y: number };
+    } | undefined>(undefined);
     
     const processedData = useMemo(() => {
         try {
-            const points = data.features.map(f => ({
-                type: 'Feature',
-                geometry: f.geometry,
-                properties: f.properties
-            }));
+            const points = data.features.map(f => 
+                turf.point(
+                    f.geometry.coordinates as Position,
+                    f.properties
+                )
+            );
 
-            const bbox = turf.bbox(data);
+            const bbox = turf.bbox(turf.featureCollection(points));
             const voronoiPolygons = turf.voronoi(turf.featureCollection(points), {
-                bbox: [bbox[0], bbox[1], bbox[2], bbox[3]]
+                bbox: bbox
             });
 
-            const features = voronoiPolygons.features.map(polygon => {
+            const features = voronoiPolygons.features.map((polygon) => {
                 const center = turf.center(polygon);
-                const nearest = turf.nearestPoint(center, data);
+                const pointFeatures = turf.featureCollection(
+                    data.features.filter(f => f.geometry.type === 'Point')
+                );
+                const nearest = turf.nearestPoint(center, pointFeatures);
                 
                 return {
-                    type: 'Feature',
+                    type: 'Feature' as const,
                     geometry: polygon.geometry,
                     properties: nearest.properties
                 };
             });
 
             return {
-                type: 'FeatureCollection',
+                type: 'FeatureCollection' as const,
                 features
             };
         } catch (error) {
@@ -62,64 +82,34 @@ const WaveHeightLayer = memo(({ data, map, visible = true }: WaveHeightLayerProp
         const handleMouseMove = (e: mapboxgl.MapLayerMouseEvent) => {
             const feature = e.features?.[0];
             
-            if (feature) {
-                map.getCanvas().style.cursor = 'pointer';
-                
-                // Remove previous hover state
+            if (!feature?.properties) {
+                // Clear hover state when no feature or properties
                 if (hoveredFeatureId !== null) {
-                    map.setFeatureState(
-                        { source: 'wave-data', id: hoveredFeatureId },
-                        { hover: false }
-                    );
-                }
-
-                // Set new hover state
-                const newHoveredId = feature.id as number;
-                setHoveredFeatureId(newHoveredId);
-                map.setFeatureState(
-                    { source: 'wave-data', id: newHoveredId },
-                    { hover: true }
-                );
-
-                // Update popup
-                const { properties } = feature;
-                const html = `
-                    <div class="px-4 py-2 space-y-1 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Height:</span>
-                            <span class="font-medium">${properties.height.toFixed(1)}m</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Direction:</span>
-                            <span class="font-medium">${properties.direction.toFixed(1)}°</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Period:</span>
-                            <span class="font-medium">${properties.mean_period.toFixed(1)}s</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Energy:</span>
-                            <span class="font-medium">${properties.wave_energy.toFixed(1)} kW/m</span>
-                        </div>
-                    </div>
-                `;
-
-                popupRef.current
-                    ?.setLngLat(e.lngLat)
-                    .setHTML(html)
-                    .addTo(map);
-            } else {
-                // Clear hover state when not over a feature
-                if (hoveredFeatureId !== null) {
-                    map.setFeatureState(
+                    map?.setFeatureState(
                         { source: 'wave-data', id: hoveredFeatureId },
                         { hover: false }
                     );
                     setHoveredFeatureId(null);
                 }
-                map.getCanvas().style.cursor = '';
-                popupRef.current?.remove();
+                setWaveInfo(undefined);
+                return;
             }
+
+            const { height, direction, mean_period, wave_energy } = feature.properties;
+
+            // Early return if any required property is null/undefined
+            if (height == null || direction == null || mean_period == null || wave_energy == null) {
+                setWaveInfo(undefined);
+                return;
+            }
+
+            setWaveInfo({
+                height,
+                direction,
+                mean_period,
+                wave_energy,
+                position: { x: e.point.x, y: e.point.y }
+            });
         };
 
         const handleMouseLeave = () => {
@@ -222,14 +212,17 @@ const WaveHeightLayer = memo(({ data, map, visible = true }: WaveHeightLayerProp
     if (!visible) return null;
 
     return (
-        <Source 
-            id="wave-data"
-            type="geojson" 
-            data={processedData}
-            generateId={true}
-        >
-            <Layer {...fillExtrusionLayer} />
-        </Source>
+        <>
+            <Source 
+                id="wave-data"
+                type="geojson" 
+                data={processedData}
+                generateId={true}
+            >
+                <Layer {...fillExtrusionLayer} />
+            </Source>
+            {waveInfo && <WaveInfo info={waveInfo} />}
+        </>
     );
 });
 
