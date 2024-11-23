@@ -16,13 +16,13 @@ const MAP_CONSTANTS = {
     DEFAULT_VIEW: {
         longitude: -71.0,
         latitude: 39.0,
-        zoom: 5,
+        zoom: 4,
     },
     BOUNDS: {
         PADDING: 50,
         ANIMATION_DURATION: 2500,
         MAX_ZOOM: 10,
-        MIN_ZOOM: 6,
+        MIN_ZOOM: 4,
     },
 } as const;
 
