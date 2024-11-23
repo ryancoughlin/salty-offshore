@@ -40,7 +40,7 @@ export const DatasetValueDisplay: React.FC<DatasetValueDisplayProps> = ({
           {config.label}
         </span>
         <span 
-          className="text-2xl font-medium font-sans text-white"
+          className="text-2xl font-normal font-mono text-white"
         >
           {displayValue}
         </span>

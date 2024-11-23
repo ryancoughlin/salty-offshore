@@ -56,8 +56,6 @@ export const useDatasetValue = (
 ) => {
   const [value, setValue] = useState<number | null>(null);
 
-console.log(valueKey, mapRef, cursorPosition)
-  
   useDebugValue(value !== null ? `${value.toFixed(2)}` : 'No value');
 
   const calculateValue = useCallback(

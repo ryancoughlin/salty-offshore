@@ -69,6 +69,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
     set({ selectedDate: date, layerData: null });
 
     const dateEntry = selectedDataset.dates.find(d => d.date === date);
+    console.log('Date entry ranges:', dateEntry?.ranges);
     if (dateEntry?.ranges) {
       set({ ranges: dateEntry.ranges });
     } else {
