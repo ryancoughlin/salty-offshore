@@ -46,9 +46,9 @@ const SaltyMap: React.FC = () => {
 
         try {
             mapRef.current.fitBounds(selectedRegion.bounds, {
-                padding: MAP_CONSTANTS.BOUNDS.PADDING,
-                duration: MAP_CONSTANTS.BOUNDS.ANIMATION_DURATION,
-                maxZoom: MAP_CONSTANTS.BOUNDS.MAX_ZOOM
+                padding: 50,
+                duration: 3200,
+                maxZoom: 5
             });
         } catch (error) {
             console.error('Error fitting bounds:', error);

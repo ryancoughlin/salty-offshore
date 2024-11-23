@@ -44,13 +44,19 @@ export interface Regions {
   regions: Region[];
 }
 
+export interface LayerData {
+  data: FeatureCollection | null;
+  contours: FeatureCollection | null;
+  image: string | null;
+}
+
 export interface CachedLayerData {
   regionId: string;
   datasetId: string;
-  date: ISODateString;
-  data?: FeatureCollection;
-  contours?: FeatureCollection;
-  image?: string;
+  date: string;
+  data: FeatureCollection | null;
+  contours: FeatureCollection | null;
+  image: string | null;
 }
 
 export interface DatasetMetadata {

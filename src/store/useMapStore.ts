@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import type { Dataset, CachedLayerData, Region } from "../types/api";
 import type { MapStore } from "./types";
+import type { FeatureCollection } from 'geojson';
 
 const layerCache = new Map<string, CachedLayerData>();
-const MAX_CACHE_SIZE = 200;
-const PREFETCH_WINDOW = 2;
+const MAX_CACHE_SIZE = 500;
 
-const fetchLayerUrl = async (url: string | undefined): Promise<any> => {
+const fetchLayerUrl = async (url: string | undefined): Promise<FeatureCollection | null> => {
   if (!url) return null;
   const response = await fetch(url);
   return response.ok ? response.json() : null;
@@ -54,18 +54,24 @@ export const useMapStore = create<MapStore>((set, get) => ({
   },
 
   selectDataset: (dataset: Dataset) => {
-    console.log('Selecting dataset:', dataset.id);
-    set({ selectedDataset: dataset });
+    console.log('[Dataset] Selecting dataset:', dataset.id);
+    set({ selectedDataset: dataset, layerData: null });
+    
     const mostRecentDate = dataset.dates[0]?.date;
     if (mostRecentDate) {
+      console.log('[Dataset] Setting most recent date:', mostRecentDate);
       get().selectDate(mostRecentDate);
     }
   },
 
   selectDate: (date) => {
     const { selectedDataset } = get();
-    if (!selectedDataset) return;
+    if (!selectedDataset) {
+      console.warn('[Date] No dataset selected');
+      return;
+    }
 
+    console.log('[Date] Selecting date:', date);
     set({ selectedDate: date, layerData: null });
 
     const dateEntry = selectedDataset.dates.find(d => d.date === date);
@@ -75,15 +81,17 @@ export const useMapStore = create<MapStore>((set, get) => ({
       set({ ranges: null });
     }
 
-    get().fetchLayerData(selectedDataset, date);
+    void get().fetchLayerData(selectedDataset, date);
   },
 
-  fetchLayerData: async (dataset: Dataset, date: string, priority: 'high' | 'low' = 'high') => {
+  fetchLayerData: async (dataset: Dataset, date: string) => {
     const cacheKey = `${dataset.id}:${date}`;
+    console.log('[Fetch] Fetching layer data:', { datasetId: dataset.id, date });
+    
     const cached = layerCache.get(cacheKey);
-
     if (cached) {
-      if (priority === 'high') {
+      console.log('[Fetch] Found cached data');
+      if (dataset.id === get().selectedDataset?.id && date === get().selectedDate) {
         set({ layerData: cached });
       }
       return;
@@ -91,7 +99,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
     const isCurrentDataset = dataset.id === get().selectedDataset?.id;
     const isCurrentDate = date === get().selectedDate;
-    const shouldUpdateUI = isCurrentDataset && isCurrentDate && priority === 'high';
+    const shouldUpdateUI = isCurrentDataset && isCurrentDate;
 
     if (shouldUpdateUI) {
       set({ loading: true, error: null });
@@ -99,7 +107,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
     try {
       const dateEntry = dataset.dates.find((d) => d.date === date);
-      if (!dateEntry) throw new Error("Date not found");
+      if (!dateEntry) {
+        throw new Error(`Date ${date} not found in dataset ${dataset.id}`);
+      }
+
+      console.log('[Fetch] Fetching layers:', {
+        data: Boolean(dateEntry.layers.data),
+        contours: Boolean(dateEntry.layers.contours),
+        image: Boolean(dateEntry.layers.image)
+      });
 
       // Parallel fetch all layer types
       const [data, contours] = await Promise.all([
@@ -107,13 +123,13 @@ export const useMapStore = create<MapStore>((set, get) => ({
         fetchLayerUrl(dateEntry.layers.contours)
       ]);
 
-      const layerData = {
+      const layerData: CachedLayerData = {
         regionId: dataset.regionId,
         datasetId: dataset.id,
         date,
-        data,
-        contours,
-        image: dateEntry.layers.image,
+        data: data || null,
+        contours: contours || null,
+        image: dateEntry.layers.image || null
       };
 
       // Cache management
@@ -123,35 +139,19 @@ export const useMapStore = create<MapStore>((set, get) => ({
       }
 
       layerCache.set(cacheKey, layerData);
+      console.log('[Fetch] Cached layer data for:', { datasetId: dataset.id, date });
 
       if (shouldUpdateUI) {
+        console.log('[Fetch] Updating UI with new layer data');
         set({ layerData, loading: false });
       }
 
-      // Prefetch adjacent dates
-      if (priority === 'high') {
-        const dateIndex = dataset.dates.findIndex(d => d.date === date);
-        const datesToPrefetch = [
-          ...dataset.dates.slice(Math.max(0, dateIndex - PREFETCH_WINDOW), dateIndex),
-          ...dataset.dates.slice(dateIndex + 1, dateIndex + 1 + PREFETCH_WINDOW)
-        ];
-
-        // Prefetch in background
-        Promise.all(
-          datesToPrefetch.map(d => 
-            get().fetchLayerData(dataset, d.date)
-          )
-        ).catch(console.error);
-      }
-
     } catch (err) {
+      const error = err instanceof Error ? err : new Error("Failed to fetch layer data");
+      console.error('[Fetch] Error:', error);
       if (shouldUpdateUI) {
-        set({
-          error: err instanceof Error ? err : new Error("Failed to fetch layer data"),
-          loading: false,
-        });
+        set({ error, loading: false });
       }
-      console.error("Error fetching data:", err);
     }
   },
 
