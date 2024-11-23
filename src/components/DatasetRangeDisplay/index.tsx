@@ -18,6 +18,8 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
   ranges
 }) => {
   const config = useMemo(() => getDatasetConfig(datasetKey.id), [datasetKey.id]);
+
+  console.log(config, ranges);
   
   if (!config || !ranges) return null;
 
