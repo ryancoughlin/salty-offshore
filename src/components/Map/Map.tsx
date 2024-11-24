@@ -43,7 +43,7 @@ const SaltyMap: React.FC = () => {
       updateMousePosition 
     } = useMapToolsStore();
 
-    const { handleMapLoad } = useMapInitialization(mapRef, setMapRef);
+    const { mapLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
 
     const fitToRegionBounds = useCallback(() => {
         if (!selectedRegion?.bounds || !mapRef.current) return;
@@ -117,19 +117,21 @@ const SaltyMap: React.FC = () => {
                     minZoom={4}
                     optimizeForTerrain={false}
                 >
-                    <Suspense fallback={null}>
-                        <MapControls />
-                        <MapTools />
-                        <MapLayerComponents
-                            selectedRegion={selectedRegion}
-                            selectedDataset={selectedDataset}
-                            selectedDate={selectedDate}
-                            mapRef={mapRef}
-                        />
-                        <BathymetryLayer />
-                        <Grid />
-                        <SpotLayer />
-                    </Suspense>
+                    {mapLoaded && (
+                        <Suspense fallback={null}>
+                            <MapControls />
+                            <MapTools />
+                            <MapLayerComponents
+                                selectedRegion={selectedRegion}
+                                selectedDataset={selectedDataset}
+                                selectedDate={selectedDate}
+                                mapRef={mapRef}
+                            />
+                            <BathymetryLayer />
+                            <Grid />
+                            <SpotLayer />
+                        </Suspense>
+                    )}
                 </Map>
             </div>
         </MapErrorBoundary>
