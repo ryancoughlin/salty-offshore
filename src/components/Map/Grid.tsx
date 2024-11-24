@@ -20,6 +20,7 @@ export const Grid: React.FC<GridProps> = ({ visible = true }) => {
         type: 'FeatureCollection',
         features: []
     });
+    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
         // Generate latitude lines
@@ -52,9 +53,12 @@ export const Grid: React.FC<GridProps> = ({ visible = true }) => {
             type: 'FeatureCollection',
             features: [...latitudeLines, ...longitudeLines]
         });
+        setIsReady(true);
     }, []); // Empty dependency array since GRID_CONSTANTS.SIZE is static
 
-    return visible ? (
+    if (!visible || !isReady) return null;
+
+    return (
         <Source id="grid-source" type="geojson" data={gridLines}>
             <Layer
                 id="grid-lines"
@@ -67,5 +71,5 @@ export const Grid: React.FC<GridProps> = ({ visible = true }) => {
                 }}
             />
         </Source>
-    ) : null;
+    );
 }; 
