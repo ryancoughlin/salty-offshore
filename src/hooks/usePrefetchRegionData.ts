@@ -26,8 +26,8 @@ export const usePrefetchRegionData = (region: Region | null) => {
       abortControllerRef.current = new AbortController();
 
       try {
-        console.log(`[Prefetch] Starting prefetch for region: ${region.id}`);
-        console.log(`[Prefetch] Found ${regionData.datasets.length} datasets`);
+        // console.log(`[Prefetch] Starting prefetch for region: ${region.id}`);
+        // console.log(`[Prefetch] Found ${regionData.datasets.length} datasets`);
 
         // Create a queue of all dataset-date combinations with metadata
         const prefetchQueue = regionData.datasets.flatMap(dataset => 
@@ -54,7 +54,7 @@ export const usePrefetchRegionData = (region: Region | null) => {
           const chunkNumber = Math.floor(i / CHUNK_SIZE) + 1;
           const totalChunks = Math.ceil(prefetchQueue.length / CHUNK_SIZE);
           
-          console.log(`[Prefetch] Processing chunk ${chunkNumber}/${totalChunks}`);
+          // console.log(`[Prefetch] Processing chunk ${chunkNumber}/${totalChunks}`);
           
           // Process chunk in parallel
           await Promise.all(
@@ -62,11 +62,11 @@ export const usePrefetchRegionData = (region: Region | null) => {
               try {
                 await fetchLayerData(dataset, date);
                 completedItems++;
-                console.log(
-                  `[Prefetch] Completed ${completedItems}/${prefetchQueue.length} ` +
-                  `(${Math.round((completedItems/prefetchQueue.length) * 100)}%) ` +
-                  `Dataset: ${dataset.id}, Date: ${date}`
-                );
+                // // console.log(
+                // //   `[Prefetch] Completed ${completedItems}/${prefetchQueue.length} ` +
+                // //   `(${Math.round((completedItems/prefetchQueue.length) * 100)}%) ` +
+                // //   `Dataset: ${dataset.id}, Date: ${date}`
+                // );
               } catch (error) {
                 console.error(
                   `[Prefetch] Error prefetching dataset: ${dataset.id}, ` +
