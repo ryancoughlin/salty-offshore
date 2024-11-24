@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { Dataset } from '../types/api';
 import { getDatasetDisplayName } from '../config';
 import DatasetInfo from './DatasetInfo/DatasetInfo';

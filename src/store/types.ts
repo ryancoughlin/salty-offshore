@@ -1,10 +1,10 @@
-import type { RegionInfo, Dataset, CachedLayerData } from "../types/api";
+import type { Region, Dataset, CachedLayerData } from "../types/api";
 import type { ISODateString } from "../types/date";
 import type { Coordinate } from "../types/core";
 import type { Map as MapboxMap } from "mapbox-gl";
 
 export interface MapState {
-  selectedRegion: RegionInfo | null;
+  selectedRegion: Region | null;
   selectedDataset: Dataset | null;
   selectedDate: ISODateString | null;
   layerData: CachedLayerData | null;
@@ -22,8 +22,8 @@ export interface MapState {
 }
 
 export interface MapActions {
-  selectRegion: (region: RegionInfo) => void;
-  selectDefaultDataset: (regionData: RegionInfo) => void;
+  selectRegion: (region: Region) => void;
+  selectDefaultDataset: (regionData: Region) => void;
   selectDataset: (dataset: Dataset) => void;
   selectDate: (date: ISODateString) => void;
   fetchLayerData: (dataset: Dataset, date: ISODateString) => Promise<void>;

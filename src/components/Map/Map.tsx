@@ -10,7 +10,9 @@ import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { MapErrorBoundary } from './MapErrorBoundary';
 import { BathymetryLayer } from './BathymetryLayer';
 import { SpotLayer } from './SpotLayer';
-import { Region, Dataset } from '@/types/api';
+import { MapTools } from '../MapTools';
+import { useMapToolsStore } from '../../store/mapToolsStore';
+import type { Region, Dataset } from '../../types/api';
 
 const MAP_CONSTANTS = {
     DEFAULT_VIEW: {
@@ -23,6 +25,7 @@ const MAP_CONSTANTS = {
 const SaltyMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
     const [viewState, setViewState] = useState<Partial<ViewState>>(MAP_CONSTANTS.DEFAULT_VIEW);
+    const [cursor, setCursor] = useState<string>('default');
 
     const {
         selectedRegion,
@@ -33,9 +36,16 @@ const SaltyMap: React.FC = () => {
         selectDefaultDataset,
     } = useMapStore();
 
+    const { 
+      isToolActive, 
+      activeTool,
+      addPoint, 
+      updateMousePosition 
+    } = useMapToolsStore();
+
     const { isStyleLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
 
-    const handleBoundsFitting = useCallback(() => {
+    const fitToRegionBounds = useCallback(() => {
         if (!isStyleLoaded || !selectedRegion?.bounds || !mapRef.current) return;
 
         try {
@@ -50,25 +60,44 @@ const SaltyMap: React.FC = () => {
     }, [selectedRegion, isStyleLoaded]);
 
     useEffect(() => {
-        handleBoundsFitting();
-    }, [handleBoundsFitting]);
+        fitToRegionBounds();
+    }, [fitToRegionBounds]);
 
     const handleMove = useCallback((evt: { viewState: ViewState }) => {
         setViewState(evt.viewState);
     }, []);
 
     const handleMouseMove = useCallback((event: MapLayerMouseEvent) => {
-        setCursorPosition({
-            longitude: event.lngLat.lng,
-            latitude: event.lngLat.lat
-        });
-    }, [setCursorPosition]);
+        if (isToolActive && activeTool === 'distance') {
+            updateMousePosition([event.lngLat.lng, event.lngLat.lat]);
+        } else {
+            setCursorPosition({
+                longitude: event.lngLat.lng,
+                latitude: event.lngLat.lat
+            });
+        }
+    }, [isToolActive, activeTool, updateMousePosition, setCursorPosition]);
+
+    const handleClick = useCallback((event: MapLayerMouseEvent) => {
+        if (isToolActive && activeTool === 'distance') {
+            addPoint([event.lngLat.lng, event.lngLat.lat]);
+        }
+    }, [isToolActive, activeTool, addPoint]);
 
     useEffect(() => {
         if (selectedRegion && !selectedDataset) {
             selectDefaultDataset(selectedRegion);
         }
     }, [selectedRegion, selectedDataset, selectDefaultDataset]);
+
+    // Update cursor only when measure tool is active
+    useEffect(() => {
+        if (isToolActive && activeTool === 'distance') {
+            setCursor('crosshair');
+        } else {
+            setCursor('default');
+        }
+    }, [isToolActive, activeTool]);
 
     return (
         <MapErrorBoundary>
@@ -78,9 +107,11 @@ const SaltyMap: React.FC = () => {
                     {...viewState}
                     onMove={handleMove}
                     onMouseMove={handleMouseMove}
+                    onClick={handleClick}
                     onLoad={handleMapLoad}
                     mapStyle='mapbox://styles/snowcast/cm3rd1mik008801s97a8db8w6'
                     style={{ width: '100%', height: '100%' }}
+                    cursor={cursor}
                     mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
                     maxZoom={10}
                     minZoom={4}
@@ -88,6 +119,7 @@ const SaltyMap: React.FC = () => {
                 >
                     <Suspense fallback={null}>
                         <MapControls />
+                        <MapTools />
                         <MapLayerComponents
                             selectedRegion={selectedRegion}
                             selectedDataset={selectedDataset}
