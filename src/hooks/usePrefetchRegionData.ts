@@ -23,13 +23,9 @@ export const usePrefetchRegionData = (region: Region | null) => {
       }
 
       prefetchingRef.current = true;
-      abortControllerRef.current = new AbortController();
+      console.log(`[Prefetch] Starting prefetch for region: ${region.id}`);
 
       try {
-        // console.log(`[Prefetch] Starting prefetch for region: ${region.id}`);
-        // console.log(`[Prefetch] Found ${regionData.datasets.length} datasets`);
-
-        // Create a queue of all dataset-date combinations with metadata
         const prefetchQueue = regionData.datasets.flatMap(dataset => 
           dataset.dates.map(dateEntry => ({
             dataset,
@@ -41,32 +37,20 @@ export const usePrefetchRegionData = (region: Region | null) => {
         );
 
         console.log(`[Prefetch] Total items to prefetch: ${prefetchQueue.length}`);
-        let completedItems = 0;
 
         for (let i = 0; i < prefetchQueue.length; i += CHUNK_SIZE) {
-          // Check if prefetch was cancelled
           if (abortControllerRef.current?.signal.aborted) {
             console.log('[Prefetch] Prefetch cancelled');
             break;
           }
 
           const chunk = prefetchQueue.slice(i, i + CHUNK_SIZE);
-          const chunkNumber = Math.floor(i / CHUNK_SIZE) + 1;
-          const totalChunks = Math.ceil(prefetchQueue.length / CHUNK_SIZE);
-          
-          // console.log(`[Prefetch] Processing chunk ${chunkNumber}/${totalChunks}`);
           
           // Process chunk in parallel
           await Promise.all(
             chunk.map(async ({ dataset, date }) => {
               try {
                 await fetchLayerData(dataset, date);
-                completedItems++;
-                // // console.log(
-                // //   `[Prefetch] Completed ${completedItems}/${prefetchQueue.length} ` +
-                // //   `(${Math.round((completedItems/prefetchQueue.length) * 100)}%) ` +
-                // //   `Dataset: ${dataset.id}, Date: ${date}`
-                // );
               } catch (error) {
                 console.error(
                   `[Prefetch] Error prefetching dataset: ${dataset.id}, ` +
@@ -84,7 +68,7 @@ export const usePrefetchRegionData = (region: Region | null) => {
 
         console.log(`[Prefetch] Completed prefetch for region: ${region.id}`);
       } catch (error) {
-        console.error(`[Prefetch] Fatal error during prefetch:`, error);
+        console.error(`[Prefetch] Error:`, error);
       } finally {
         prefetchingRef.current = false;
         abortControllerRef.current = null;
@@ -93,7 +77,6 @@ export const usePrefetchRegionData = (region: Region | null) => {
 
     prefetchData();
 
-    // Cleanup function
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();

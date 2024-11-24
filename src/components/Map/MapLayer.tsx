@@ -1,8 +1,10 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 import { ContourLineLayer } from './ContourLineLayer';
 import WaveHeightLayer from './WaveHeightLayer';
+import type { FeatureCollection, Point } from 'geojson';
+import type { WaveProperties } from '../../types/WaveProperties';
 
 const imageLayer = {
     id: 'image-layer',
@@ -21,7 +23,22 @@ interface MapLayerProps {
 export const MapLayer = memo<MapLayerProps>(({ map }) => {
     const { layerData, selectedRegion, selectedDataset } = useMapStore();
 
-    if (!layerData || !selectedRegion) return null;
+    useEffect(() => {
+        console.log('MapLayer render:', {
+            hasLayerData: !!layerData,
+            hasRegion: !!selectedRegion,
+            datasetId: selectedDataset?.id,
+            hasImage: !!layerData?.image,
+            hasContours: !!layerData?.contours,
+            hasData: !!layerData?.data
+        });
+    }, [layerData, selectedRegion, selectedDataset]);
+
+    if (!layerData || !selectedRegion) {
+        console.log('MapLayer: Missing required data');
+        return null;
+    }
+
     const isWaveDataset = selectedDataset?.id === "CMEMS_Global_Waves_Daily";
 
     return (
@@ -40,7 +57,7 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
             {isWaveDataset && layerData.data && (
                 <WaveHeightLayer 
                     map={map}
-                    data={layerData.data}
+                    data={layerData.data as unknown as FeatureCollection<Point, WaveProperties>}
                 />
             )}
 

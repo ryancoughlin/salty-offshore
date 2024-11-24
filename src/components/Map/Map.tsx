@@ -43,11 +43,11 @@ const SaltyMap: React.FC = () => {
       updateMousePosition 
     } = useMapToolsStore();
 
-    const { isStyleLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
+    const { handleMapLoad } = useMapInitialization(mapRef, setMapRef);
 
     const fitToRegionBounds = useCallback(() => {
-        if (!isStyleLoaded || !selectedRegion?.bounds || !mapRef.current) return;
-
+        if (!selectedRegion?.bounds || !mapRef.current) return;
+        
         try {
             mapRef.current.fitBounds(selectedRegion.bounds, {
                 padding: 10,
@@ -57,7 +57,7 @@ const SaltyMap: React.FC = () => {
         } catch (error) {
             console.error('Error fitting bounds:', error);
         }
-    }, [selectedRegion, isStyleLoaded]);
+    }, [selectedRegion]);
 
     useEffect(() => {
         fitToRegionBounds();
@@ -126,7 +126,6 @@ const SaltyMap: React.FC = () => {
                             selectedDate={selectedDate}
                             mapRef={mapRef}
                         />
-
                         <BathymetryLayer />
                         <Grid />
                         <SpotLayer />
