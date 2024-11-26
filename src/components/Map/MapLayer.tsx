@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useMemo } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import useMapStore from '../../store/useMapStore';
 import { ContourLineLayer } from './ContourLineLayer';
@@ -23,37 +23,25 @@ interface MapLayerProps {
 export const MapLayer = memo<MapLayerProps>(({ map }) => {
     const { layerData, selectedRegion, selectedDataset } = useMapStore();
 
-    useEffect(() => {
-        console.log('MapLayer render:', {
-            hasLayerData: !!layerData,
-            hasRegion: !!selectedRegion,
-            datasetId: selectedDataset?.id,
-            hasImage: !!layerData?.image,
-            hasContours: !!layerData?.contours,
-            hasData: !!layerData?.data
-        });
-    }, [layerData, selectedRegion, selectedDataset]);
-
-    if (!layerData || !selectedRegion) {
-        console.log('MapLayer: Missing required data');
-        return null;
-    }
+    // Memoize the coordinates calculation
+    const imageCoordinates = useMemo(() => {
+        if (!selectedRegion) return null;
+        return [
+            [selectedRegion.bounds[0][0], selectedRegion.bounds[1][1]],
+            [selectedRegion.bounds[1][0], selectedRegion.bounds[1][1]],
+            [selectedRegion.bounds[1][0], selectedRegion.bounds[0][1]],
+            [selectedRegion.bounds[0][0], selectedRegion.bounds[0][1]]
+        ];
+    }, [selectedRegion]);
 
     const isWaveDataset = selectedDataset?.id === "CMEMS_Global_Waves_Daily";
 
+    if (!layerData || !selectedRegion || !imageCoordinates) {
+        return null;
+    }
+
     return (
         <>
-            <Source id="data-layer" type="geojson" data={layerData.data}>
-                <Layer
-                    id="data-layer"
-                    type="fill"
-                    paint={{
-                        'fill-opacity': 0,
-                        'fill-color': '#007cbf'
-                    }}
-                />
-            </Source>
-
             {isWaveDataset && layerData.data && (
                 <WaveHeightLayer 
                     map={map}
@@ -65,16 +53,28 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                 <Source 
                     type="image" 
                     url={layerData.image}
-                    coordinates={[
-                        [selectedRegion.bounds[0][0], selectedRegion.bounds[1][1]],
-                        [selectedRegion.bounds[1][0], selectedRegion.bounds[1][1]],
-                        [selectedRegion.bounds[1][0], selectedRegion.bounds[0][1]],
-                        [selectedRegion.bounds[0][0], selectedRegion.bounds[0][1]]
-                    ]}
+                    coordinates={imageCoordinates}
                 >
                     <Layer {...imageLayer} />
                 </Source>
             )}
+
+            <Source 
+                id="data-layer" 
+                type="geojson" 
+                data={layerData.data}
+                tolerance={3}
+                maxzoom={22}
+            >
+                <Layer
+                    id="data-layer"
+                    type="fill"
+                    paint={{
+                        'fill-opacity': 0,
+                        'fill-color': '#007cbf'
+                    }}
+                />
+            </Source>
 
             {layerData.contours && (
                 <ContourLineLayer map={map} />

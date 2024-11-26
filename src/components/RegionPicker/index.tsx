@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
-import type { RegionInfo } from '../../types/api';
+import type { Region } from '../../types/api';
 import usePersistedState from '../../hooks/usePersistedState';
 import { RegionSelectItem } from './RegionSelectItem';
+import { useRegionDatasets } from '../../hooks/useRegionDatasets';
 
 interface RegionPickerProps {
-  regions: RegionInfo[];
-  selectedRegion: RegionInfo | null;
-  onRegionSelect: (region: RegionInfo) => void;
+  regions: Region[];
+  selectedRegion: Region | null;
+  onRegionSelect: (region: Region) => void;
 }
 
 export const RegionPicker: React.FC<RegionPickerProps> = ({
@@ -17,17 +18,19 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [persistedRegionId, setPersistedRegionId] = usePersistedState<string>('selectedRegionId', '');
+  const { getRegionData } = useRegionDatasets();
 
   const sortedRegions = [...regions].sort((a, b) => 
     a.name.localeCompare(b.name)
   );
 
-  const handleRegionSelect = useCallback((region: RegionInfo) => {
-    setPersistedRegionId(region.id);
-    onRegionSelect(region);
+  const handleRegionSelect = useCallback((region: Region) => {
+    const fullRegionData = getRegionData(region.id);
+    if (fullRegionData) {
+      onRegionSelect(fullRegionData);
+    }
     setIsOpen(false);
-  }, [setPersistedRegionId, onRegionSelect]);
+  }, [onRegionSelect, getRegionData]);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
