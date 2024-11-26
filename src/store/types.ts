@@ -6,7 +6,7 @@ import type { Map as MapboxMap } from "mapbox-gl";
 export interface MapState {
   selectedRegion: Region | null;
   selectedDataset: Dataset | null;
-  selectedDate: ISODateString | null;
+  selectedDate: string | null;
   layerData: CachedLayerData | null;
   loading: boolean;
   error: Error | null;
@@ -22,10 +22,9 @@ export interface MapState {
 }
 
 export interface MapActions {
-  selectRegion: (region: Region) => void;
-  selectDefaultDataset: (regionData: Region) => void;
-  selectDataset: (dataset: Dataset) => void;
-  selectDate: (date: ISODateString) => void;
+  selectRegion: (region: Region | null) => void;
+  selectDataset: (dataset: Dataset | null) => void;
+  selectDate: (date: string | null) => void;
   fetchLayerData: (dataset: Dataset, date: ISODateString) => Promise<void>;
   setCursorPosition: (position: Coordinate | null) => void;
   setMapRef: (ref: MapboxMap | null) => void;

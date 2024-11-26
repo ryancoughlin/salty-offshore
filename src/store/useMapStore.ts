@@ -21,40 +21,49 @@ export const useMapStore = create<MapStore>((set, get) => ({
   layerData: null,
   loading: false,
   error: null,
-  contourLineInfo: null,
   cursorPosition: null,
   mapRef: null,
   ranges: null,
 
   // Actions
-  selectRegion: (region: Region) => {
-    if (region.id !== get().selectedRegion?.id) {
-      layerCache.clear();
-      set({
-        selectedRegion: region,
-        selectedDataset: null,
-        selectedDate: null,
-        layerData: null,
-        error: null,
-      });
-
-      get().selectDefaultDataset(region);
+  selectRegion: (region: Region | null) => {
+    if (!region) {
+      set({ selectedRegion: null, selectedDataset: null, selectedDate: null });
+      return;
     }
+
+    console.log('[Region] Selecting region:', region.id);
+    console.log('[Region] Available datasets:', region.datasets);
+
+    layerCache.clear();
+    set({ selectedRegion: region });
+    get().selectDataset(null);
   },
 
-  selectDefaultDataset: (region: Region) => {
-    if (!region.datasets) return;
+  selectDataset: (dataset: Dataset | null) => {
+    const { selectedRegion } = get();
 
-    const sstDataset = region.datasets.find(
-      (d: Dataset) => d.id === "LEOACSPOSSTL3SnrtCDaily"
-    );
+    if (!dataset) {
+      console.log('[Dataset] No dataset selected, selecting default LEO dataset');
+      console.log('[Dataset] Selected region:', selectedRegion?.id);
+      console.log('[Dataset] Region datasets:', selectedRegion?.datasets);
 
-    if (sstDataset) {
-      get().selectDataset(sstDataset);
+      if (selectedRegion?.datasets) {
+        const leoDataset = selectedRegion.datasets.find(
+          d => d.id === "LEOACSPOSSTL3SnrtCDaily"
+        );
+        console.log('[Dataset] Found LEO dataset:', leoDataset?.id);
+        if (leoDataset) {
+          dataset = leoDataset;
+        }
+      }
     }
-  },
 
-  selectDataset: (dataset: Dataset) => {
+    if (!dataset) {
+      set({ selectedDataset: null, selectedDate: null, layerData: null });
+      return;
+    }
+
     console.log('[Dataset] Selecting dataset:', dataset.id);
     set({ selectedDataset: dataset, layerData: null });
     
@@ -65,10 +74,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
     }
   },
 
-  selectDate: (date) => {
+  selectDate: (date: string | null) => {
     const { selectedDataset } = get();
     if (!selectedDataset) {
       console.warn('[Date] No dataset selected');
+      return;
+    }
+
+    if (!date) {
+      set({ selectedDate: null, layerData: null });
       return;
     }
 
@@ -76,7 +90,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
     set({ selectedDate: date, layerData: null });
 
     const dateEntry = selectedDataset.dates.find(d => d.date === date);
-    console.log('Date entry ranges:', dateEntry?.ranges);
     if (dateEntry?.ranges) {
       set({ ranges: dateEntry.ranges });
     } else {
@@ -113,13 +126,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
         throw new Error(`Date ${date} not found in dataset ${dataset.id}`);
       }
 
-      console.log('[Fetch] Fetching layers:', {
-        data: Boolean(dateEntry.layers.data),
-        contours: Boolean(dateEntry.layers.contours),
-        image: Boolean(dateEntry.layers.image)
-      });
-
-      // Parallel fetch all layer types
       const [data, contours] = await Promise.all([
         fetchLayerUrl(dateEntry.layers.data),
         fetchLayerUrl(dateEntry.layers.contours)
@@ -134,20 +140,16 @@ export const useMapStore = create<MapStore>((set, get) => ({
         image: dateEntry.layers.image || null
       };
 
-      // Cache management
       if (layerCache.size >= MAX_CACHE_SIZE) {
         const firstKey = layerCache.keys().next().value;
         layerCache.delete(firstKey);
       }
 
       layerCache.set(cacheKey, layerData);
-      console.log('[Fetch] Cached layer data for:', { datasetId: dataset.id, date });
 
       if (shouldUpdateUI) {
-        console.log('[Fetch] Updating UI with new layer data');
         set({ layerData, loading: false });
       }
-
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch layer data");
       console.error('[Fetch] Error:', error);

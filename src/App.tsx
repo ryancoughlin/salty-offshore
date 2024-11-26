@@ -1,29 +1,51 @@
 import './App.css'
-import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { createBrowserRouter, RouterProvider, useParams, Navigate } from 'react-router-dom'
 import SaltyMap from './components/Map/Map'
 import Dock from './components/Dock'
 import { DateTimeline } from './components/DateTimeline'
 import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
 import useMapStore from './store/useMapStore'
-import { useUrlSync } from './hooks/useUrlSync'
-import { usePrefetchRegionData } from './hooks/usePrefetchRegionData'
 import { ROUTES } from './routes'
+import { useUrlSync } from './hooks/useUrlSync'
 
-const AppContainer: React.FC = () => {
-  const { regions } = useRegions();
-  const { getRegionData } = useRegionDatasets();
+const MainLayout: React.FC = () => {
+  const params = useParams();
   const {
     selectedRegion,
     selectedDataset,
     selectedDate,
     selectRegion,
+    selectDataset,
     selectDate,
   } = useMapStore();
+  const { regions } = useRegions();
+  const { getRegionData } = useRegionDatasets();
 
+  // Enable URL sync
   useUrlSync();
-  usePrefetchRegionData(selectedRegion);
+
+  // Handle URL params on mount and updates
+  useEffect(() => {
+    if (params.regionId && !selectedRegion) {
+      const region = regions.find(r => r.id === params.regionId);
+      if (region) {
+        const fullRegionData = getRegionData(region.id);
+        if (fullRegionData) {
+          selectRegion(fullRegionData);
+        }
+      }
+    }
+    if (params.datasetId && !selectedDataset) {
+      const dataset = getRegionData(params.regionId!)?.datasets
+        .find(d => d.id === params.datasetId);
+      if (dataset) selectDataset(dataset);
+    }
+    if (params.date && !selectedDate) {
+      selectDate(params.date);
+    }
+  }, [params, regions, selectedRegion, selectedDataset, selectedDate, getRegionData, selectRegion, selectDataset, selectDate]);
 
   const regionData = selectedRegion ? getRegionData(selectedRegion.id) : null;
 
@@ -52,32 +74,25 @@ const AppContainer: React.FC = () => {
 const router = createBrowserRouter([
   {
     path: ROUTES.HOME,
-    element: <AppContainer />,
-    children: [
-      {
-        path: ROUTES.REGION,
-        element: <AppContainer />
-      },
-      {
-        path: ROUTES.DATASET,
-        element: <AppContainer />
-      },
-      {
-        path: ROUTES.DATE,
-        element: <AppContainer />
-      }
-    ]
+    element: <MainLayout />,
+  },
+  {
+    path: ROUTES.REGION,
+    element: <MainLayout />,
+  },
+  {
+    path: ROUTES.DATASET,
+    element: <MainLayout />,
+  },
+  {
+    path: ROUTES.DATE,
+    element: <MainLayout />,
+  },
+  {
+    path: '*',
+    element: <Navigate to="/" replace />
   }
-], {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true,
-    v7_fetcherPersist: true,
-    v7_normalizeFormMethod: true,
-    v7_partialHydration: true,
-    v7_skipActionErrorRevalidation: true
-  }
-});
+]);
 
 const App = () => {
   return <RouterProvider router={router} />;

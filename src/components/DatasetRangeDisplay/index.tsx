@@ -62,7 +62,7 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
           {config.formatValue(range.min)}
         </span>
         <span className="text-xs font-mono text-neutral-400">
-          {config.formatValue(range.max)}
+          {config.formatValue(range.max)}{config.unit}
         </span>
       </div>
     </div>
