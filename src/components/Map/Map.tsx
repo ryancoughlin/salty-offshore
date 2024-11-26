@@ -15,6 +15,7 @@ import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { useMapCursor } from '../../hooks/useMapCursor';
 import { useMapViewState } from '../../hooks/useMapViewState';
 import { MAP_CONSTANTS } from '../../constants/map';
+import StationsLayer from './StationsLayer';
 
 const OceanographicMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
@@ -108,6 +109,7 @@ const OceanographicMap: React.FC = () => {
                             <BathymetryLayer />
                             <Grid />
                             <SpotLayer />
+                            <StationsLayer />
                         </Suspense>
                     )}
                 </Map>
