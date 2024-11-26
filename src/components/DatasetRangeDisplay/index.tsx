@@ -1,5 +1,5 @@
 import { Dataset } from '../../types/api';
-import { getDatasetConfig } from '../../types/datasets';
+import { getDatasetConfig, DatasetType, getDatasetType } from '../../types/datasets';
 import { useMemo } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { useDatasetValue } from '../../hooks/useDatasetValue';
@@ -22,9 +22,30 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
   const config = useMemo(() => getDatasetConfig(datasetKey.id), [datasetKey.id]);
   const { cursorPosition, mapRef } = useMapStore();
   
-  const currentValue = useDatasetValue(cursorPosition, mapRef, config?.valueKey || '');
+  const currentValue = useDatasetValue(
+    cursorPosition, 
+    mapRef, 
+    config?.valueKey || 'temperature'
+  );
   
   if (!config || !ranges) return null;
+
+  const formatValue = (val: number): string => {
+    const datasetType = getDatasetType(datasetKey.id);
+    switch (datasetType) {
+      case DatasetType.BLENDED_SST:
+      case DatasetType.LEO_SST:
+        return `${val.toFixed(1)}${config.unit}`;
+      case DatasetType.CHLOROPHYLL:
+        return `${val.toFixed(2)} ${config.unit}`;
+      case DatasetType.WAVE_HEIGHT:
+        return `${val.toFixed(1)}${config.unit}`;
+      case DatasetType.CURRENTS:
+        return `${val.toFixed(2)}${config.unit}`;
+      default:
+        return `${val}${config.unit}`;
+    }
+  };
 
   const range = ranges[config.rangeKey];
   if (!range) return null;
@@ -59,10 +80,10 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
       {/* Min/Max Labels */}
       <div className="absolute w-full flex justify-between mt-1">
         <span className="text-xs font-mono text-neutral-400">
-          {config.formatValue(range.min)}
+          {formatValue(range.min)}
         </span>
         <span className="text-xs font-mono text-neutral-400">
-          {config.formatValue(range.max)}{config.unit}
+          {formatValue(range.max)}
         </span>
       </div>
     </div>

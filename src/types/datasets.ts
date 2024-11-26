@@ -1,37 +1,25 @@
-export enum DatasetValueKey {
-    BLENDED_SST = 'temperature',
-    LEO_SST = 'temperature',
-    CHLOROPHYLL = 'concentration',
-    WAVE_HEIGHT = 'height',
-    CURRENTS = 'speed'
-  }
-  
-  export enum DatasetRangeKey {
-    BLENDED_SST = 'temperature',
-    LEO_SST = 'temperature',
-    CHLOROPHYLL = 'concentration',
-    WAVE_HEIGHT = 'height',
-    CURRENTS = 'speed'
+export enum DatasetType {
+    BLENDED_SST = 'blended_sst',
+    LEO_SST = 'leo_sst',
+    CHLOROPHYLL = 'chlorophyll',
+    WAVE_HEIGHT = 'wave_height',
+    CURRENTS = 'currents'
   }
   
   export interface DatasetConfig {
-    valueKey: DatasetValueKey;    // Key for getting values from feature properties
-    rangeKey: DatasetRangeKey;    // Key for getting ranges from date entry
+    valueKey: string;
+    rangeKey: string;
     unit: string;
     label: string;
-    formatValue: (value: number) => string;
-    formatRange: (min: number, max: number) => string;
-    colorScale: string[];  // Add this field
+    colorScale: string[];
   }
   
   export const DATASET_CONFIGS: Record<string, DatasetConfig> = {
     'LEOACSPOSSTL3SnrtCDaily': {
-      valueKey: DatasetValueKey.LEO_SST,
-      rangeKey: DatasetRangeKey.LEO_SST,
+      valueKey: 'temperature',
+      rangeKey: 'temperature',
       unit: '°',
       label: 'Water temp',
-      formatValue: (value: number) => `${value.toFixed(1)}°`,
-      formatRange: (min: number, max: number) => `${min.toFixed(1)}° - ${max.toFixed(1)}`,
       colorScale: [
         '#081d58', '#0d2167', '#122b76', '#173584', '#1c3f93',
         '#2149a1', '#2653b0', '#2b5dbe', '#3067cd', '#3571db',
@@ -44,12 +32,10 @@ export enum DatasetValueKey {
       ]
     },
     'BLENDEDsstDNDaily': {
-      valueKey: DatasetValueKey.BLENDED_SST,
-      rangeKey: DatasetRangeKey.BLENDED_SST,
+      valueKey: 'temperature',
+      rangeKey: 'temperature',
       unit: '°',
       label: 'Water temp',
-      formatValue: (value: number) => `${value.toFixed(1)}°`,
-      formatRange: (min: number, max: number) => `${min.toFixed(1)}° - ${max.toFixed(1)}`,
       colorScale: [
         '#081d58', '#0d2167', '#122b76', '#173584', '#1c3f93',
         '#2149a1', '#2653b0', '#2b5dbe', '#3067cd', '#3571db',
@@ -62,12 +48,10 @@ export enum DatasetValueKey {
       ]
     },
     'chlorophyll_oci': {
-      valueKey: DatasetValueKey.CHLOROPHYLL,
-      rangeKey: DatasetRangeKey.CHLOROPHYLL,
+      valueKey: 'concentration',
+      rangeKey: 'concentration',
       unit: 'mg/m³',
       label: 'Chlorophyll',
-      formatValue: (value: number) => `${value.toFixed(2)} mg/m³`,
-      formatRange: (min: number, max: number) => `${min.toFixed(2)} - ${max.toFixed(2)}`,
       colorScale: [
         '#B1C2D8', '#A3B9D3', '#96B1CF', '#88A8CA', '#7AA0C5',
         '#6C98C0', '#5F8FBB', '#5187B6', '#437FB0', '#3577AB',
@@ -79,12 +63,10 @@ export enum DatasetValueKey {
       ]
     },
     'CMEMS_Global_Waves_Daily': {
-        valueKey: DatasetValueKey.WAVE_HEIGHT,
-        rangeKey: DatasetRangeKey.WAVE_HEIGHT,
+        valueKey: 'height',
+        rangeKey: 'height',
         unit: 'ft',
         label: 'Wave Height',
-        formatValue: (value: number) => `${value.toFixed(1)}'`,
-        formatRange: (min: number, max: number) => `${min.toFixed(1)} - ${max.toFixed(1)}`,
         colorScale: [
           '#053061', '#0a3666', '#0f3d6c',
           '#B2E5F4', '#bae7f3', '#c1e9f2',
@@ -100,17 +82,32 @@ export enum DatasetValueKey {
           '#b81717', '#b01010', '#a80808'        ]
       },
       'CMEMS_Global_Currents_Daily': {
-        valueKey: DatasetValueKey.CURRENTS,
-        rangeKey: DatasetRangeKey.CURRENTS,
+        valueKey: 'speed',
+        rangeKey: 'speed',
         unit: 'm/s',
         label: 'Current',
-        formatValue: (value: number) => `${value.toFixed(2)}'`,
-        formatRange: (min: number, max: number) => `${min.toFixed(2)} - ${max.toFixed(2)}`,
         colorScale: ['#B1C2D8', '#89CFF0', '#4682B4', '#0047AB', '#00008B', '#000033']
       }
   };
   
   export function getDatasetConfig(datasetId: string): DatasetConfig | undefined {
     return DATASET_CONFIGS[datasetId];
+  }
+  
+  export function getDatasetType(datasetId: string): DatasetType | undefined {
+    switch (datasetId) {
+      case 'LEOACSPOSSTL3SnrtCDaily':
+        return DatasetType.LEO_SST;
+      case 'BLENDEDsstDNDaily':
+        return DatasetType.BLENDED_SST;
+      case 'chlorophyll_oci':
+        return DatasetType.CHLOROPHYLL;
+      case 'CMEMS_Global_Waves_Daily':
+        return DatasetType.WAVE_HEIGHT;
+      case 'CMEMS_Global_Currents_Daily':
+        return DatasetType.CURRENTS;
+      default:
+        return undefined;
+    }
   }
   

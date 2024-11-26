@@ -1,5 +1,5 @@
 import { useDatasetValue } from '../../hooks/useDatasetValue';
-import { getDatasetConfig } from '../../types/datasets';
+import { getDatasetConfig, DatasetType, getDatasetType } from '../../types/datasets';
 import type { Coordinate } from '../../types/core';
 import type { Dataset } from '../../types/api';
 import { useMemo } from 'react';
@@ -16,14 +16,31 @@ export const DatasetValueDisplay: React.FC<DatasetValueDisplayProps> = ({
   mapRef
 }) => {
   const config = useMemo(() => getDatasetConfig(dataset.id), [dataset.id]);
+  const value = useDatasetValue(cursorPosition, mapRef, config?.valueKey || 'temperature');
   
   if (!config) {
     console.warn(`No configuration found for dataset: ${dataset.id}`);
     return null;
   }
 
-  const value = useDatasetValue(cursorPosition, mapRef, config.valueKey);
-  const displayValue = value !== null ? config.formatValue(value) : 'N/A';
+  const formatValue = (val: number): string => {
+    const datasetType = getDatasetType(dataset.id);
+    switch (datasetType) {
+      case DatasetType.BLENDED_SST:
+      case DatasetType.LEO_SST:
+        return `${val.toFixed(1)}${config.unit}`;
+      case DatasetType.CHLOROPHYLL:
+        return `${val.toFixed(2)} ${config.unit}`;
+      case DatasetType.WAVE_HEIGHT:
+        return `${val.toFixed(1)}${config.unit}`;
+      case DatasetType.CURRENTS:
+        return `${val.toFixed(2)}${config.unit}`;
+      default:
+        return `${val}${config.unit}`;
+    }
+  };
+
+  const displayValue = value !== null ? formatValue(value) : 'N/A';
   const isAvailable = value !== null;
 
   return (
