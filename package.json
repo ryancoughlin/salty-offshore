@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@heroicons/react": "^2.1.5",
+    "@heroicons/react": "^2.2.0",
     "@turf/turf": "^7.1.0",
     "@types/mapbox-gl": "^3.4.0",
     "@types/supercluster": "^7.1.3",
