@@ -6,7 +6,7 @@ export const MAP_CONSTANTS = {
     },
     ZOOM_LIMITS: {
         MAX: 10,
-        MIN: 4
+        MIN: 5
     },
     REGION_FIT: {
         PADDING: 10,
