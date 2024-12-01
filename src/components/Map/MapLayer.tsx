@@ -42,7 +42,7 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                 <WaveHeightLayer
                     map={map}
                     data={layerData.data as unknown as FeatureCollection<Point, WaveProperties>}
-                    opacity={threeDSettings.opacity}
+                    visible={threeDSettings.visible}
                 />
             )}
 
@@ -86,8 +86,6 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
             {layerData.contours && contourSettings?.visible && (
                 <ContourLineLayer
                     map={map}
-                    visible={contourSettings?.visible ?? true}
-                    opacity={contourSettings?.opacity ?? 0.7}
                 />
             )}
         </>
