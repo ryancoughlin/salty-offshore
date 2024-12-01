@@ -1,5 +1,5 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useEffect, useRef, useCallback, Suspense, memo } from 'react';
+import { useRef, useCallback, Suspense, memo } from 'react';
 import type { MapRef, MapLayerMouseEvent } from 'react-map-gl';
 import Map from 'react-map-gl';
 import { BathymetryLayer } from './BathymetryLayer';
@@ -24,7 +24,6 @@ const OceanographicMap: React.FC = () => {
         viewState,
         cursor,
         handleViewStateChange,
-        updateCursor
     } = useMapViewState();
 
     const {
@@ -46,20 +45,6 @@ const OceanographicMap: React.FC = () => {
 
     const { mapLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
 
-    const handleRegionFit = useCallback(() => {
-        if (!selectedRegion?.bounds || !mapRef.current) return;
-
-        try {
-            mapRef.current.fitBounds(selectedRegion.bounds, {
-                padding: MAP_CONSTANTS.REGION_FIT.PADDING,
-                duration: MAP_CONSTANTS.REGION_FIT.DURATION,
-                maxZoom: MAP_CONSTANTS.REGION_FIT.MAX_ZOOM
-            });
-        } catch (error) {
-            console.error('Error fitting to region bounds:', error);
-        }
-    }, [selectedRegion]);
-
     const handleMouseMove = useMapCursor(
         setCursorPosition,
         updateMousePosition,
@@ -72,14 +57,6 @@ const OceanographicMap: React.FC = () => {
             addPoint([event.lngLat.lng, event.lngLat.lat]);
         }
     }, [isToolActive, activeTool, addPoint]);
-
-    useEffect(() => {
-        handleRegionFit();
-    }, [handleRegionFit]);
-
-    useEffect(() => {
-        updateCursor(isToolActive && activeTool === 'distance');
-    }, [isToolActive, activeTool, updateCursor]);
 
     const gridSettings = layerSettings.get('grid');
 

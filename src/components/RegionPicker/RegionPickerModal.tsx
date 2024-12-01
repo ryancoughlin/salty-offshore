@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import type { Region } from '../../types/api';
-import usePersistedState from '../../hooks/usePersistedState';
 import { RegionImage } from './RegionImage';
 import { useRegionSelection } from '../../hooks/useRegionSelection';
+import { useMapStore } from '../../store/useMapStore';
 
 interface RegionPickerModalProps {
   regions: Region[];
@@ -16,8 +16,13 @@ export const RegionPickerModal: React.FC<RegionPickerModalProps> = ({
   onRegionSelect,
   onClose,
 }) => {
-  const [hasVisited, setHasVisited] = usePersistedState('hasVisitedBefore', false);
+  const isFirstVisit = useMapStore(state => state.isFirstVisit);
+  const initializeFromPreferences = useMapStore(state => state.initializeFromPreferences);
   const { handleRegionSelect, sortedRegions } = useRegionSelection(onRegionSelect);
+
+  useEffect(() => {
+    initializeFromPreferences();
+  }, [initializeFromPreferences]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -27,13 +32,12 @@ export const RegionPickerModal: React.FC<RegionPickerModalProps> = ({
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
+  if (!isFirstVisit) return null;
+
   const handleSelect = (region: Region) => {
     handleRegionSelect(region);
-    setHasVisited(true);
     onClose();
   };
-
-  if (hasVisited) return null;
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">

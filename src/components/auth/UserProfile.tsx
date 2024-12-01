@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { supabase } from '../../auth/supabase';
+import { useRegions } from '../../hooks/useRegions';
 import { Database } from '../../types/supabase';
 
 type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
@@ -9,12 +10,14 @@ type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
 export const UserProfile = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { regions } = useRegions();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [preferences, setPreferences] = useState<Partial<UserPreferences>>({
         theme: 'light',
         map_preferences: {},
         notification_settings: {},
+        last_selected_region: null,
     });
     const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +46,7 @@ export const UserProfile = () => {
                                 theme: 'light',
                                 map_preferences: {},
                                 notification_settings: {},
+                                last_selected_region: null,
                             },
                         ]);
 
@@ -113,6 +117,28 @@ export const UserProfile = () => {
                                     <option value="light">Light</option>
                                     <option value="dark">Dark</option>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Default Region</label>
+                                <select
+                                    value={preferences.last_selected_region || ''}
+                                    onChange={(e) => setPreferences({
+                                        ...preferences,
+                                        last_selected_region: e.target.value || null
+                                    })}
+                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                >
+                                    <option value="">No default region</option>
+                                    {regions.map((region) => (
+                                        <option key={region.id} value={region.id}>
+                                            {region.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    This region will be automatically selected when you log in.
+                                </p>
                             </div>
 
                             <div>
