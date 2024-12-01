@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider, useParams, Navigate } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { LoginForm } from './components/auth/LoginForm'
+import { SignUpForm } from './components/auth/SignUpForm'
+import { UserProfile } from './components/auth/UserProfile'
 import SaltyMap from './components/Map/Map'
 import Dock from './components/Dock'
 import { DateTimeline } from './components/DateTimeline'
@@ -72,29 +77,65 @@ const MainLayout: React.FC = () => {
 
 const router = createBrowserRouter([
   {
+    path: ROUTES.LOGIN,
+    element: <LoginForm />,
+  },
+  {
+    path: ROUTES.SIGNUP,
+    element: <SignUpForm />,
+  },
+  {
+    path: ROUTES.PROFILE,
+    element: (
+      <ProtectedRoute>
+        <UserProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: ROUTES.HOME,
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
   },
   {
     path: ROUTES.REGION,
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
   },
   {
     path: ROUTES.DATASET,
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
   },
   {
     path: ROUTES.DATE,
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '*',
-    element: <Navigate to="/" replace />
+    element: <Navigate to={ROUTES.LOGIN} replace />
   }
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 };
 
 export default App;
