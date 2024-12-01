@@ -1,4 +1,3 @@
-import './App.css'
 import React, { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider, useParams, Navigate } from 'react-router-dom'
 import SaltyMap from './components/Map/Map'
