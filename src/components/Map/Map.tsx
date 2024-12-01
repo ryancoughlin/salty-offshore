@@ -15,6 +15,7 @@ import { useMapInitialization } from '../../hooks/useMapInitialization';
 import { useMapCursor } from '../../hooks/useMapCursor';
 import { useMapViewState } from '../../hooks/useMapViewState';
 import { MAP_CONSTANTS } from '../../constants/map';
+import { useLayerStore } from '../../store/useLayerStore';
 import StationsLayer from './StationsLayer';
 
 const OceanographicMap: React.FC = () => {
@@ -34,18 +35,20 @@ const OceanographicMap: React.FC = () => {
         setMapRef,
     } = useMapStore();
 
-    const { 
-        isToolActive, 
+    const { layerSettings } = useLayerStore();
+
+    const {
+        isToolActive,
         activeTool,
-        addPoint, 
-        updateMousePosition 
+        addPoint,
+        updateMousePosition
     } = useMapToolsStore();
 
     const { mapLoaded, handleMapLoad } = useMapInitialization(mapRef, setMapRef);
 
     const handleRegionFit = useCallback(() => {
         if (!selectedRegion?.bounds || !mapRef.current) return;
-        
+
         try {
             mapRef.current.fitBounds(selectedRegion.bounds, {
                 padding: MAP_CONSTANTS.REGION_FIT.PADDING,
@@ -78,6 +81,8 @@ const OceanographicMap: React.FC = () => {
         updateCursor(isToolActive && activeTool === 'distance');
     }, [isToolActive, activeTool, updateCursor]);
 
+    const gridSettings = layerSettings.get('grid');
+
     return (
         <MapErrorBoundary>
             <div className="relative w-full h-full">
@@ -107,7 +112,10 @@ const OceanographicMap: React.FC = () => {
                                 mapRef={mapRef}
                             />
                             <BathymetryLayer />
-                            <Grid />
+                            <Grid
+                                visible={gridSettings?.visible ?? false}
+                                opacity={gridSettings?.opacity ?? 0.7}
+                            />
                             <SpotLayer />
                             <StationsLayer />
                         </Suspense>
