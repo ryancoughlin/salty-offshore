@@ -1,13 +1,10 @@
-/* Third-party imports */
 @import "mapbox-gl/dist/mapbox-gl.css";
 @import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap");
 
-/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
 @layer base {
   html {
     @apply antialiased text-neutral-900 font-sans;
@@ -22,7 +19,6 @@
   }
 }
 
-/* Custom utility classes */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -34,5 +30,4 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: red;
 }

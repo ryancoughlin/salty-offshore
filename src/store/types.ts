@@ -1,7 +1,7 @@
 import type { Region, Dataset, CachedLayerData } from "../types/api";
 import type { ISODateString } from "../types/date";
 import type { Coordinate } from "../types/core";
-import type { Map as MapboxMap } from "mapbox-gl";
+import type { MapRef } from 'react-map-gl';
 
 export interface MapState {
   selectedRegion: Region | null;
@@ -11,7 +11,7 @@ export interface MapState {
   loading: boolean;
   error: Error | null;
   cursorPosition: Coordinate | null;
-  mapRef: MapboxMap | null;
+  mapRef: MapRef | null;
   ranges: {
     [key: string]: {
       min: number;
@@ -19,6 +19,7 @@ export interface MapState {
       unit?: string;
     };
   } | null;
+  isFirstVisit: boolean;
 }
 
 export interface MapActions {
@@ -27,7 +28,9 @@ export interface MapActions {
   selectDate: (date: string | null) => void;
   fetchLayerData: (dataset: Dataset, date: ISODateString) => Promise<void>;
   setCursorPosition: (position: Coordinate | null) => void;
-  setMapRef: (ref: MapboxMap | null) => void;
+  setMapRef: (ref: MapRef | null) => void;
 }
 
-export type MapStore = MapState & MapActions;
+export type MapStore = MapState & MapActions & {
+  initializeFromPreferences: () => boolean;
+};

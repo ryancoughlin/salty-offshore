@@ -5,6 +5,7 @@ import type { CircleLayer, SymbolLayer, MapLayerMouseEvent } from 'mapbox-gl';
 import stations from '../../utils/stations.json';
 import { StationPanel } from '../StationPanel';
 import BuoyHoverCard from './StationHoverCard';
+import buoyIcon from '../../assets/buoy.png';
 
 interface Station {
   id: string;
@@ -28,6 +29,7 @@ const StationsLayer = () => {
   const { current: map } = useMap();
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [hoveredStation, setHoveredStation] = useState<HoverInfo | null>(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const geojsonData: FeatureCollection<Point> = useMemo(() => ({
     type: 'FeatureCollection',
@@ -46,6 +48,31 @@ const StationsLayer = () => {
       }
     })) as Feature<Point>[]
   }), []);
+
+  useEffect(() => {
+    if (!map) return;
+
+    if (map.hasImage('buoy-icon')) {
+      setIsImageLoaded(true);
+      return;
+    }
+
+    const image = new Image();
+    image.src = buoyIcon;
+    image.onload = () => {
+      if (map.hasImage('buoy-icon')) {
+        map.removeImage('buoy-icon');
+      }
+      map.addImage('buoy-icon', image);
+      setIsImageLoaded(true);
+    };
+
+    return () => {
+      if (map.hasImage('buoy-icon')) {
+        map.removeImage('buoy-icon');
+      }
+    };
+  }, [map]);
 
   useEffect(() => {
     if (!map) return;
@@ -189,18 +216,20 @@ const StationsLayer = () => {
 
   return (
     <>
-      <Source
-        id="stations"
-        type="geojson"
-        data={geojsonData}
-        cluster={true}
-        clusterMaxZoom={14}
-        clusterRadius={50}
-      >
-        <Layer {...clusterLayer} />
-        <Layer {...clusterCountLayer} />
-        <Layer {...unclusteredPointLayer} />
-      </Source>
+      {isImageLoaded && (
+        <Source
+          id="stations"
+          type="geojson"
+          data={geojsonData}
+          cluster={true}
+          clusterMaxZoom={14}
+          clusterRadius={50}
+        >
+          <Layer {...clusterLayer} />
+          <Layer {...clusterCountLayer} />
+          <Layer {...unclusteredPointLayer} />
+        </Source>
+      )}
 
       {selectedStation && (
         <StationPanel

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { Dataset, CachedLayerData, Region } from "../types/api";
 import type { MapStore } from "./types";
 import type { FeatureCollection } from 'geojson';
+import { getUserPreference, setUserPreference } from '../utils/preferences';
 
 const layerCache = new Map<string, CachedLayerData>();
 
@@ -24,88 +25,100 @@ export const useMapStore = create<MapStore>((set, get) => ({
   cursorPosition: null,
   mapRef: null,
   ranges: null,
+  isFirstVisit: true,
 
   // Actions
+  initializeFromPreferences: () => {
+    const lastRegion = getUserPreference('last_selected_region');
+    if (!lastRegion) {
+      set({ isFirstVisit: true });
+      return false;
+    }
+
+    try {
+      const region = JSON.parse(lastRegion);
+      get().selectRegion(region);
+      set({ isFirstVisit: false });
+      return true;
+    } catch {
+      set({ isFirstVisit: true });
+      return false;
+    }
+  },
+
   selectRegion: (region: Region | null) => {
     if (!region) {
       set({ selectedRegion: null, selectedDataset: null, selectedDate: null });
       return;
     }
 
-    console.log('[Region] Selecting region:', region.id);
-    console.log('[Region] Available datasets:', region.datasets);
+    // Save to user preferences
+    setUserPreference('last_selected_region', JSON.stringify(region));
 
+    // Clear cache and update state atomically
     layerCache.clear();
-    set({ selectedRegion: region });
-    get().selectDataset(null);
+    set({
+      selectedRegion: region,
+      selectedDataset: null,
+      selectedDate: null,
+      layerData: null
+    });
+
+    // After state is set, select default dataset
+    if (region.datasets) {
+      const defaultDataset = region.datasets.find(d => d.id === "LEOACSPOSSTL3SnrtCDaily");
+      if (defaultDataset) {
+        get().selectDataset(defaultDataset);
+      }
+    }
   },
 
   selectDataset: (dataset: Dataset | null) => {
-    const { selectedRegion } = get();
-
-    if (!dataset) {
-      console.log('[Dataset] No dataset selected, selecting default LEO dataset');
-      console.log('[Dataset] Selected region:', selectedRegion?.id);
-      console.log('[Dataset] Region datasets:', selectedRegion?.datasets);
-
-      if (selectedRegion?.datasets) {
-        const leoDataset = selectedRegion.datasets.find(
-          d => d.id === "LEOACSPOSSTL3SnrtCDaily"
-        );
-        console.log('[Dataset] Found LEO dataset:', leoDataset?.id);
-        if (leoDataset) {
-          dataset = leoDataset;
-        }
-      }
-    }
-
     if (!dataset) {
       set({ selectedDataset: null, selectedDate: null, layerData: null });
       return;
     }
 
-    console.log('[Dataset] Selecting dataset:', dataset.id);
-    set({ selectedDataset: dataset, layerData: null });
-    
+    // Batch state updates
     const mostRecentDate = dataset.dates[0]?.date;
+    set({
+      selectedDataset: dataset,
+      selectedDate: mostRecentDate || null,
+      layerData: null
+    });
+
     if (mostRecentDate) {
-      console.log('[Dataset] Setting most recent date:', mostRecentDate);
-      get().selectDate(mostRecentDate);
+      void get().fetchLayerData(dataset, mostRecentDate);
     }
   },
 
   selectDate: (date: string | null) => {
     const { selectedDataset } = get();
-    if (!selectedDataset) {
-      console.warn('[Date] No dataset selected');
-      return;
-    }
+
+    if (!selectedDataset) return;
 
     if (!date) {
       set({ selectedDate: null, layerData: null });
       return;
     }
 
-    console.log('[Date] Selecting date:', date);
-    set({ selectedDate: date, layerData: null });
-
+    // Update state atomically
     const dateEntry = selectedDataset.dates.find(d => d.date === date);
-    if (dateEntry?.ranges) {
-      set({ ranges: dateEntry.ranges });
-    } else {
-      set({ ranges: null });
-    }
+    set({
+      selectedDate: date,
+      layerData: null,
+      ranges: dateEntry?.ranges || null
+    });
 
+    // Fetch layer data after state update
     void get().fetchLayerData(selectedDataset, date);
   },
 
   fetchLayerData: async (dataset: Dataset, date: string) => {
     const cacheKey = `${dataset.id}:${date}`;
-    console.log('[Fetch] Fetching layer data:', { datasetId: dataset.id, date });
-    
     const cached = layerCache.get(cacheKey);
+
     if (cached) {
-      console.log('[Fetch] Found cached data');
       if (dataset.id === get().selectedDataset?.id && date === get().selectedDate) {
         set({ layerData: cached });
       }

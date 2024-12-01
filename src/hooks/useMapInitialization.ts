@@ -1,31 +1,32 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import type { RefObject } from "react";
 import type { MapRef } from "react-map-gl";
-import type { Map as MapboxMap } from "mapbox-gl";
-import buoyIcon from '../assets/buoy.png';
+import { MAP_CONSTANTS } from '../constants/map';
+import { useMapStore } from '../store/useMapStore';
 
 export const useMapInitialization = (
   mapRef: RefObject<MapRef>,
-  setMapRef: (map: MapboxMap) => void
+  setMapRef: (ref: MapRef | null) => void
 ) => {
   const [mapLoaded, setMapLoaded] = useState(false);
+  const { selectedRegion, initializeFromPreferences } = useMapStore();
 
-  const handleMapLoad = useCallback((event: { target: MapboxMap }) => {
-    const map = event.target;
-    setMapRef(map);
+  const handleMapLoad = useCallback(() => {
+    if (!mapRef.current) return;
+    setMapRef(mapRef.current);
     setMapLoaded(true);
-    
-    // Load buoy icon image
-    map.loadImage(buoyIcon, (error, image) => {
-      if (error) throw error;
-      if (image && !map.hasImage('buoy-icon')) {
-        map.addImage('buoy-icon', image);
-      }
-    });
-  }, [setMapRef]);
 
-  return {
-    mapLoaded,
-    handleMapLoad
-  };
+    // Load preferences or default view
+    if (!initializeFromPreferences()) {
+      mapRef.current.flyTo(MAP_CONSTANTS.DEFAULT_VIEW);
+    }
+  }, [mapRef, setMapRef, initializeFromPreferences]);
+
+  // Fit to region bounds when region changes
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current || !selectedRegion?.bounds) return;
+    mapRef.current.fitBounds(selectedRegion.bounds, MAP_CONSTANTS.REGION_FIT);
+  }, [mapLoaded, selectedRegion, mapRef]);
+
+  return { mapLoaded, handleMapLoad };
 };
