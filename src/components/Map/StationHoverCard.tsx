@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import useBuoyData from '../../hooks/useBuoyData';
+import useStationData from '../../hooks/useStationData';
 
-interface BuoyHoverCardProps {
+interface StationHoverCardProps {
     stationId: string;
     stationName: string;
     position: { x: number; y: number };
@@ -34,8 +34,8 @@ const MessageDisplay = ({ message }: { message: string }) => (
     </div>
 );
 
-const BuoyHoverCard = ({ stationId, stationName, position }: BuoyHoverCardProps) => {
-    const { data, loading, error } = useBuoyData(stationId);
+const StationHoverCard = ({ stationId, stationName, position }: StationHoverCardProps) => {
+    const { data, loading, error } = useStationData(stationId);
 
     const currentConditions = useMemo(() => {
         if (!data?.data?.currentConditions) return null;
@@ -64,7 +64,7 @@ const BuoyHoverCard = ({ stationId, stationName, position }: BuoyHoverCardProps)
                 {loading ? (
                     <LoadingSpinner />
                 ) : error ? (
-                    <MessageDisplay message="Unable to load buoy data" />
+                    <MessageDisplay message="Unable to load station data" />
                 ) : !currentConditions ? (
                     <MessageDisplay message="No data available" />
                 ) : (
@@ -84,4 +84,4 @@ const BuoyHoverCard = ({ stationId, stationName, position }: BuoyHoverCardProps)
     );
 };
 
-export default BuoyHoverCard; 
+export default StationHoverCard; 

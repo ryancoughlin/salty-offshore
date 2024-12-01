@@ -4,7 +4,7 @@ import type { FeatureCollection, Feature, Point } from 'geojson';
 import type { CircleLayer, SymbolLayer, MapLayerMouseEvent } from 'mapbox-gl';
 import stations from '../../utils/stations.json';
 import { StationPanel } from '../StationPanel';
-import BuoyHoverCard from './BuoyHoverCard';
+import BuoyHoverCard from './StationHoverCard';
 
 interface Station {
   id: string;
