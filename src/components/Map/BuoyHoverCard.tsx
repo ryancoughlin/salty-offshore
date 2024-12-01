@@ -60,14 +60,6 @@ const BuoyHoverCard = ({ stationId, stationName, position }: BuoyHoverCardProps)
                 transform: 'translate(12px, 15%)',
             }}
         >
-            {/* BuoyName */}
-            <div className="h-10 p-3 border-b border-white/10 flex items-center">
-                <div className="text-gray-200 text-sm font-bold">
-                    {stationName}
-                </div>
-            </div>
-
-            {/* BuoyConditions */}
             <div className="flex-1 p-3">
                 {loading ? (
                     <LoadingSpinner />
@@ -82,6 +74,11 @@ const BuoyHoverCard = ({ stationId, stationName, position }: BuoyHoverCardProps)
                         ))}
                     </div>
                 )}
+            </div>
+            <div className="h-10 p-3 border-t border-white/10 flex items-center">
+                <div className="text-gray-200 text-sm font-bold">
+                    {stationName}
+                </div>
             </div>
         </div>
     );
