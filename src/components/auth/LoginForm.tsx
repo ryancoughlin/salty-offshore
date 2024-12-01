@@ -40,18 +40,36 @@ export const LoginForm = () => {
         }
     };
 
+    const [containerClasses, formClasses] = [
+        "min-h-screen flex items-center justify-center bg-neutral-950 py-12 px-4 sm:px-6 lg:px-8",
+        "max-w-md w-full space-y-8"
+    ].map(c => c);
+
+    const inputClasses = `
+        appearance-none rounded-none relative block w-full px-3 py-2 
+        border border-white/10 placeholder-neutral-500 
+        bg-neutral-900 text-gray-200
+        focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 
+        sm:text-sm
+    `;
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
+        <div className={containerClasses}>
+            <div className={formClasses}>
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    <img
+                        src="/salty-logo-dark.png"
+                        alt="Salty Offshore"
+                        className="mx-auto h-8 w-auto mb-10"
+                    />
+                    <h2 className="mt-6 text-center text-xl font-extrabold text-gray-200">
                         Sign in to your account
                     </h2>
                 </div>
 
                 {error && (
-                    <div className="rounded-md bg-red-50 p-4">
-                        <div className="text-sm text-red-700">{error}</div>
+                    <div className="rounded-md bg-red-900/50 p-4">
+                        <div className="text-sm text-red-400">{error}</div>
                     </div>
                 )}
 
@@ -69,7 +87,7 @@ export const LoginForm = () => {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className={inputClasses}
                                 placeholder="Email address"
                             />
                         </div>
@@ -85,7 +103,7 @@ export const LoginForm = () => {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className={inputClasses}
                                 placeholder="Password"
                             />
                         </div>
@@ -108,7 +126,9 @@ export const LoginForm = () => {
                             <div className="w-full border-t border-gray-300" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+                            <span className="px-2 bg-neutral-950 text-neutral-500">
+                                Or continue with
+                            </span>
                         </div>
                     </div>
 
@@ -136,12 +156,12 @@ export const LoginForm = () => {
                 </div>
 
                 <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-neutral-400">
                         Don't have an account?{' '}
                         <button
                             type="button"
                             onClick={() => navigate(ROUTES.SIGNUP)}
-                            className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+                            className="font-medium text-blue-400 hover:text-blue-300 focus:outline-none focus:underline"
                         >
                             Sign up now
                         </button>
