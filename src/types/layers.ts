@@ -25,8 +25,8 @@ export const DEFAULT_LAYER_SETTINGS: Record<LayerType, LayerSettings> = {
         opacity: 0.7
     },
     grid: {
-        visible: false,
-        opacity: 0.7
+        visible: true,
+        opacity: 0.1
     }
 };
 

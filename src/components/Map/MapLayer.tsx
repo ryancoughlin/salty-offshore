@@ -83,7 +83,7 @@ export const MapLayer = memo<MapLayerProps>(({ map }) => {
                 </Source>
             )}
 
-            {layerData.contours && (
+            {layerData.contours && contourSettings?.visible && (
                 <ContourLineLayer
                     map={map}
                     visible={contourSettings?.visible ?? true}
