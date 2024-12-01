@@ -1,5 +1,5 @@
 import { XMarkIcon, BeakerIcon } from '@heroicons/react/24/outline';
-import useBuoyData from '../../hooks/useBuoyData';
+import useStationData from '../../hooks/useStationData';
 import CurrentConditions from './CurrentConditions';
 import ForecastTable from './ForecastTable';
 import ConditionsSummary from './ConditionsSummary';
@@ -20,7 +20,7 @@ interface StationPanelProps {
 }
 
 export const StationPanel: React.FC<StationPanelProps> = ({ station, onClose }) => {
-  const { data, loading, error } = useBuoyData(station.id);
+  const { data, loading, error } = useStationData(station.id);
 
   return (
     <div className="fixed right-0 top-0 h-full w-[420px] bg-neutral-950 text-white shadow-lg z-50 overflow-y-auto border-l border-white/10">
@@ -58,7 +58,7 @@ export const StationPanel: React.FC<StationPanelProps> = ({ station, onClose }) 
             <div className="p-4 space-y-6">
               <ConditionsSummary summaries={data.data.summaries} />
               <CurrentConditions conditions={data.data.currentConditions} />
-              
+
               <div className="border-t border-white/10 pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium">Forecast</h3>
@@ -68,8 +68,8 @@ export const StationPanel: React.FC<StationPanelProps> = ({ station, onClose }) 
                   </div>
                 </div>
                 {data?.data?.forecast && data?.data?.units && (
-                  <ForecastTable 
-                    forecast={data.data.forecast} 
+                  <ForecastTable
+                    forecast={data.data.forecast}
                     units={data.data.units}
                   />
                 )}
