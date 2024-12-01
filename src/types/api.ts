@@ -10,6 +10,7 @@ export interface Dataset {
   supportedLayers: LayerType[];
   dates: DateEntry[];
   metadata: DatasetMetadata;
+  thumbnail?: string;
 }
 
 export interface DateEntry {
@@ -59,4 +60,21 @@ export interface DatasetMetadata {
   resolution?: string;
   description?: string;
   [key: string]: string | undefined;
+}
+
+export interface LayerData {
+  id: string;
+  type: string;
+  source: string;
+  paint?: {
+    'fill-color'?: string;
+    'fill-opacity'?: number;
+    'line-color'?: string;
+    'line-width'?: number;
+    [key: string]: string | number | undefined;
+  };
+  layout?: {
+    visibility?: 'visible' | 'none';
+    [key: string]: string | undefined;
+  };
 }
