@@ -1,23 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap");
+/* Third-party imports */
 @import "mapbox-gl/dist/mapbox-gl.css";
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,500;1,500&family=Spline+Sans:wght@300..700&display=swap");
 
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
+/* Base styles */
 @layer base {
   html {
     @apply antialiased text-neutral-900 font-sans;
   }
+
   .subtle-heading {
     @apply opacity-50 text-white text-xs font-medium uppercase font-mono;
   }
+
   :focus-visible {
     @apply outline-none ring-2 ring-primary-500 ring-offset-2;
   }
@@ -28,4 +27,12 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Global styles outside of layers */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: red;
 }

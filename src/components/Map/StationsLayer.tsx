@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Layer, Source, useMap } from 'react-map-gl';
 import type { FeatureCollection, Feature, Point } from 'geojson';
 import type { CircleLayer, SymbolLayer, MapLayerMouseEvent } from 'mapbox-gl';
 import stations from '../../utils/stations.json';
 import { StationPanel } from '../StationPanel';
+import BuoyHoverCard from './BuoyHoverCard';
 
 interface Station {
   id: string;
@@ -17,9 +18,16 @@ interface Station {
   owner: string;
 }
 
+interface HoverInfo {
+  station: Station;
+  x: number;
+  y: number;
+}
+
 const StationsLayer = () => {
   const { current: map } = useMap();
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+  const [hoveredStation, setHoveredStation] = useState<HoverInfo | null>(null);
 
   const geojsonData: FeatureCollection<Point> = useMemo(() => ({
     type: 'FeatureCollection',
@@ -64,9 +72,10 @@ const StationsLayer = () => {
     };
 
     const handleStationClick = (e: MapLayerMouseEvent) => {
+      e.preventDefault();
       const feature = e.features?.[0];
       if (!feature?.properties) return;
-      
+
       const station = stations.find(s => s.id === feature.properties?.id);
       if (station) {
         setSelectedStation({
@@ -79,29 +88,51 @@ const StationsLayer = () => {
       }
     };
 
+    const handleStationHover = (e: MapLayerMouseEvent) => {
+      e.preventDefault();
+      const feature = e.features?.[0];
+      if (!feature?.properties) return;
+
+      const station = stations.find(s => s.id === feature.properties?.id);
+      if (station) {
+        console.log('Hovering station:', station.id, 'at position:', e.point);
+        setHoveredStation({
+          station: {
+            ...station,
+            location: {
+              type: "Point",
+              coordinates: station.location.coordinates as [number, number]
+            }
+          },
+          x: e.point.x,
+          y: e.point.y
+        });
+        map.getCanvas().style.cursor = 'pointer';
+      }
+    };
+
+    const handleStationLeave = () => {
+      console.log('Leaving station');
+      setHoveredStation(null);
+      map.getCanvas().style.cursor = '';
+    };
+
+    // Add event listeners
     map.on('click', 'clusters', handleClusterClick);
     map.on('click', 'unclustered-point', handleStationClick);
 
-    map.on('mouseenter', 'clusters', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'clusters', () => {
-      map.getCanvas().style.cursor = '';
-    });
-    map.on('mouseenter', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = '';
-    });
+    // Unclustered point interactions
+    map.on('mouseenter', 'unclustered-point', handleStationHover);
+    map.on('mousemove', 'unclustered-point', handleStationHover);
+    map.on('mouseleave', 'unclustered-point', handleStationLeave);
 
     return () => {
+      // Remove event listeners
       map.off('click', 'clusters', handleClusterClick);
       map.off('click', 'unclustered-point', handleStationClick);
-      map.off('mouseenter', 'clusters');
-      map.off('mouseleave', 'clusters');
-      map.off('mouseenter', 'unclustered-point');
-      map.off('mouseleave', 'unclustered-point');
+      map.off('mouseenter', 'unclustered-point', handleStationHover);
+      map.off('mousemove', 'unclustered-point', handleStationHover);
+      map.off('mouseleave', 'unclustered-point', handleStationLeave);
     };
   }, [map]);
 
@@ -151,7 +182,8 @@ const StationsLayer = () => {
     filter: ['!', ['has', 'point_count']],
     layout: {
       'icon-image': 'buoy-icon',
-      'icon-allow-overlap': true
+      'icon-allow-overlap': true,
+      'icon-size': 0.75
     }
   };
 
@@ -174,6 +206,14 @@ const StationsLayer = () => {
         <StationPanel
           station={selectedStation}
           onClose={() => setSelectedStation(null)}
+        />
+      )}
+
+      {hoveredStation && (
+        <BuoyHoverCard
+          stationId={hoveredStation.station.id}
+          stationName={hoveredStation.station.name}
+          position={{ x: hoveredStation.x, y: hoveredStation.y }}
         />
       )}
     </>
