@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Region } from '../types/api';
 import useMapStore from '../store/useMapStore';
-import LayerControl from './LayerControl';
+import { LayerControl } from './LayerControl';
 import { getDatasetConfig } from '../types/datasets';
 
 interface LayerControlsProps {
