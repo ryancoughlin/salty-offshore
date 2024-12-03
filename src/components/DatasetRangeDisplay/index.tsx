@@ -3,6 +3,7 @@ import { getDatasetConfig, DatasetType, getDatasetType } from '../../types/datas
 import { useMemo } from 'react';
 import useMapStore from '../../store/useMapStore';
 import { useDatasetValue } from '../../hooks/useDatasetValue';
+import type { Map } from 'mapbox-gl';
 
 interface DatasetRangeDisplayProps {
   datasetKey: Dataset;
@@ -21,14 +22,28 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
 }) => {
   const config = useMemo(() => getDatasetConfig(datasetKey.id), [datasetKey.id]);
   const { cursorPosition, mapRef } = useMapStore();
-  
+
+  console.debug('DatasetRangeDisplay render:', {
+    datasetId: datasetKey.id,
+    hasConfig: !!config,
+    ranges,
+    configRangeKey: config?.rangeKey
+  });
+
   const currentValue = useDatasetValue(
-    cursorPosition, 
-    mapRef, 
+    cursorPosition,
+    mapRef as Map | null,
     config?.valueKey || 'temperature'
   );
-  
-  if (!config || !ranges) return null;
+
+  if (!config || !ranges) {
+    console.debug('Missing required data:', {
+      hasConfig: !!config,
+      hasRanges: !!ranges,
+      datasetId: datasetKey.id
+    });
+    return null;
+  }
 
   const formatValue = (val: number): string => {
     const datasetType = getDatasetType(datasetKey.id);
@@ -47,30 +62,47 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
     }
   };
 
+  // Find the correct range based on dataset type
   const range = ranges[config.rangeKey];
-  if (!range) return null;
+  console.log('Range check:', {
+    datasetId: datasetKey.id,
+    rangeKey: config.rangeKey,
+    ranges,
+    range,
+    availableRanges: Object.keys(ranges)
+  });
 
-  const positionPercent = currentValue !== null 
+  if (!range) {
+    console.log('Range not found:', {
+      datasetId: datasetKey.id,
+      rangeKey: config.rangeKey,
+      availableRanges: Object.keys(ranges),
+      ranges
+    });
+    return null;
+  }
+
+  const positionPercent = currentValue !== null
     ? ((currentValue - range.min) / (range.max - range.min)) * 100
     : null;
 
-  const gradient = config.colorScale 
-    ? `linear-gradient(to right, ${config.colorScale.join(', ')})`
-    : 'linear-gradient(to right, from-indigo-600 via-green-500 to-amber-500)';
-
   return (
-    <div className="relative h-6">
+    <div className="relative h-6 w-full px-1">
       {/* Gradient Bar */}
-      <div 
+      <div
         className="h-1.5 w-full rounded-sm"
-        style={{ background: gradient }}
+        style={{
+          background: config.colorScale
+            ? `linear-gradient(to right, ${config.colorScale.join(', ')})`
+            : 'linear-gradient(to right, rgb(79, 70, 229), rgb(34, 197, 94), rgb(245, 158, 11))'
+        }}
       >
         {/* Position Indicator */}
         {positionPercent !== null && (
-          <div 
-            className="absolute top-0 w-0.5 h-3 bg-white transition-all duration-100 ease-out"
+          <div
+            className="absolute top-0 w-0.5 h-3 bg-white shadow-sm transition-all duration-100 ease-out"
             style={{
-              left: `${positionPercent}%`,
+              left: `${Math.max(0, Math.min(100, positionPercent))}%`,
               transform: 'translateX(-50%)'
             }}
           />
@@ -78,7 +110,7 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
       </div>
 
       {/* Min/Max Labels */}
-      <div className="absolute w-full flex justify-between mt-1">
+      <div className="absolute w-full flex justify-between mt-1 px-1">
         <span className="text-xs font-mono text-neutral-400">
           {formatValue(range.min)}
         </span>

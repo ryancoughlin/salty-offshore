@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Dataset } from '../types/api';
 import { getDatasetDisplayName } from '../config';
-import { getDatasetConfig } from '../types/datasets';
+import type { DatasetConfig } from '../types/datasets';
 import { isDatasetLayer, isGlobalLayer } from '../types/core';
 import { useLayerStore } from '../store/useLayerStore';
 import DatasetInfo from './DatasetInfo/DatasetInfo';
@@ -10,12 +10,14 @@ interface LayerControlProps {
   isSelected: boolean;
   onSelect: (datasetId: string) => void;
   dataset: Dataset;
+  config?: DatasetConfig;
 }
 
 const LayerControl: React.FC<LayerControlProps> = ({
   dataset,
   isSelected,
   onSelect,
+  config
 }) => {
   const displayName = getDatasetDisplayName(dataset.id);
   const { layerSettings, toggleLayer, setLayerOpacity } = useLayerStore();
@@ -24,8 +26,7 @@ const LayerControl: React.FC<LayerControlProps> = ({
     onSelect(dataset.id);
   };
 
-  // Get available layers for this dataset
-  const config = getDatasetConfig(dataset.id);
+  // Get available layers from config or use defaults
   const availableLayers = config?.supportedLayers || [];
   const datasetLayers = availableLayers.filter(isDatasetLayer);
   const globalLayers = availableLayers.filter(isGlobalLayer);

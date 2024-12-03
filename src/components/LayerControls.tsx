@@ -1,8 +1,8 @@
 import React from 'react';
-import LayerControl from './LayerControl';
-import GlobalControls from './GlobalControls';
 import type { Region } from '../types/api';
-import { useMapStore } from '../store/useMapStore';
+import useMapStore from '../store/useMapStore';
+import LayerControl from './LayerControl';
+import { getDatasetConfig } from '../types/datasets';
 
 interface LayerControlsProps {
     region: Region;
@@ -32,6 +32,7 @@ const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
                             <LayerControl
                                 key={dataset.id}
                                 dataset={dataset}
+                                config={dataset.id === selectedDataset?.id ? getDatasetConfig(dataset.id) : undefined}
                                 isSelected={dataset.id === selectedDataset?.id}
                                 onSelect={() => selectDataset(dataset)}
                             />
@@ -51,6 +52,7 @@ const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
                             <LayerControl
                                 key={dataset.id}
                                 dataset={dataset}
+                                config={dataset.id === selectedDataset?.id ? getDatasetConfig(dataset.id) : undefined}
                                 isSelected={dataset.id === selectedDataset?.id}
                                 onSelect={() => selectDataset(dataset)}
                             />
@@ -58,9 +60,6 @@ const LayerControls: React.FC<LayerControlsProps> = ({ region }) => {
                     </div>
                 </div>
             )}
-
-            {/* Global Layer Controls */}
-            <GlobalControls />
         </div>
     );
 };
