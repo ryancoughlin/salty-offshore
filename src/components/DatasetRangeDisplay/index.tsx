@@ -23,27 +23,18 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
   const config = useMemo(() => getDatasetConfig(datasetKey.id), [datasetKey.id]);
   const { cursorPosition, mapRef } = useMapStore();
 
-  console.debug('DatasetRangeDisplay render:', {
-    datasetId: datasetKey.id,
-    hasConfig: !!config,
-    ranges,
-    configRangeKey: config?.rangeKey
-  });
-
   const currentValue = useDatasetValue(
     cursorPosition,
     mapRef as Map | null,
     config?.valueKey || 'temperature'
   );
 
-  if (!config || !ranges) {
-    console.debug('Missing required data:', {
-      hasConfig: !!config,
-      hasRanges: !!ranges,
-      datasetId: datasetKey.id
-    });
-    return null;
-  }
+  // Early return if required data is missing
+  if (!config || !ranges) return null;
+
+  // Get range for current dataset
+  const range = ranges[config.rangeKey];
+  if (!range) return null;
 
   const formatValue = (val: number): string => {
     const datasetType = getDatasetType(datasetKey.id);
@@ -62,28 +53,8 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
     }
   };
 
-  // Find the correct range based on dataset type
-  const range = ranges[config.rangeKey];
-  console.log('Range check:', {
-    datasetId: datasetKey.id,
-    rangeKey: config.rangeKey,
-    ranges,
-    range,
-    availableRanges: Object.keys(ranges)
-  });
-
-  if (!range) {
-    console.log('Range not found:', {
-      datasetId: datasetKey.id,
-      rangeKey: config.rangeKey,
-      availableRanges: Object.keys(ranges),
-      ranges
-    });
-    return null;
-  }
-
   const positionPercent = currentValue !== null
-    ? ((currentValue - range.min) / (range.max - range.min)) * 100
+    ? Math.max(0, Math.min(100, ((currentValue - range.min) / (range.max - range.min)) * 100))
     : null;
 
   return (
@@ -102,7 +73,7 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
           <div
             className="absolute top-0 w-0.5 h-3 bg-white shadow-sm transition-all duration-100 ease-out"
             style={{
-              left: `${Math.max(0, Math.min(100, positionPercent))}%`,
+              left: `${positionPercent}%`,
               transform: 'translateX(-50%)'
             }}
           />

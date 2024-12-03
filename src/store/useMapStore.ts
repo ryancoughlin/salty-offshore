@@ -4,9 +4,10 @@ import type { MapStore } from "./types";
 import type { FeatureCollection } from 'geojson';
 import { getUserPreference, setUserPreference } from '../utils/preferences';
 
-const layerCache = new Map<string, CachedLayerData>();
-
 const MAX_CACHE_SIZE = 500;
+const DEFAULT_DATASET_ID = "LEOACSPOSSTL3SnrtCDaily";
+
+const layerCache = new Map<string, CachedLayerData>();
 
 const fetchLayerUrl = async (url: string | undefined): Promise<FeatureCollection | null> => {
   if (!url) return null;
@@ -52,24 +53,15 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return;
     }
 
-    // Save to user preferences
     setUserPreference('last_selected_region', JSON.stringify(region));
-
-    // Clear cache and update state atomically
     layerCache.clear();
-    set({
-      selectedRegion: region,
-      selectedDataset: null,
-      selectedDate: null,
-      layerData: null
-    });
 
-    // After state is set, select default dataset
-    if (region.datasets) {
-      const defaultDataset = region.datasets.find(d => d.id === "LEOACSPOSSTL3SnrtCDaily");
-      if (defaultDataset) {
-        get().selectDataset(defaultDataset);
-      }
+    // Update state and select default dataset
+    set({ selectedRegion: region, selectedDataset: null, selectedDate: null, layerData: null });
+
+    const defaultDataset = region.datasets?.find(d => d.id === DEFAULT_DATASET_ID);
+    if (defaultDataset) {
+      get().selectDataset(defaultDataset);
     }
   },
 
@@ -79,7 +71,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return;
     }
 
-    // Batch state updates
     const mostRecentDate = dataset.dates[0]?.date;
     const dateEntry = mostRecentDate ? dataset.dates[0] : null;
 
@@ -97,7 +88,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
   selectDate: (date: string | null) => {
     const { selectedDataset } = get();
-
     if (!selectedDataset) return;
 
     if (!date) {
@@ -105,7 +95,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
       return;
     }
 
-    // Update state atomically
     const dateEntry = selectedDataset.dates.find(d => d.date === date);
     set({
       selectedDate: date,
@@ -113,7 +102,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
       ranges: dateEntry?.ranges || null
     });
 
-    // Fetch layer data after state update
     void get().fetchLayerData(selectedDataset, date);
   },
 
@@ -121,26 +109,20 @@ export const useMapStore = create<MapStore>((set, get) => ({
     const cacheKey = `${dataset.id}:${date}`;
     const cached = layerCache.get(cacheKey);
 
-    if (cached) {
-      if (dataset.id === get().selectedDataset?.id && date === get().selectedDate) {
-        set({ layerData: cached });
-      }
+    // Return cached data if available and still relevant
+    if (cached && dataset.id === get().selectedDataset?.id && date === get().selectedDate) {
+      set({ layerData: cached });
       return;
     }
 
-    const isCurrentDataset = dataset.id === get().selectedDataset?.id;
-    const isCurrentDate = date === get().selectedDate;
-    const shouldUpdateUI = isCurrentDataset && isCurrentDate;
-
-    if (shouldUpdateUI) {
+    const isCurrentSelection = dataset.id === get().selectedDataset?.id && date === get().selectedDate;
+    if (isCurrentSelection) {
       set({ loading: true, error: null });
     }
 
     try {
       const dateEntry = dataset.dates.find((d) => d.date === date);
-      if (!dateEntry) {
-        throw new Error(`Date ${date} not found in dataset ${dataset.id}`);
-      }
+      if (!dateEntry) throw new Error(`Date ${date} not found in dataset ${dataset.id}`);
 
       const [data, contours] = await Promise.all([
         fetchLayerUrl(dateEntry.layers.data),
@@ -156,20 +138,20 @@ export const useMapStore = create<MapStore>((set, get) => ({
         image: dateEntry.layers.image || null
       };
 
+      // Manage cache size
       if (layerCache.size >= MAX_CACHE_SIZE) {
         const firstKey = layerCache.keys().next().value;
         layerCache.delete(firstKey);
       }
-
       layerCache.set(cacheKey, layerData);
 
-      if (shouldUpdateUI) {
+      if (isCurrentSelection) {
         set({ layerData, loading: false });
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Failed to fetch layer data");
       console.error('[Fetch] Error:', error);
-      if (shouldUpdateUI) {
+      if (isCurrentSelection) {
         set({ error, loading: false });
       }
     }

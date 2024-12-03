@@ -13,7 +13,54 @@ interface LayerControlProps {
   config?: DatasetConfig;
 }
 
-const LayerControl: React.FC<LayerControlProps> = ({
+interface LayerSettingsProps {
+  layerId: string;
+  settings: {
+    visible: boolean;
+    opacity: number;
+  };
+  onToggle: () => void;
+  onOpacityChange: (opacity: number) => void;
+}
+
+const LayerSettings: React.FC<LayerSettingsProps> = ({
+  layerId,
+  settings,
+  onToggle,
+  onOpacityChange
+}) => (
+  <div className="flex items-center justify-between">
+    <label className="text-sm text-white">
+      {layerId.charAt(0).toUpperCase() + layerId.slice(1)}
+    </label>
+    <div className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={settings.visible}
+        onChange={onToggle}
+        className="rounded border-white/20"
+      />
+      {settings.visible && (
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={settings.opacity}
+            onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
+            className="w-24"
+          />
+          <span className="text-xs text-white/60 w-8">
+            {Math.round(settings.opacity * 100)}%
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+export const LayerControl: React.FC<LayerControlProps> = ({
   dataset,
   isSelected,
   onSelect,
@@ -21,10 +68,6 @@ const LayerControl: React.FC<LayerControlProps> = ({
 }) => {
   const displayName = getDatasetDisplayName(dataset.id);
   const { layerSettings, toggleLayer, setLayerOpacity } = useLayerStore();
-
-  const handleClick = () => {
-    onSelect(dataset.id);
-  };
 
   // Get available layers from config or use defaults
   const availableLayers = config?.supportedLayers || [];
@@ -34,7 +77,7 @@ const LayerControl: React.FC<LayerControlProps> = ({
   return (
     <div className="flex flex-col">
       <button
-        onClick={handleClick}
+        onClick={() => onSelect(dataset.id)}
         className={`
           w-full h-12 px-4
           flex items-center justify-between
@@ -50,19 +93,17 @@ const LayerControl: React.FC<LayerControlProps> = ({
         <span className="text-base font-medium font-sans">
           {displayName}
         </span>
-        <div className="flex items-center gap-2">
-          {dataset.thumbnail && (
-            <div className={`w-8 h-8 relative rounded overflow-hidden
-              ${isSelected ? '' : 'opacity-50 bg-white'}`}
-            >
-              <img
-                src={dataset.thumbnail}
-                alt=""
-                className="w-12 h-8 object-cover -ml-[14px]"
-              />
-            </div>
-          )}
-        </div>
+        {dataset.thumbnail && (
+          <div className={`w-8 h-8 relative rounded overflow-hidden
+            ${isSelected ? '' : 'opacity-50 bg-white'}`}
+          >
+            <img
+              src={dataset.thumbnail}
+              alt=""
+              className="w-12 h-8 object-cover -ml-[14px]"
+            />
+          </div>
+        )}
       </button>
 
       {isSelected && (
@@ -81,35 +122,13 @@ const LayerControl: React.FC<LayerControlProps> = ({
                     if (!settings) return null;
 
                     return (
-                      <div key={layerId} className="flex items-center justify-between">
-                        <label className="text-sm text-white">
-                          {layerId.charAt(0).toUpperCase() + layerId.slice(1)}
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={settings.visible}
-                            onChange={() => toggleLayer(layerId)}
-                            className="rounded border-white/20"
-                          />
-                          {settings.visible && (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={settings.opacity}
-                                onChange={(e) => setLayerOpacity(layerId, parseFloat(e.target.value))}
-                                className="w-24"
-                              />
-                              <span className="text-xs text-white/60 w-8">
-                                {Math.round(settings.opacity * 100)}%
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <LayerSettings
+                        key={layerId}
+                        layerId={layerId}
+                        settings={settings}
+                        onToggle={() => toggleLayer(layerId)}
+                        onOpacityChange={(opacity) => setLayerOpacity(layerId, opacity)}
+                      />
                     );
                   })}
                 </div>
@@ -124,35 +143,13 @@ const LayerControl: React.FC<LayerControlProps> = ({
                     if (!settings) return null;
 
                     return (
-                      <div key={layerId} className="flex items-center justify-between">
-                        <label className="text-sm text-white">
-                          {layerId.charAt(0).toUpperCase() + layerId.slice(1)}
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={settings.visible}
-                            onChange={() => toggleLayer(layerId)}
-                            className="rounded border-white/20"
-                          />
-                          {settings.visible && (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={settings.opacity}
-                                onChange={(e) => setLayerOpacity(layerId, parseFloat(e.target.value))}
-                                className="w-24"
-                              />
-                              <span className="text-xs text-white/60 w-8">
-                                {Math.round(settings.opacity * 100)}%
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <LayerSettings
+                        key={layerId}
+                        layerId={layerId}
+                        settings={settings}
+                        onToggle={() => toggleLayer(layerId)}
+                        onOpacityChange={(opacity) => setLayerOpacity(layerId, opacity)}
+                      />
                     );
                   })}
                 </div>
@@ -164,5 +161,3 @@ const LayerControl: React.FC<LayerControlProps> = ({
     </div>
   );
 };
-
-export default LayerControl;
