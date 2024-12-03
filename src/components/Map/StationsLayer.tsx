@@ -122,7 +122,6 @@ const StationsLayer = () => {
 
       const station = stations.find(s => s.id === feature.properties?.id);
       if (station) {
-        console.log('Hovering station:', station.id, 'at position:', e.point);
         setHoveredStation({
           station: {
             ...station,
@@ -139,7 +138,6 @@ const StationsLayer = () => {
     };
 
     const handleStationLeave = () => {
-      console.log('Leaving station');
       setHoveredStation(null);
       map.getCanvas().style.cursor = '';
     };

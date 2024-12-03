@@ -75,16 +75,19 @@ export const useMapStore = create<MapStore>((set, get) => ({
 
   selectDataset: (dataset: Dataset | null) => {
     if (!dataset) {
-      set({ selectedDataset: null, selectedDate: null, layerData: null });
+      set({ selectedDataset: null, selectedDate: null, layerData: null, ranges: null });
       return;
     }
 
     // Batch state updates
     const mostRecentDate = dataset.dates[0]?.date;
+    const dateEntry = mostRecentDate ? dataset.dates[0] : null;
+
     set({
       selectedDataset: dataset,
       selectedDate: mostRecentDate || null,
-      layerData: null
+      layerData: null,
+      ranges: dateEntry?.ranges || null
     });
 
     if (mostRecentDate) {
@@ -98,7 +101,7 @@ export const useMapStore = create<MapStore>((set, get) => ({
     if (!selectedDataset) return;
 
     if (!date) {
-      set({ selectedDate: null, layerData: null });
+      set({ selectedDate: null, layerData: null, ranges: null });
       return;
     }
 

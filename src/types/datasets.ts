@@ -120,7 +120,6 @@ export function getDatasetType(datasetId: string): DatasetType | undefined {
     }
 }
 
-// Helper to get supported layers for a dataset
 export function getSupportedLayers(datasetId: string): LayerType[] {
     const config = getDatasetConfig(datasetId);
     return config?.supportedLayers ?? ['data', 'image'];
