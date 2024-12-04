@@ -10,6 +10,26 @@
     @apply antialiased text-neutral-900 font-sans;
   }
 
+  .text-body {
+    @apply text-base font-normal;
+  }
+
+  .text-label {
+    @apply text-base font-medium;
+  }
+
+  .text-heading {
+    @apply text-xl font-medium;
+  }
+
+  .text-micro {
+    @apply text-xs font-normal;
+  }
+
+  .text-display {
+    @apply text-2xl font-medium;
+  }
+
   .subtle-heading {
     @apply opacity-50 text-white text-xs font-medium uppercase font-mono;
   }

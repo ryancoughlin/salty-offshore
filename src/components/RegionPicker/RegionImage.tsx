@@ -5,9 +5,9 @@ interface RegionImageProps {
 
 export const RegionImage = ({ thumbnail, name }: RegionImageProps) => {
   if (!thumbnail) return null;
-  
+
   return (
-    <div className="w-20 h-12 relative overflow-hidden rounded-lg bg-white/10">
+    <div className="w-16 h-10 relative overflow-hidden rounded">
       <img
         src={`http://157.245.10.94/${thumbnail}`}
         alt={`${name} region`}
