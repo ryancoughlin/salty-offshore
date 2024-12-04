@@ -20,7 +20,8 @@ export const UserProfile = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { regions } = useRegions();
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -48,33 +49,42 @@ export const UserProfile = () => {
     const onSubmit = async (data: FormValues) => {
         if (!user) return;
 
+        const updates = {
+            name: data.name.trim(),
+            location: data.location?.trim() || null,
+            last_selected_region: data.last_selected_region,
+            updated_at: new Date().toISOString()
+        };
+
         try {
             const { error } = await supabase
                 .from('user_preferences')
-                .update({
-                    name: data.name?.trim() || '',
-                    location: data.location?.trim() || null,
-                    last_selected_region: data.last_selected_region,
-                    updated_at: new Date().toISOString(),
-                })
+                .update(updates)
                 .eq('id', user.id);
 
             if (error) throw error;
 
-            setShowSuccess(true);
-        } catch (err) {
-            console.error('Error updating preferences:', err);
+            setNotification({ type: 'success', message: 'Profile updated successfully' });
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+            setNotification({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'Failed to update profile. Please try again.'
+            });
         }
     };
 
     return (
         <AccountLayout>
-            {showSuccess && (
+            {notification && (
                 <Banner
-                    message="Profile updated successfully"
+                    type={notification.type}
+                    message={notification.message}
                     onClose={() => {
-                        setShowSuccess(false);
-                        navigate(-1);
+                        setNotification(null);
+                        if (notification.type === 'success') {
+                            navigate(-1);
+                        }
                     }}
                 />
             )}
@@ -85,11 +95,9 @@ export const UserProfile = () => {
                     error={errors.name?.message}
                     {...register('name', {
                         required: 'Name is required',
-                        validate: {
-                            minLength: (value) =>
-                                value.trim().length >= 2 || 'Name must be at least 2 characters',
-                            notEmpty: (value) =>
-                                value.trim().length > 0 || 'Name cannot be empty'
+                        minLength: {
+                            value: 2,
+                            message: 'Name must be at least 2 characters'
                         }
                     })}
                 />
