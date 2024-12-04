@@ -1,17 +1,21 @@
+import { forwardRef } from 'react';
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     required?: boolean;
     helperText?: string;
+    error?: string;
 }
 
-export const Input = ({
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
     label,
     required,
     className,
     id,
     helperText,
+    error,
     ...props
-}: InputProps) => {
+}, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
@@ -35,21 +39,32 @@ export const Input = ({
                 </div>
             )}
             <input
+                ref={ref}
                 id={inputId}
-                className={`text-body p-2 bg-neutral-950/90 border border-neutral-700 text-white rounded-none
+                className={`text-body p-2 bg-neutral-950/90 border text-white rounded-none
                     placeholder:text-neutral-500
-                    focus-visible:outline-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    focus-visible:outline-none focus:outline-none focus:ring-2 focus:border-transparent
                     disabled:opacity-50 disabled:cursor-not-allowed
+                    ${error ? 'border-rose-500 focus:ring-rose-500' : 'border-neutral-700 focus:ring-blue-500'}
                     ${className || ''}`}
                 aria-required={required}
-                aria-describedby={helperText ? `${inputId}-helper` : undefined}
+                aria-invalid={!!error}
+                aria-describedby={
+                    error ? `${inputId}-error` :
+                        helperText ? `${inputId}-helper` :
+                            undefined
+                }
                 {...props}
             />
-            {helperText && (
+            {error ? (
+                <p id={`${inputId}-error`} className="text-helper text-rose-500">
+                    {error}
+                </p>
+            ) : helperText && (
                 <p id={`${inputId}-helper`} className="text-helper">
                     {helperText}
                 </p>
             )}
         </div>
     );
-}; 
+}); 

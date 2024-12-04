@@ -12,7 +12,7 @@ export interface Database {
             user_preferences: {
                 Row: {
                     id: string
-                    name: string
+                    name: string | null
                     location: string | null
                     map_preferences: Json
                     last_selected_region: string | null
@@ -21,7 +21,7 @@ export interface Database {
                 }
                 Insert: {
                     id: string
-                    name: string
+                    name?: string | null
                     location?: string | null
                     map_preferences?: Json
                     last_selected_region?: string | null
@@ -30,7 +30,7 @@ export interface Database {
                 }
                 Update: {
                     id?: string
-                    name?: string
+                    name?: string | null
                     location?: string | null
                     map_preferences?: Json
                     last_selected_region?: string | null

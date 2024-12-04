@@ -5,8 +5,7 @@ export const ROUTES = {
   DATE: "/:regionId/:datasetId/:date",
   AUTH: {
     LOGIN: "/login",
-    SIGNUP: "/signup",
-    VERIFY_EMAIL: "/verify-email"
+    SIGNUP: "/signup"
   },
   ACCOUNT: {
     PROFILE: "/account/profile",

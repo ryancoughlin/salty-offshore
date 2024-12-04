@@ -87,26 +87,6 @@ const router = createBrowserRouter([
     element: <SignUpForm />,
   },
   {
-    path: ROUTES.AUTH.VERIFY_EMAIL,
-    element: <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-      <div className="max-w-md w-full space-y-8 p-6 bg-neutral-900 rounded-lg">
-        <div>
-          <img
-            src="/salty-logo-dark.png"
-            alt="Salty Offshore"
-            className="h-8 mx-auto"
-          />
-          <h2 className="mt-6 text-center text-display text-white">
-            Check your email
-          </h2>
-          <p className="mt-2 text-center text-white/60">
-            We sent you an email with a link to verify your account.
-          </p>
-        </div>
-      </div>
-    </div>,
-  },
-  {
     path: ROUTES.ACCOUNT.PROFILE,
     element: (
       <ProtectedRoute>

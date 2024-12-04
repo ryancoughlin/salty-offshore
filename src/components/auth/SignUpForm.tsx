@@ -29,7 +29,7 @@ export const SignUpForm = () => {
                     .insert([
                         {
                             id: data.user.id,
-                            name,
+                            name: name || null,
                             map_preferences: {},
                             last_selected_region: null,
                         },
@@ -38,7 +38,7 @@ export const SignUpForm = () => {
                 if (prefError) throw prefError;
             }
 
-            navigate(ROUTES.AUTH.VERIFY_EMAIL);
+            navigate(ROUTES.HOME);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Error during sign up');
             setLoading(false);
@@ -67,7 +67,6 @@ export const SignUpForm = () => {
 
                 <Input
                     label="Name"
-                    required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     helperText="This is how we'll address you in the app."

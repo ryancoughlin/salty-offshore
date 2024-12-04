@@ -43,7 +43,7 @@ export const AccountLayout = ({ children }: AccountLayoutProps) => {
                 <h1 className="text-display text-white mb-6">
                     Account Settings
                 </h1>
-                <div className="bg-neutral-900 sm:rounded-lg">
+                <div className="bg-neutral-900">
                     <div className="flex flex-col sm:flex-row">
                         <nav className="sm:w-80 border-b sm:border-b-0 sm:border-r border-white/10">
                             {navItems.map((item) => (
