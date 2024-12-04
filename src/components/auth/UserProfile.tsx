@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../../auth/AuthContext';
 import { supabase } from '../../auth/supabase';
 import { useRegions } from '../../hooks/useRegions';
@@ -7,139 +7,105 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { AccountLayout } from '../account/AccountLayout';
 import { AccountRegionSelect } from '../account/AccountRegionSelect';
-import type { Database } from '../../types/supabase';
+import { Banner } from '../ui/Banner';
+import { useState } from 'react';
 
-type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
-type UserPreferencesUpdate = Database['public']['Tables']['user_preferences']['Update'];
+type FormValues = {
+    name: string;
+    location: string;
+    last_selected_region: string | null;
+};
 
 export const UserProfile = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { regions } = useRegions();
-    const [saving, setSaving] = useState(false);
-    const [preferences, setPreferences] = useState<UserPreferences>({
-        id: '',
-        name: '',
-        location: null,
-        map_preferences: {},
-        last_selected_region: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+    const [showSuccess, setShowSuccess] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        setValue,
+        watch
+    } = useForm<FormValues>({
+        defaultValues: async () => {
+            if (!user) return { name: '', location: '', last_selected_region: null };
+
+            const { data } = await supabase
+                .from('user_preferences')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            return {
+                name: data?.name || '',
+                location: data?.location || '',
+                last_selected_region: data?.last_selected_region || null
+            };
+        }
     });
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadPreferences = async () => {
-            if (!user) return;
-
-            try {
-                const { data, error } = await supabase
-                    .from('user_preferences')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error) throw error;
-
-                if (data) {
-                    setPreferences(data);
-                } else {
-                    // Create default preferences if none exist
-                    const defaultPreferences: UserPreferences = {
-                        id: user.id,
-                        name: '',
-                        location: null,
-                        map_preferences: {},
-                        last_selected_region: null,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                    };
-
-                    const { error: insertError } = await supabase
-                        .from('user_preferences')
-                        .insert([defaultPreferences]);
-
-                    if (insertError) throw insertError;
-                    setPreferences(defaultPreferences);
-                }
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Error loading preferences');
-            }
-        };
-
-        loadPreferences();
-    }, [user]);
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: FormValues) => {
         if (!user) return;
 
-        setSaving(true);
-        setError(null);
-        setSuccessMessage(null);
-
         try {
-            const updateData: UserPreferencesUpdate = {
-                name: preferences.name,
-                location: preferences.location,
-                map_preferences: preferences.map_preferences,
-                last_selected_region: preferences.last_selected_region,
-                updated_at: new Date().toISOString(),
-            };
-
             const { error } = await supabase
                 .from('user_preferences')
-                .update(updateData)
+                .update({
+                    name: data.name?.trim() || '',
+                    location: data.location?.trim() || null,
+                    last_selected_region: data.last_selected_region,
+                    updated_at: new Date().toISOString(),
+                })
                 .eq('id', user.id);
 
             if (error) throw error;
-            setSuccessMessage('Settings saved successfully!');
-            setTimeout(() => setSuccessMessage(null), 3000);
+
+            setShowSuccess(true);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error saving preferences');
-        } finally {
-            setSaving(false);
+            console.error('Error updating preferences:', err);
         }
     };
 
     return (
         <AccountLayout>
-            <form onSubmit={handleSave} className="space-y-6">
-                {error && (
-                    <div className="rounded-md bg-red-900/50 p-4">
-                        <div className="text-sm text-red-400">{error}</div>
-                    </div>
-                )}
-
-                {successMessage && (
-                    <div className="rounded-md bg-green-900/50 p-4">
-                        <div className="text-sm text-green-400">{successMessage}</div>
-                    </div>
-                )}
-
+            {showSuccess && (
+                <Banner
+                    message="Profile updated successfully"
+                    onClose={() => {
+                        setShowSuccess(false);
+                        navigate(-1);
+                    }}
+                />
+            )}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <Input
                     label="Name"
                     required
-                    value={preferences.name}
-                    onChange={(e) => setPreferences({ ...preferences, name: e.target.value })}
+                    error={errors.name?.message}
+                    {...register('name', {
+                        required: 'Name is required',
+                        validate: {
+                            minLength: (value) =>
+                                value.trim().length >= 2 || 'Name must be at least 2 characters',
+                            notEmpty: (value) =>
+                                value.trim().length > 0 || 'Name cannot be empty'
+                        }
+                    })}
                 />
 
                 <Input
                     label="Location"
-                    value={preferences.location || ''}
-                    onChange={(e) => setPreferences({ ...preferences, location: e.target.value })}
+                    error={errors.location?.message}
+                    {...register('location')}
                 />
 
                 <AccountRegionSelect
                     label="Favorite Region"
                     helperText="This region will be automatically selected when you log in."
                     regions={regions}
-                    value={preferences.last_selected_region || null}
-                    onChange={(value) => setPreferences({
-                        ...preferences,
-                        last_selected_region: value
-                    })}
+                    value={watch('last_selected_region')}
+                    onChange={(value) => setValue('last_selected_region', value)}
                 />
 
                 <div className="flex justify-end gap-2 mt-8">
@@ -153,9 +119,9 @@ export const UserProfile = () => {
                     <Button
                         variant="primary"
                         type="submit"
-                        disabled={saving}
+                        disabled={isSubmitting}
                     >
-                        {saving ? 'Saving...' : 'Save'}
+                        {isSubmitting ? 'Saving...' : 'Save'}
                     </Button>
                 </div>
             </form>
