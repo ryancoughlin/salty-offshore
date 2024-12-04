@@ -16,6 +16,8 @@ export interface Database {
                     map_preferences: Json
                     notification_settings: Json
                     last_selected_region: string | null
+                    name: string | null
+                    location: string | null
                     created_at: string
                     updated_at: string
                 }
@@ -25,6 +27,8 @@ export interface Database {
                     map_preferences?: Json
                     notification_settings?: Json
                     last_selected_region?: string | null
+                    name?: string | null
+                    location?: string | null
                     created_at?: string
                     updated_at?: string
                 }
@@ -34,6 +38,8 @@ export interface Database {
                     map_preferences?: Json
                     notification_settings?: Json
                     last_selected_region?: string | null
+                    name?: string | null
+                    location?: string | null
                     created_at?: string
                     updated_at?: string
                 }
