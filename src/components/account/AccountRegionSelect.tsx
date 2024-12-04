@@ -4,6 +4,7 @@ import type { Region } from '../../types/api';
 interface AccountRegionSelectProps {
     label?: string;
     helperText?: string;
+    error?: string;
     regions: Region[];
     value: string | null;
     onChange: (value: string | null) => void;
@@ -13,6 +14,7 @@ interface AccountRegionSelectProps {
 export const AccountRegionSelect = ({
     label,
     helperText,
+    error,
     regions,
     value,
     onChange,
@@ -31,8 +33,10 @@ export const AccountRegionSelect = ({
                     {label}
                 </label>
             )}
-            <div className={`relative p-3 bg-neutral-950/90 border border-neutral-700 flex justify-between items-center
-                group hover:border-neutral-600 ${className || ''}`}
+            <div className={`relative p-3 bg-neutral-950/90 border flex justify-between items-center
+                group ${error ? 'hover:border-rose-400' : 'hover:border-neutral-600'}
+                ${error ? 'border-rose-500' : 'border-neutral-700'}
+                ${className || ''}`}
             >
                 <div className="flex items-center gap-4 w-full pointer-events-none">
                     {selectedRegion && (
@@ -67,8 +71,10 @@ export const AccountRegionSelect = ({
                     id={selectId}
                     value={value || ''}
                     onChange={(e) => onChange(e.target.value || null)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer
-                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer
+                        focus-visible:outline-none focus-visible:ring-2 
+                        ${error ? 'focus-visible:ring-rose-500' : 'focus-visible:ring-blue-500'}`}
+                    aria-invalid={!!error}
                 >
                     <option value="">Select a region</option>
                     {regions.map((region) => (
@@ -78,7 +84,11 @@ export const AccountRegionSelect = ({
                     ))}
                 </select>
             </div>
-            {helperText && (
+            {error ? (
+                <p className="text-helper text-rose-500">
+                    {error}
+                </p>
+            ) : helperText && (
                 <p className="text-helper">
                     {helperText}
                 </p>
