@@ -5,6 +5,8 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { LoginForm } from './components/auth/LoginForm'
 import { SignUpForm } from './components/auth/SignUpForm'
 import { UserProfile } from './components/auth/UserProfile'
+import { Billing } from './components/account/Billing'
+import { Boat } from './components/account/Boat'
 import SaltyMap from './components/Map/Map'
 import Dock from './components/Dock'
 import { DateTimeline } from './components/DateTimeline'
@@ -77,18 +79,54 @@ const MainLayout: React.FC = () => {
 
 const router = createBrowserRouter([
   {
-    path: ROUTES.LOGIN,
+    path: ROUTES.AUTH.LOGIN,
     element: <LoginForm />,
   },
   {
-    path: ROUTES.SIGNUP,
+    path: ROUTES.AUTH.SIGNUP,
     element: <SignUpForm />,
   },
   {
-    path: ROUTES.PROFILE,
+    path: ROUTES.AUTH.VERIFY_EMAIL,
+    element: <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+      <div className="max-w-md w-full space-y-8 p-6 bg-neutral-900 rounded-lg">
+        <div>
+          <img
+            src="/salty-logo-dark.png"
+            alt="Salty Offshore"
+            className="h-8 mx-auto"
+          />
+          <h2 className="mt-6 text-center text-display text-white">
+            Check your email
+          </h2>
+          <p className="mt-2 text-center text-white/60">
+            We sent you an email with a link to verify your account.
+          </p>
+        </div>
+      </div>
+    </div>,
+  },
+  {
+    path: ROUTES.ACCOUNT.PROFILE,
     element: (
       <ProtectedRoute>
         <UserProfile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: ROUTES.ACCOUNT.BILLING,
+    element: (
+      <ProtectedRoute>
+        <Billing />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: ROUTES.ACCOUNT.BOAT,
+    element: (
+      <ProtectedRoute>
+        <Boat />
       </ProtectedRoute>
     ),
   },
@@ -126,7 +164,7 @@ const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Navigate to={ROUTES.LOGIN} replace />
+    element: <Navigate to={ROUTES.AUTH.LOGIN} replace />
   }
 ]);
 

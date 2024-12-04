@@ -10,19 +10,24 @@ import { AccountRegionSelect } from '../account/AccountRegionSelect';
 import type { Database } from '../../types/supabase';
 
 type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
+type UserPreferencesUpdate = Database['public']['Tables']['user_preferences']['Update'];
 
 export const UserProfile = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { regions } = useRegions();
     const [saving, setSaving] = useState(false);
-    const [preferences, setPreferences] = useState<Partial<UserPreferences>>({
-        theme: 'light',
+    const [preferences, setPreferences] = useState<UserPreferences>({
+        id: '',
+        name: '',
+        location: null,
         map_preferences: {},
-        notification_settings: {},
         last_selected_region: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
     });
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const loadPreferences = async () => {
@@ -41,19 +46,22 @@ export const UserProfile = () => {
                     setPreferences(data);
                 } else {
                     // Create default preferences if none exist
+                    const defaultPreferences: UserPreferences = {
+                        id: user.id,
+                        name: '',
+                        location: null,
+                        map_preferences: {},
+                        last_selected_region: null,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                    };
+
                     const { error: insertError } = await supabase
                         .from('user_preferences')
-                        .insert([
-                            {
-                                id: user.id,
-                                theme: 'light',
-                                map_preferences: {},
-                                notification_settings: {},
-                                last_selected_region: null,
-                            },
-                        ]);
+                        .insert([defaultPreferences]);
 
                     if (insertError) throw insertError;
+                    setPreferences(defaultPreferences);
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Error loading preferences');
@@ -69,18 +77,25 @@ export const UserProfile = () => {
 
         setSaving(true);
         setError(null);
+        setSuccessMessage(null);
 
         try {
+            const updateData: UserPreferencesUpdate = {
+                name: preferences.name,
+                location: preferences.location,
+                map_preferences: preferences.map_preferences,
+                last_selected_region: preferences.last_selected_region,
+                updated_at: new Date().toISOString(),
+            };
+
             const { error } = await supabase
                 .from('user_preferences')
-                .upsert({
-                    id: user.id,
-                    ...preferences,
-                    updated_at: new Date().toISOString(),
-                });
+                .update(updateData)
+                .eq('id', user.id);
 
             if (error) throw error;
-            navigate(-1);
+            setSuccessMessage('Settings saved successfully!');
+            setTimeout(() => setSuccessMessage(null), 3000);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Error saving preferences');
         } finally {
@@ -97,10 +112,16 @@ export const UserProfile = () => {
                     </div>
                 )}
 
+                {successMessage && (
+                    <div className="rounded-md bg-green-900/50 p-4">
+                        <div className="text-sm text-green-400">{successMessage}</div>
+                    </div>
+                )}
+
                 <Input
                     label="Name"
                     required
-                    value={preferences.name || ''}
+                    value={preferences.name}
                     onChange={(e) => setPreferences({ ...preferences, name: e.target.value })}
                 />
 

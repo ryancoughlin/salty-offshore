@@ -12,34 +12,28 @@ export interface Database {
             user_preferences: {
                 Row: {
                     id: string
-                    theme: string
-                    map_preferences: Json
-                    notification_settings: Json
-                    last_selected_region: string | null
-                    name: string | null
+                    name: string
                     location: string | null
+                    map_preferences: Json
+                    last_selected_region: string | null
                     created_at: string
                     updated_at: string
                 }
                 Insert: {
                     id: string
-                    theme?: string
-                    map_preferences?: Json
-                    notification_settings?: Json
-                    last_selected_region?: string | null
-                    name?: string | null
+                    name: string
                     location?: string | null
+                    map_preferences?: Json
+                    last_selected_region?: string | null
                     created_at?: string
                     updated_at?: string
                 }
                 Update: {
                     id?: string
-                    theme?: string
-                    map_preferences?: Json
-                    notification_settings?: Json
-                    last_selected_region?: string | null
-                    name?: string | null
+                    name?: string
                     location?: string | null
+                    map_preferences?: Json
+                    last_selected_region?: string | null
                     created_at?: string
                     updated_at?: string
                 }
