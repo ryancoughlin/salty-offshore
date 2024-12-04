@@ -85,11 +85,11 @@ export const AccountRegionSelect = ({
                 </select>
             </div>
             {error ? (
-                <p className="text-helper text-rose-500">
+                <p className="text-micro text-rose-500">
                     {error}
                 </p>
             ) : helperText && (
-                <p className="text-helper">
+                <p className="text-micro">
                     {helperText}
                 </p>
             )}

@@ -11,7 +11,7 @@ export const Button = ({
 }: ButtonProps) => {
     return (
         <button
-            className={`text-label px-5 py-3 transition-colors
+            className={`text-label px-4 py-2 transition-colors
                 ${variant === 'primary'
                     ? 'bg-yellow-300 text-black hover:bg-yellow-400'
                     : 'bg-neutral-900 text-zinc-100 hover:bg-neutral-800'}
