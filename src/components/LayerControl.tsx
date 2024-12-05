@@ -5,6 +5,7 @@ import type { DatasetConfig } from '../types/datasets';
 import { isDatasetLayer, isGlobalLayer } from '../types/core';
 import { useLayerStore } from '../store/useLayerStore';
 import DatasetInfo from './DatasetInfo/DatasetInfo';
+import Toggle from './ui/Toggle';
 
 interface LayerControlProps {
   isSelected: boolean;
@@ -17,46 +18,24 @@ interface LayerSettingsProps {
   layerId: string;
   settings: {
     visible: boolean;
-    opacity: number;
   };
   onToggle: () => void;
-  onOpacityChange: (opacity: number) => void;
 }
 
 const LayerSettings: React.FC<LayerSettingsProps> = ({
   layerId,
   settings,
   onToggle,
-  onOpacityChange
 }) => (
   <div className="flex items-center justify-between">
     <label className="text-sm text-white">
       {layerId.charAt(0).toUpperCase() + layerId.slice(1)}
     </label>
-    <div className="flex items-center gap-2">
-      <input
-        type="checkbox"
-        checked={settings.visible}
-        onChange={onToggle}
-        className="rounded border-white/20"
-      />
-      {settings.visible && (
-        <div className="flex items-center gap-2">
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={settings.opacity}
-            onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
-            className="w-24"
-          />
-          <span className="text-xs text-white/60 w-8">
-            {Math.round(settings.opacity * 100)}%
-          </span>
-        </div>
-      )}
-    </div>
+    <Toggle
+      checked={settings.visible}
+      onChange={onToggle}
+      aria-label={`Toggle ${layerId}`}
+    />
   </div>
 );
 
@@ -67,7 +46,7 @@ export const LayerControl: React.FC<LayerControlProps> = ({
   config
 }) => {
   const displayName = getDatasetDisplayName(dataset.id);
-  const { layerSettings, toggleLayer, setLayerOpacity } = useLayerStore();
+  const { layerSettings, toggleLayer } = useLayerStore();
 
   // Get available layers from config or use defaults
   const availableLayers = config?.supportedLayers || [];
@@ -125,9 +104,8 @@ export const LayerControl: React.FC<LayerControlProps> = ({
                       <LayerSettings
                         key={layerId}
                         layerId={layerId}
-                        settings={settings}
+                        settings={{ visible: settings.visible }}
                         onToggle={() => toggleLayer(layerId)}
-                        onOpacityChange={(opacity) => setLayerOpacity(layerId, opacity)}
                       />
                     );
                   })}
@@ -146,9 +124,8 @@ export const LayerControl: React.FC<LayerControlProps> = ({
                       <LayerSettings
                         key={layerId}
                         layerId={layerId}
-                        settings={settings}
+                        settings={{ visible: settings.visible }}
                         onToggle={() => toggleLayer(layerId)}
-                        onOpacityChange={(opacity) => setLayerOpacity(layerId, opacity)}
                       />
                     );
                   })}
