@@ -51,7 +51,7 @@ export const SignUpForm = () => {
                     <img
                         src="/salty-logo-dark.png"
                         alt="Salty Offshore"
-                        className="h-6 mx-auto mb-8 md:h-8"
+                        className="h-7 mx-auto mb-8 md:h-8"
                     />
                 </div>
 

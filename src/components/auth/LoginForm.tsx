@@ -35,7 +35,7 @@ export const LoginForm = () => {
                     <img
                         src="/salty-logo-dark.png"
                         alt="Salty Offshore"
-                        className="h-8 mx-auto mb-8"
+                        className="h-7 mx-auto mb-8 md:h-8"
                     />
                 </div>
 
