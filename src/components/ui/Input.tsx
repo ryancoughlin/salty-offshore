@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
             {label && (
                 <div className="flex items-center">
                     <label
