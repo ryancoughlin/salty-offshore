@@ -22,15 +22,15 @@ interface LayerSettingsProps {
   onToggle: () => void;
 }
 
-const LayerSettings: React.FC<LayerSettingsProps> = ({
+const LayerSettings = ({
   layerId,
   settings,
   onToggle,
-}) => (
+}: LayerSettingsProps) => (
   <div className="flex items-center justify-between">
-    <label className="text-sm text-white">
+    <span className="text-sm text-white">
       {layerId.charAt(0).toUpperCase() + layerId.slice(1)}
-    </label>
+    </span>
     <Toggle
       checked={settings.visible}
       onChange={onToggle}
