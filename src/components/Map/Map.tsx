@@ -1,5 +1,5 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useRef, useCallback, Suspense, memo } from 'react';
+import { useRef, useCallback, Suspense, memo, useLayoutEffect } from 'react';
 import type { MapRef, MapLayerMouseEvent } from 'react-map-gl';
 import Map from 'react-map-gl';
 import { BathymetryLayer } from './BathymetryLayer';
@@ -63,9 +63,40 @@ const OceanographicMap: React.FC = () => {
 
     const gridSettings = layerSettings.get('grid');
 
+    // Handle map resizing
+    useLayoutEffect(() => {
+        if (!mapRef.current?.getMap()) return;
+
+        const map = mapRef.current.getMap();
+        const dockElement = document.querySelector('[class*="w-12"], [class*="w-[364px]"]');
+
+        if (!dockElement) return;
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    map.resize();
+                }
+            });
+        });
+
+        observer.observe(dockElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+        // Also handle window resize
+        window.addEventListener('resize', () => map.resize());
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('resize', () => map.resize());
+        };
+    }, []);
+
     return (
         <MapErrorBoundary>
-            <div className="relative w-full h-full">
+            <div className="w-full h-full absolute inset-0">
                 <Map
                     ref={mapRef}
                     {...viewState}
@@ -80,6 +111,7 @@ const OceanographicMap: React.FC = () => {
                     maxZoom={MAP_CONSTANTS.ZOOM_LIMITS.MAX}
                     minZoom={MAP_CONSTANTS.ZOOM_LIMITS.MIN}
                     optimizeForTerrain={false}
+                    reuseMaps
                 >
                     {mapLoaded && (
                         <Suspense fallback={null}>

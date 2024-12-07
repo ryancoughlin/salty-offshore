@@ -62,7 +62,7 @@ const MainLayout: React.FC = () => {
         onRegionSelect={selectRegion}
         regionData={regionData}
       />
-      <main className="flex-1 relative">
+      <main id="map-container" className="flex-1 relative overflow-hidden">
         <SaltyMap />
       </main>
     </div>

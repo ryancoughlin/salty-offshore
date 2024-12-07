@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import type { Region } from '../../types/api';
 import { RegionSelectItem } from './RegionSelectItem';
 import { RegionPickerModal } from './RegionPickerModal';
@@ -40,15 +40,15 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({
   return (
     <>
       <div ref={dropdownRef} className="relative">
-        <div 
+        <div
           onClick={() => setIsOpen(!isOpen)}
-          className="h-16 px-4 border-b border-white/20 flex items-center justify-between cursor-pointer"
+          className="hover:bg-neutral-900 transition-colors duration-150 h-16 px-4 border-b border-white/20 flex items-center justify-between cursor-pointer"
         >
           <div className="text-white text-xl font-semibold font-['Spline Sans']">
             {selectedRegion?.name || 'Select Region'}
           </div>
-          <ChevronRightIcon 
-            className={`w-6 h-6 text-white transform transition-transform duration-150 ${isOpen ? 'rotate-90' : '-rotate-90'}`}
+          <ChevronDownIcon
+            className={`w-5 h-5 text-white transform transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
           />
         </div>
 

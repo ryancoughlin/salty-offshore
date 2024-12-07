@@ -75,7 +75,7 @@ export const DateTimeline = ({
                     className="h-12 w-12 flex items-center justify-center hover:bg-neutral-50 rounded-l-full disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Previous date"
                 >
-                    <ChevronLeftIcon className="h-5 w-5 text-neutral-900" />
+                    <ChevronLeftIcon strokeWidth={1.5} className="h-5 w-5 text-neutral-900" />
                 </button>
 
                 <button
@@ -91,7 +91,7 @@ export const DateTimeline = ({
                     className="h-12 w-12 flex items-center justify-center hover:bg-neutral-50 rounded-r-full disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Next date"
                 >
-                    <ChevronRightIcon className="h-5 w-5 text-neutral-900" />
+                    <ChevronRightIcon strokeWidth={1.5} className="h-5 w-5 text-neutral-900" />
                 </button>
             </div>
 
