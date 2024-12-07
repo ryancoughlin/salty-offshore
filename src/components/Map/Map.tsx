@@ -6,7 +6,6 @@ import { BathymetryLayer } from './BathymetryLayer';
 import { Grid } from './Grid';
 import { SpotLayer } from './SpotLayer';
 import { MapControls } from './MapControls';
-import { MapTools } from '../MapTools';
 import { DatasetLayers } from './DatasetLayers';
 import { MapErrorBoundary } from './MapErrorBoundary';
 import { useMapStore } from '../../store/useMapStore';
@@ -17,6 +16,9 @@ import { useMapViewState } from '../../hooks/useMapViewState';
 import { MAP_CONSTANTS } from '../../constants/map';
 import { useLayerStore } from '../../store/useLayerStore';
 import StationsLayer from './StationsLayer';
+import { MapToolbar } from './MapToolbar';
+import { DistanceTool } from '../MapTools/DistanceTool';
+import { MeasurementHelper } from '../MapTools/DistanceTool/MeasurementHelper';
 
 const OceanographicMap: React.FC = () => {
     const mapRef = useRef<MapRef>(null);
@@ -32,6 +34,7 @@ const OceanographicMap: React.FC = () => {
         selectedDate,
         setCursorPosition,
         setMapRef,
+        selectDate,
     } = useMapStore();
 
     const { layerSettings } = useLayerStore();
@@ -81,7 +84,13 @@ const OceanographicMap: React.FC = () => {
                     {mapLoaded && (
                         <Suspense fallback={null}>
                             <MapControls />
-                            <MapTools />
+                            <MapToolbar
+                                dataset={selectedDataset || undefined}
+                                selectedDate={selectedDate}
+                                onDateSelect={selectDate}
+                            />
+                            <MeasurementHelper />
+                            <DistanceTool />
                             <DatasetLayers
                                 selectedRegion={selectedRegion}
                                 selectedDataset={selectedDataset}

@@ -18,7 +18,7 @@ export const TotalDistanceLabel: React.FC<TotalDistanceLabelProps> = ({
   const center = turf.center(lineString);
 
   return (
-    <Marker 
+    <Marker
       longitude={center.geometry.coordinates[0]}
       latitude={center.geometry.coordinates[1]}
       offset={[0, 30]} // Position below the line

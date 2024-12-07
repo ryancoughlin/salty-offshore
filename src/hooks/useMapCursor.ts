@@ -16,10 +16,10 @@ export const useMapCursor = (
 
   const hasPositionChanged = (newPos: Coordinate) => {
     if (!lastPosition.current) return true;
-    
+
     const latDiff = Math.abs(newPos.latitude - lastPosition.current.latitude);
     const lngDiff = Math.abs(newPos.longitude - lastPosition.current.longitude);
-    
+
     return latDiff > MIN_DISTANCE_CHANGE || lngDiff > MIN_DISTANCE_CHANGE;
   };
 
@@ -31,6 +31,11 @@ export const useMapCursor = (
       longitude: event.lngLat.lng,
       latitude: event.lngLat.lat
     };
+
+    // Set cursor style based on tool state
+    if (event.target) {
+      event.target.getCanvas().style.cursor = isToolActive && activeTool === 'distance' ? 'crosshair' : '';
+    }
 
     if (isToolActive && activeTool === 'distance') {
       updateMousePosition([newPosition.longitude, newPosition.latitude]);

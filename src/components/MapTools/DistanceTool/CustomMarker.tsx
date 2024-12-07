@@ -3,6 +3,7 @@ import { Marker } from 'react-map-gl';
 import startFlag from '../../../assets/start_flag.png';
 import endFlag from '../../../assets/end_flag.png';
 import pointMarker from '../../../assets/point_marker.png';
+import { useMapToolsStore } from '../../../store/mapToolsStore';
 
 type MarkerType = 'start' | 'end' | 'point';
 
@@ -44,19 +45,25 @@ export const CustomMarker: React.FC<CustomMarkerProps> = ({
   const markerRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef<boolean>(false);
   const config = MARKER_CONFIGS[type];
+  const { completePath, toggleTool } = useMapToolsStore();
 
   useEffect(() => {
-    if (markerRef.current && (type === 'start' || type === 'end') && !hasAnimated.current) {
-      markerRef.current.style.transform = 'scale(0.1) translateY(100%)';
-      requestAnimationFrame(() => {
-        if (markerRef.current) {
-          markerRef.current.style.transition = 'transform 0.3s ease-out';
-          markerRef.current.style.transform = 'scale(1) translateY(0)';
-          hasAnimated.current = true;
-        }
-      });
-    }
-  }, []); 
+    if (!markerRef.current || hasAnimated.current || !['start', 'end'].includes(type)) return;
+
+    markerRef.current.style.transform = 'scale(0.1) translateY(100%)';
+    requestAnimationFrame(() => {
+      if (markerRef.current) {
+        markerRef.current.style.transition = 'transform 0.3s ease-out';
+        markerRef.current.style.transform = 'scale(1) translateY(0)';
+        hasAnimated.current = true;
+      }
+    });
+  }, [type]);
+
+  const handleClick = () => {
+    completePath();
+    toggleTool('distance');
+  };
 
   return (
     <Marker
@@ -66,21 +73,28 @@ export const CustomMarker: React.FC<CustomMarkerProps> = ({
       onDragStart={onDragStart}
       onDrag={e => onDrag?.([e.lngLat.lng, e.lngLat.lat])}
       onDragEnd={onDragEnd}
-      anchor="center" 
-      offset={config.offset}
+      anchor="center"
+      offset={config.offset as [number, number]}
+      onClick={handleClick}
     >
-      <div 
+      <div
         ref={markerRef}
-        className="origin-center"
+        className="relative origin-center transition-all duration-150"
         style={{
           width: config.size,
           height: config.size,
-          backgroundImage: `url(${config.icon})`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center'
         }}
-      />
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${config.icon})`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+          }}
+        />
+      </div>
     </Marker>
   );
 }; 

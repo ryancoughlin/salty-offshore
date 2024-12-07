@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import type { Path, Point } from '../../../store/mapToolsStore';
+import React from 'react';
 import { useMapToolsStore } from '../../../store/mapToolsStore';
+import type { Path } from '../../../store/mapToolsStore';
 import { DistanceLine } from './DistanceLine';
 import { TotalDistanceLabel } from './TotalDistanceLabel';
 import { CustomMarker } from './CustomMarker';
@@ -17,62 +17,63 @@ export const DistanceTool: React.FC = () => {
     updatePointPosition,
   } = useMapToolsStore();
 
-  const handleDragStart = useCallback((pointId: string) => {
-    startDraggingPoint(pointId);
-  }, [startDraggingPoint]);
+  const renderPath = (path: Path, isCurrent = false) => {
+    if (!path.points.length) return null;
 
-  const handleDragEnd = useCallback(() => {
-    stopDraggingPoint();
-  }, [stopDraggingPoint]);
-
-  const renderPath = (path: Path, isCurrent: boolean = false) => (
-    <React.Fragment key={path.id}>
-      {path.points.length >= 2 && (
-        <>
-          <DistanceLine 
-            points={path.points.map((p: Point) => p.coordinates)} 
-            lineId={`${path.id}-${isCurrent ? 'current' : 'main'}`}
+    return (
+      <React.Fragment key={path.id}>
+        {path.points.length >= 2 && (
+          <>
+            <DistanceLine
+              points={path.points.map(p => p.coordinates)}
+              lineId={`${path.id}-${isCurrent ? 'current' : 'main'}`}
+            />
+            <TotalDistanceLabel
+              points={path.points.map(p => p.coordinates)}
+              totalDistance={path.totalDistance}
+            />
+          </>
+        )}
+        {path.points.map((point, index) => (
+          <CustomMarker
+            key={point.id}
+            coordinates={point.coordinates}
+            type={index === 0 ? 'start' : index === path.points.length - 1 ? 'end' : 'point'}
+            isDraggable
+            onDragStart={() => startDraggingPoint(point.id)}
+            onDrag={(coords) => updatePointPosition(coords)}
+            onDragEnd={stopDraggingPoint}
           />
-          <TotalDistanceLabel
-            points={path.points.map((p: Point) => p.coordinates)}
-            totalDistance={path.totalDistance}
-          />
-        </>
-      )}
-      {path.points.map((point: Point, index: number) => (
-        <CustomMarker
-          key={point.id}
-          coordinates={point.coordinates}
-          type={index === 0 ? 'start' : index === path.points.length - 1 ? 'end' : 'point'}
-          isDraggable
-          onDragStart={() => handleDragStart(point.id)}
-          onDrag={(coords) => updatePointPosition(coords)}
-          onDragEnd={handleDragEnd}
-        />
-      ))}
-    </React.Fragment>
-  );
+        ))}
+      </React.Fragment>
+    );
+  };
 
-  if (!isToolActive || activeTool !== 'distance') {
-    return null;
-  }
+  const renderTemporaryLine = () => {
+    if (!mousePosition || !currentPath?.points.length) return null;
+
+    return (
+      <DistanceLine
+        points={[
+          currentPath.points[currentPath.points.length - 1].coordinates,
+          mousePosition
+        ]}
+        isTemporary
+        lineId={`${currentPath.id}-temp`}
+      />
+    );
+  };
 
   return (
     <>
-      {paths.map((path) => renderPath(path))}
-      {currentPath && (
+      {/* Completed paths are always visible */}
+      {paths.map(path => renderPath(path))}
+
+      {/* Current path and temporary line only visible in measure mode */}
+      {isToolActive && activeTool === 'distance' && currentPath && (
         <>
           {renderPath(currentPath, true)}
-          {mousePosition && currentPath.points.length > 0 && (
-            <DistanceLine
-              points={[
-                currentPath.points[currentPath.points.length - 1].coordinates,
-                mousePosition
-              ]}
-              isTemporary
-              lineId={`${currentPath.id}-temp`}
-            />
-          )}
+          {renderTemporaryLine()}
         </>
       )}
     </>

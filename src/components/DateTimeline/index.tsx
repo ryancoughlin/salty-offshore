@@ -14,10 +14,10 @@ const formatDate = (dateString: string) => {
     const year = dateString.substring(0, 4);
     const month = dateString.substring(4, 6);
     const day = dateString.substring(6, 8);
-    
+
     const date = new Date(Number(year), Number(month) - 1, Number(day));
-    
-    return date.toLocaleDateString('en-US', { 
+
+    return date.toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'short',
         day: 'numeric'
@@ -67,20 +67,20 @@ export const DateTimeline = ({
     const toggleDropdown = () => setIsOpen(!isOpen);
 
     return (
-        <div className="absolute bottom-4 left-4 z-10" ref={dropdownRef}>
-            <div className="bg-neutral-900 rounded-lg shadow-lg flex items-center">
+        <div className="relative" ref={dropdownRef}>
+            <div className="bg-white rounded-full shadow-lg flex items-center">
                 <button
                     onClick={handlePrevious}
                     disabled={!hasPrevious}
-                    className="p-2 hover:bg-neutral-800 rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-12 w-12 flex items-center justify-center hover:bg-neutral-50 rounded-l-full disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Previous date"
                 >
-                    <ChevronLeftIcon className="h-5 w-5 text-white" />
+                    <ChevronLeftIcon className="h-5 w-5 text-neutral-900" />
                 </button>
-                
+
                 <button
                     onClick={toggleDropdown}
-                    className="px-4 py-2 text-white hover:bg-neutral-800 min-w-[180px] text-center"
+                    className="px-4 h-12 text-neutral-900 font-sans text-base hover:bg-neutral-50 font-medium min-w-[180px] text-center border-l border-r border-black/10"
                 >
                     {selectedDate ? formatDate(selectedDate) : 'Select Date'}
                 </button>
@@ -88,19 +88,19 @@ export const DateTimeline = ({
                 <button
                     onClick={handleNext}
                     disabled={!hasNext}
-                    className="p-2 hover:bg-neutral-800 rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-12 w-12 flex items-center justify-center hover:bg-neutral-50 rounded-r-full disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Next date"
                 >
-                    <ChevronRightIcon className="h-5 w-5 text-white" />
+                    <ChevronRightIcon className="h-5 w-5 text-neutral-900" />
                 </button>
             </div>
 
-            <div 
+            <div
                 className={`
                     absolute bottom-full mb-2 w-full
                     transform transition-all duration-200 ease-out origin-bottom
-                    ${isOpen 
-                        ? 'opacity-100 translate-y-0 scale-100' 
+                    ${isOpen
+                        ? 'opacity-100 translate-y-0 scale-100'
                         : 'opacity-0 translate-y-4 scale-95 pointer-events-none'}
                 `}
             >

@@ -9,7 +9,6 @@ import { Billing } from './components/account/Billing'
 import { Boat } from './components/account/Boat'
 import SaltyMap from './components/Map/Map'
 import Dock from './components/Dock'
-import { DateTimeline } from './components/DateTimeline'
 import { useRegions } from './hooks/useRegions'
 import { useRegionDatasets } from './hooks/useRegionDatasets'
 import useMapStore from './store/useMapStore'
@@ -65,13 +64,6 @@ const MainLayout: React.FC = () => {
       />
       <main className="flex-1 relative">
         <SaltyMap />
-        {selectedRegion && selectedDataset && (
-          <DateTimeline
-            dataset={selectedDataset}
-            selectedDate={selectedDate}
-            onDateSelect={selectDate}
-          />
-        )}
       </main>
     </div>
   );
