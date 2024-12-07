@@ -116,14 +116,7 @@ export const UserProfile = () => {
                     onChange={(value) => setValue('last_selected_region', value)}
                 />
 
-                <div className="flex justify-end gap-2">
-                    <Button
-                        variant="secondary"
-                        type="button"
-                        onClick={() => navigate(-1)}
-                    >
-                        Cancel
-                    </Button>
+                <div className="flex justify-end">
                     <Button
                         variant="primary"
                         type="submit"

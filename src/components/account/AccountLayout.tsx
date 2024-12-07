@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, WalletCards, Ship } from 'lucide-react';
+import { User, WalletCards, Ship, ArrowLeft } from 'lucide-react';
 import { AccountNavItem } from './AccountNavItem';
 import { ROUTES } from '../../routes';
+import { Button } from '../ui/Button';
 
 interface AccountLayoutProps {
     children: React.ReactNode;
@@ -10,6 +11,10 @@ interface AccountLayoutProps {
 export const AccountLayout = ({ children }: AccountLayoutProps) => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const handleBackToMap = () => {
+        navigate('/', { state: { from: location.pathname } });
+    };
 
     const navItems = [
         {
@@ -34,12 +39,27 @@ export const AccountLayout = ({ children }: AccountLayoutProps) => {
 
     return (
         <div className="min-h-screen bg-neutral-950 px-4 py-8">
-            <img
-                src="/salty-logo-dark.png"
-                alt="Salty Offshore"
-                className="h-8 mx-auto mb-8"
-            />
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto relative">
+                <div className="flex items-center justify-between mb-8">
+                    <Button
+                        variant="invisible"
+                        onClick={handleBackToMap}
+                        className="flex items-center gap-2"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Map
+                    </Button>
+                    <img
+                        src="/salty-logo-dark.png"
+                        alt="Salty Offshore"
+                        className="h-8 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={handleBackToMap}
+                        onKeyDown={(e) => e.key === 'Enter' && handleBackToMap()}
+                        role="button"
+                        tabIndex={0}
+                    />
+                    <div className="w-[104px]" /> {/* Spacer to balance the layout */}
+                </div>
                 <h1 className="text-display text-white mb-6">
                     Account Settings
                 </h1>
