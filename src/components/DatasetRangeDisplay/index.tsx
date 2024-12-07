@@ -47,13 +47,27 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
     );
   }, [config?.colorScale, ranges, config?.rangeKey, datasetType]);
 
+  const normalizedValue = useMemo(() => {
+    if (!config || !ranges) return null;
+    const range = ranges[config.rangeKey];
+    if (!range || currentValue === null) return null;
+    return getNormalizedValue(currentValue, range.min, range.max, datasetType);
+  }, [currentValue, config, ranges, datasetType]);
+
+  const currentColor = useMemo(() => {
+    if (!config?.colorScale || normalizedValue === null) return 'white';
+    const colors = Array.isArray(config.colorScale) ? config.colorScale : [];
+    const colorIndex = Math.floor(normalizedValue * (colors.length - 1));
+    return colors[colorIndex] || colors[0] || 'white';
+  }, [config?.colorScale, normalizedValue]);
+
   if (!config || !ranges) return null;
 
   const range = ranges[config.rangeKey];
   if (!range) return null;
 
-  const positionPercent = currentValue !== null
-    ? Math.max(0, Math.min(100, getNormalizedValue(currentValue, range.min, range.max, datasetType) * 100))
+  const positionPercent = normalizedValue !== null
+    ? Math.max(0, Math.min(100, normalizedValue * 100))
     : null;
 
   return (
@@ -66,10 +80,11 @@ export const DatasetRangeDisplay: React.FC<DatasetRangeDisplayProps> = ({
       >
         {positionPercent !== null && (
           <div
-            className="absolute top-0 w-0.5 h-3 bg-white shadow-sm transition-all duration-100 ease-out"
+            className="absolute -top-0.5 w-4 h-2.5 rounded-sm border border-white shadow-sm transition-all duration-100 ease-out"
             style={{
               left: `${positionPercent}%`,
-              transform: 'translateX(-50%)'
+              transform: 'translateX(-50%)',
+              backgroundColor: currentColor
             }}
           />
         )}
